@@ -173,3 +173,19 @@ export const VERSES = [
     ref: 'JOSHUA 1:9',
   },
 ];
+
+// ─── Home page tiles ────────────────────────────────────────
+// The big cards on the home page. Each one shows a solid color block until
+// you add a photo: drop the image in /public/home/ and set image to its path,
+// e.g. image: '/home/programs.jpg'. tone picks the placeholder color.
+export const HOME_TILES = [
+  { id: 'programs', title: 'Programs', sub: 'At home and in the gym', to: '/dashboard/program', image: null, tone: 'ink' },
+  { id: 'nutrition', title: 'Nutrition', sub: 'Recipes and meal plans', to: '/dashboard/nutrition/recipes', image: null, tone: 'olive' },
+  { id: 'devotions', title: 'Devotions', sub: 'Scripture and reflection for every day', to: '/dashboard/devotion', image: null, tone: 'gold' },
+  { id: 'community', title: 'Community', sub: 'Encouragement, prayer, and wins', to: '/dashboard/community', image: null, tone: 'sage' },
+  { id: 'coaches', title: 'Meet your coaches', sub: 'Lex and John', to: '/dashboard/coaches', image: null, tone: 'ink' },
+];
+
+// Shown in the "Questions?" card at the bottom of the home page.
+// Leave empty to point people to the Community tab instead.
+export const SUPPORT_EMAIL = '';

@@ -14,6 +14,7 @@ import RecipeBook from './screens/dashboard/RecipeBook';
 import Community from './screens/dashboard/Community';
 import Progress from './screens/dashboard/Progress';
 import Habits from './screens/dashboard/Habits';
+import Coaches from './screens/dashboard/Coaches';
 import RequireAuth from './components/RequireAuth';
 
 export default function App() {
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="community" element={<Community />} />
           <Route path="progress" element={<Progress />} />
           <Route path="habits" element={<Habits />} />
+          <Route path="coaches" element={<Coaches />} />
         </Route>
       </Routes>
     </BrowserRouter>

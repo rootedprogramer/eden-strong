@@ -21,13 +21,16 @@ export default function BottomNav() {
       style={{
         position: 'fixed',
         bottom: 0,
-        left: 0,
-        right: 0,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '100%',
+        maxWidth: 480,
+        zIndex: 5,
         display: 'flex',
         justifyContent: 'space-around',
         alignItems: 'center',
-        padding: '14px 0',
-        background: '#fff',
+        padding: '14px 0 calc(14px + env(safe-area-inset-bottom, 0px))',
+        background: COLORS.bgWarm,
         borderTop: `1px solid ${COLORS.line}`,
       }}
     >

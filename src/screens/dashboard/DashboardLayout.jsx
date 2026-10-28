@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Outlet, Navigate } from 'react-router-dom';
+import { Outlet, Navigate, Link } from 'react-router-dom';
+import { CircleUserRound } from 'lucide-react';
 import { COLORS, FONTS, getEdition } from '../../brand/tokens';
 import { useTheme } from '../../theme/ThemeContext';
 import { supabase } from '../../lib/supabaseClient';
@@ -31,11 +32,36 @@ export default function DashboardLayout() {
   if (!edition) return <Navigate to="/" replace />;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--es-canvas)', paddingBottom: 80 }}>
-      <div style={{ padding: '16px 24px 0', fontFamily: FONTS.body, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600, color: tokens.primary }}>
-        {edition.name}
+    <div style={{ minHeight: '100vh', background: COLORS.bg }}>
+      {/* Phone-width column, centered on bigger screens */}
+      <div style={{ maxWidth: 480, margin: '0 auto', minHeight: '100vh', background: COLORS.bg, paddingBottom: 84 }}>
+        <header
+          style={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 5,
+            display: 'grid',
+            gridTemplateColumns: '44px 1fr 44px',
+            alignItems: 'center',
+            padding: '14px 14px 12px',
+            background: COLORS.bgWarm,
+          }}
+        >
+          <Link to="/dashboard/profile" aria-label="Your profile" style={{ color: COLORS.ink, display: 'flex' }}>
+            <CircleUserRound size={28} strokeWidth={1.5} />
+          </Link>
+          <Link to="/dashboard" style={{ textAlign: 'center', textDecoration: 'none' }}>
+            <div style={{ fontFamily: FONTS.display, fontSize: 26, fontWeight: 500, color: COLORS.ink, lineHeight: 1 }}>
+              Eden Strong
+            </div>
+            <div style={{ fontFamily: FONTS.body, fontSize: 10, letterSpacing: '0.24em', textTransform: 'uppercase', fontWeight: 600, color: tokens.primary, marginTop: 4 }}>
+              {edition.short}
+            </div>
+          </Link>
+          <span />
+        </header>
+        <Outlet context={{ profile: state.profile, edition }} />
       </div>
-      <Outlet context={{ profile: state.profile, edition }} />
       <BottomNav />
     </div>
   );
