@@ -1,11 +1,16 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { COLORS, FONTS } from '../../brand/tokens';
+import { useEffect, useState } from 'react';
+import { useTheme } from '../../theme/ThemeContext';
+import { useNavigate, Link, useSearchParams, Navigate } from 'react-router-dom';
+import { COLORS, FONTS, getEdition, rememberEdition, recallEdition } from '../../brand/tokens';
 import Sprig from '../../components/Sprig';
 import { supabase } from '../../lib/supabaseClient';
 
 export default function SignUp() {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const edition = getEdition(params.get('edition') || recallEdition());
+  const { setPath } = useTheme();
+  useEffect(() => { if (edition) setPath(edition.id); }, [edition?.id]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -21,12 +26,19 @@ export default function SignUp() {
       setError(signUpError.message);
       return;
     }
-    navigate('/onboarding');
+    rememberEdition(edition.id);
+    navigate(`/onboarding?edition=${edition.id}`);
   };
+
+  // Everyone has to pick Women, Men, or Together first.
+  if (!edition) return <Navigate to="/" replace />;
 
   return (
     <div style={{ minHeight: '100vh', background: COLORS.bg, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px 32px' }}>
       <Sprig size={36} color={COLORS.gold} />
+      <div style={{ marginTop: 16, fontFamily: FONTS.body, fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: COLORS.mute }}>
+        {edition.name} · <Link to="/" style={{ color: COLORS.gold, textTransform: 'none', letterSpacing: 0 }}>change</Link>
+      </div>
       <div style={{ fontFamily: FONTS.display, fontSize: 32, color: COLORS.ink, marginTop: 20, fontStyle: 'italic' }}>
         Begin your season
       </div>

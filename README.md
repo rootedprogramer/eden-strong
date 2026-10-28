@@ -20,6 +20,16 @@ Faith-rooted fitness web app. React + Vite + Supabase, deployed on Netlify.
 
 All brand tokens (colors, fonts, copy, the 4 onboarding paths) live in `src/brand/tokens.js` — this is the single source of truth if anything needs to change.
 
+## Three editions: Women, Men, Together
+
+Eden Strong is three separate experiences under one app. Members pick **Eden Strong Women**, **Eden Strong Men**, or **Eden Strong Together** on the landing page, and from then on they only see that edition's name, colors, goals, and community feed.
+
+- Edition names, descriptions, and the goals inside each edition live in `src/brand/tokens.js` (`EDITIONS`, `GOALS`, `FOLLOW_UPS`). The Men and Together goals are drafts; edit them freely.
+- Edition colors live in `src/theme/theme.js`.
+- **Run `supabase/migration_editions.sql` once** in the SQL editor (after `schema.sql`). It adds `user_profiles.edition`, sets existing members to `women`, separates the community feeds, and adds couple linking.
+- Programs and devotions with `edition` left empty show in all three editions. To make one belong to a single edition: `update workout_programs set edition = 'men' where title = '...';`
+- Together: each spouse signs up with their own login. One taps "Create an invite code" on their Profile page, the other enters it.
+
 ## Setup
 
 ```bash

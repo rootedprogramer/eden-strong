@@ -80,7 +80,7 @@ export default function DashboardHome() {
     (habit.habit_completions || []).some((c) => c.completed_date === todayISO());
 
   return (
-    <div style={{ padding: '48px 24px 24px' }}>
+    <div style={{ padding: '24px 24px 24px' }}>
       <Sprig size={30} color={COLORS.gold} />
       <div style={{ fontFamily: FONTS.display, fontSize: 28, color: COLORS.ink, fontStyle: 'italic', marginTop: 16 }}>
         {loading ? 'Welcome back' : `Welcome back, ${profile?.name || 'friend'}`}

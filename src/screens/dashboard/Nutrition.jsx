@@ -72,7 +72,7 @@ export default function Nutrition() {
   const remaining = goal ? Math.max(goal.calories - totals.calories, 0) : null;
 
   return (
-    <div style={{ padding: '48px 24px 24px' }}>
+    <div style={{ padding: '24px 24px 24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ fontFamily: FONTS.display, fontSize: 26, color: COLORS.ink, fontStyle: 'italic' }}>
           Nutrition

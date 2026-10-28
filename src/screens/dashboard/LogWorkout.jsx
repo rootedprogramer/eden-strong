@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { COLORS, FONTS } from '../../brand/tokens';
+import { COLORS, FONTS, tint } from '../../brand/tokens';
 import { supabase } from '../../lib/supabaseClient';
 
 export default function LogWorkout() {
@@ -40,7 +40,7 @@ export default function LogWorkout() {
 
   if (saved) {
     return (
-      <div style={{ padding: '48px 24px', textAlign: 'center' }}>
+      <div style={{ padding: '24px 24px', textAlign: 'center' }}>
         <div style={{ fontFamily: FONTS.display, fontSize: 24, color: COLORS.ink, fontStyle: 'italic' }}>
           Logged. Well done.
         </div>
@@ -52,7 +52,7 @@ export default function LogWorkout() {
   }
 
   return (
-    <div style={{ padding: '48px 24px 24px' }}>
+    <div style={{ padding: '24px 24px 24px' }}>
       <div style={{ fontFamily: FONTS.display, fontSize: 26, color: COLORS.ink, fontStyle: 'italic' }}>
         How did it go?
       </div>
@@ -66,7 +66,7 @@ export default function LogWorkout() {
               padding: '10px 16px',
               borderRadius: 999,
               border: `1.5px solid ${feeling === f ? COLORS.gold : COLORS.line}`,
-              background: feeling === f ? `${COLORS.gold}1a` : '#fff',
+              background: feeling === f ? tint(COLORS.gold, 10) : '#fff',
               fontFamily: FONTS.body,
               fontSize: 13,
               color: COLORS.ink,

@@ -64,7 +64,7 @@ export default function Habits() {
   const streak = (habit) => (habit.habit_completions || []).length;
 
   return (
-    <div style={{ padding: '48px 24px 24px' }}>
+    <div style={{ padding: '24px 24px 24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ fontFamily: FONTS.display, fontSize: 26, color: COLORS.ink, fontStyle: 'italic' }}>
           Habits

@@ -52,7 +52,7 @@ export default function Devotion() {
 
   if (loading) {
     return (
-      <div style={{ padding: '48px 24px' }}>
+      <div style={{ padding: '24px 24px' }}>
         <div style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.mute }}>Loading…</div>
       </div>
     );
@@ -60,7 +60,7 @@ export default function Devotion() {
 
   if (completed) {
     return (
-      <div style={{ padding: '48px 24px', textAlign: 'center' }}>
+      <div style={{ padding: '24px 24px', textAlign: 'center' }}>
         <Sprig size={32} color={COLORS.gold} />
         <div style={{ fontFamily: FONTS.display, fontSize: 24, color: COLORS.ink, fontStyle: 'italic', marginTop: 16 }}>
           Well spent time.
@@ -74,7 +74,7 @@ export default function Devotion() {
 
   if (!devotion) {
     return (
-      <div style={{ padding: '48px 24px' }}>
+      <div style={{ padding: '24px 24px' }}>
         <div style={{ fontFamily: FONTS.display, fontSize: 20, color: COLORS.ink, fontStyle: 'italic' }}>
           No devotion available yet
         </div>
@@ -86,7 +86,7 @@ export default function Devotion() {
   }
 
   return (
-    <div style={{ padding: '48px 24px 24px' }}>
+    <div style={{ padding: '24px 24px 24px' }}>
       <div style={{ fontFamily: FONTS.body, fontSize: 12, letterSpacing: '0.14em', textTransform: 'uppercase', color: COLORS.mute }}>
         Day {devotion.day_number} · Devotion
       </div>

@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams, Navigate } from 'react-router-dom';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
-import { COLORS, FONTS, PATHS, FOLLOW_UPS, VERSES, TAGLINE } from '../../brand/tokens';
+import { COLORS, FONTS, GOALS, FOLLOW_UPS, VERSES, getEdition, recallEdition, tint } from '../../brand/tokens';
+import { useTheme } from '../../theme/ThemeContext';
 import Vine from '../../components/Vine';
 import Sprig from '../../components/Sprig';
 import { supabase } from '../../lib/supabaseClient';
@@ -11,10 +12,17 @@ const TOTAL_STEPS = 8;
 
 export default function OnboardingFlow() {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const edition = getEdition(params.get('edition') || recallEdition());
+  const { setPath: setThemePath, tokens } = useTheme();
   const [step, setStep] = useState(0);
   const [name, setName] = useState('');
   const [path, setPath] = useState(null);
   const [followUpAnswer, setFollowUpAnswer] = useState(null);
+
+  useEffect(() => {
+    if (edition) setThemePath(edition.id);
+  }, [edition?.id]);
 
   const next = () => setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
   const back = () => setStep((s) => Math.max(s - 1, 0));
@@ -29,21 +37,25 @@ export default function OnboardingFlow() {
       await supabase.from('user_profiles').upsert({
         id: userId,
         name,
+        edition: edition.id,
         path,
         path_detail: followUpAnswer,
         onboarded_at: new Date().toISOString(),
       });
     }
-    navigate('/dashboard');
+    // Together members go straight to linking with their spouse.
+    navigate(edition.id === 'together' ? '/dashboard/profile' : '/dashboard');
   };
+
+  if (!edition) return <Navigate to="/" replace />;
 
   return (
     <div style={{ minHeight: '100vh', background: COLORS.bg, display: 'flex', flexDirection: 'column' }}>
       <div style={{ flex: 1 }}>
-        {step < 3 && <VerseSplash verse={VERSES[step]} bgAlt={step % 2 === 1} />}
-        {step === 3 && <BrandScreen />}
+        {step < 3 && <VerseSplash verse={VERSES[step]} bgAlt={step % 2 === 1} edition={edition} tokens={tokens} />}
+        {step === 3 && <BrandScreen edition={edition} tokens={tokens} />}
         {step === 4 && <NameCapture name={name} setName={setName} />}
-        {step === 5 && <PathSelect path={path} setPath={setPath} />}
+        {step === 5 && <PathSelect goals={GOALS[edition.id]} path={path} setPath={setPath} />}
         {step === 6 && path && (
           <PathFollowUp
             path={path}
@@ -51,7 +63,7 @@ export default function OnboardingFlow() {
             setAnswer={setFollowUpAnswer}
           />
         )}
-        {step === 7 && <PersonalizedWelcome name={name} path={path} />}
+        {step === 7 && <PersonalizedWelcome name={name} path={path} edition={edition} />}
       </div>
 
       <div style={{ padding: '0 32px 24px' }}>
@@ -66,7 +78,7 @@ export default function OnboardingFlow() {
             (step === 5 && !path) ||
             (step === 6 && !followUpAnswer)
           }
-          nextLabel={step === TOTAL_STEPS - 1 ? 'Enter Eden Strong' : 'Continue'}
+          nextLabel={step === TOTAL_STEPS - 1 ? `Enter ${edition.name}` : 'Continue'}
         />
       </div>
     </div>
@@ -118,7 +130,7 @@ function NavBar({ step, totalSteps, onBack, onNext, nextDisabled, nextLabel }) {
   );
 }
 
-function VerseSplash({ verse, bgAlt }) {
+function VerseSplash({ verse, bgAlt, edition, tokens }) {
   return (
     <div
       style={{
@@ -131,8 +143,8 @@ function VerseSplash({ verse, bgAlt }) {
         position: 'relative',
       }}
     >
-      <div style={{ position: 'absolute', top: 32, left: 32, fontFamily: FONTS.display, fontSize: 13, letterSpacing: '0.18em', color: COLORS.mute, textTransform: 'uppercase' }}>
-        Eden Strong
+      <div style={{ position: 'absolute', top: 32, left: 32, fontFamily: FONTS.display, fontSize: 13, letterSpacing: '0.18em', color: tokens.primary, textTransform: 'uppercase' }}>
+        {edition.name}
       </div>
       <div style={{ marginBottom: 28 }}>
         <Sprig size={32} color={COLORS.sage} />
@@ -147,7 +159,7 @@ function VerseSplash({ verse, bgAlt }) {
   );
 }
 
-function BrandScreen() {
+function BrandScreen({ edition, tokens }) {
   return (
     <div style={{ minHeight: '70vh', background: COLORS.bg, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '60px 32px 24px' }}>
       <div>
@@ -157,8 +169,11 @@ function BrandScreen() {
           <br />
           <span style={{ fontStyle: 'italic', fontWeight: 300 }}>Strong</span>
         </div>
+        <div style={{ marginTop: 10, fontFamily: FONTS.body, fontSize: 13, letterSpacing: '0.22em', textTransform: 'uppercase', color: tokens.primary, fontWeight: 600 }}>
+          {edition.short}
+        </div>
         <div style={{ marginTop: 18, fontFamily: FONTS.body, fontSize: 14, color: COLORS.mute, lineHeight: 1.5, maxWidth: 260 }}>
-          {TAGLINE}
+          {edition.pitch}
         </div>
       </div>
     </div>
@@ -191,14 +206,14 @@ function NameCapture({ name, setName }) {
   );
 }
 
-function PathSelect({ path, setPath }) {
+function PathSelect({ goals, path, setPath }) {
   return (
     <div style={{ minHeight: '70vh', padding: '40px 32px' }}>
       <div style={{ fontFamily: FONTS.display, fontSize: 26, color: COLORS.ink, fontStyle: 'italic', marginBottom: 24 }}>
         Which season are you in?
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {PATHS.map((p) => (
+        {goals.map((p) => (
           <button
             key={p.id}
             onClick={() => setPath(p.id)}
@@ -207,7 +222,7 @@ function PathSelect({ path, setPath }) {
               padding: '16px 18px',
               borderRadius: 14,
               border: `1.5px solid ${path === p.id ? p.color : COLORS.line}`,
-              background: path === p.id ? `${p.color}22` : '#fff',
+              background: path === p.id ? tint(p.color, 13) : '#fff',
               cursor: 'pointer',
             }}
           >
@@ -237,7 +252,7 @@ function PathFollowUp({ path, answer, setAnswer }) {
               padding: '14px 16px',
               borderRadius: 12,
               border: `1.5px solid ${answer === opt ? COLORS.gold : COLORS.line}`,
-              background: answer === opt ? `${COLORS.gold}1a` : '#fff',
+              background: answer === opt ? tint(COLORS.gold, 10) : '#fff',
               fontFamily: FONTS.body,
               fontSize: 14,
               color: COLORS.ink,
@@ -252,8 +267,8 @@ function PathFollowUp({ path, answer, setAnswer }) {
   );
 }
 
-function PersonalizedWelcome({ name, path }) {
-  const pathInfo = PATHS.find((p) => p.id === path);
+function PersonalizedWelcome({ name, path, edition }) {
+  const pathInfo = GOALS[edition.id].find((p) => p.id === path);
   return (
     <div style={{ minHeight: '70vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px 32px' }}>
       <Sprig size={36} color={pathInfo?.color || COLORS.gold} />
@@ -261,7 +276,8 @@ function PersonalizedWelcome({ name, path }) {
         Welcome, {name || 'friend'}.
       </div>
       <div style={{ fontFamily: FONTS.body, fontSize: 14, color: COLORS.mute, marginTop: 12, lineHeight: 1.6, maxWidth: 280 }}>
-        Your space is ready — built around {pathInfo?.title?.toLowerCase() || 'this season'}. Let's begin.
+        Your space in {edition.name} is ready, built around {pathInfo?.title?.toLowerCase() || 'this season'}.
+        {edition.id === 'together' ? " Next, you'll link up with your spouse." : " Let's begin."}
       </div>
     </div>
   );

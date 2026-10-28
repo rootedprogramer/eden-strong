@@ -6,7 +6,7 @@ export default function Progress() {
   const [tab, setTab] = useState('progress'); // progress | prs | photos
 
   return (
-    <div style={{ padding: '48px 24px 24px' }}>
+    <div style={{ padding: '24px 24px 24px' }}>
       <div style={{ fontFamily: FONTS.display, fontSize: 26, color: COLORS.ink, fontStyle: 'italic' }}>
         Progress
       </div>

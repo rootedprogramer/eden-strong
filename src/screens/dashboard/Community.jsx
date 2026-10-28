@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { COLORS, FONTS } from '../../brand/tokens';
 import { supabase } from '../../lib/supabaseClient';
 
 export default function Community() {
+  const { edition } = useOutletContext();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newPost, setNewPost] = useState('');
@@ -15,6 +17,7 @@ export default function Community() {
     const { data } = await supabase
       .from('community_posts')
       .select('*, post_likes(user_id), post_comments(id, content, created_at, author_name)')
+      .eq('edition', edition.id)
       .order('created_at', { ascending: false });
     setPosts(data || []);
     setLoading(false);
@@ -30,6 +33,7 @@ export default function Community() {
       user_id: userId,
       author_name: profile?.name || 'Anonymous',
       content: newPost.trim(),
+      edition: edition.id,
     });
     setNewPost('');
     load();
@@ -47,12 +51,12 @@ export default function Community() {
   };
 
   return (
-    <div style={{ padding: '48px 24px 24px' }}>
+    <div style={{ padding: '24px 24px 24px' }}>
       <div style={{ fontFamily: FONTS.display, fontSize: 26, color: COLORS.ink, fontStyle: 'italic' }}>
         Community
       </div>
       <div style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.mute, marginTop: 6 }}>
-        Encouragement, prayer requests, and wins — shared with women walking this with you.
+        {edition.community}
       </div>
 
       <form onSubmit={submitPost} style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
