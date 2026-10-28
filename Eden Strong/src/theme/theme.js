@@ -1,70 +1,68 @@
 // theme.js
-// Centralized design tokens for Eden Strong — Women / Men / Together.
-// Screens must read colors, type, and spacing from here — never hard-code
-// a hex value or px size in a component. This is what lets a member switch
-// paths later without losing data or needing a different build.
-//
-// NOTE: these color values are sampled visually from the supplied logo per
-// the brief — NOT approved production swatches. Swap PATHS.* colors for
-// exact brand hex values once source artwork/vector logo is finalized.
+// One color palette per edition. Every screen reads its colors through the
+// COLORS object in src/brand/tokens.js, which points at CSS variables that
+// ThemeContext fills in from the active edition below. So changing a hex
+// value here recolors that whole edition.
 
 export const PATHS = {
+  // Eden Strong Women: soft blush and dusty rose, kept quiet so it reads
+  // warm rather than "pink app". Sage keeps the garden feel.
   women: {
-    canvas: '#FAF7F3',
-    primary: '#B77E78',   // dusty rose
-    secondary: '#8D927B', // sage
-    accent: '#E8C9C1',    // blush
-    text: '#252721',
-    surface: '#FFFFFF',
+    ink: '#3A2B2F',     // deep berry-brown: text, dark buttons
+    bg: '#FBF6F4',      // blush-white background
+    bgWarm: '#F5EAE6',  // slightly deeper blush for alternating sections
+    gold: '#B06F78',    // dusty rose: accents, links, highlights
+    sage: '#A9B4A0',    // muted sage
+    olive: '#6B7A62',   // deeper green
+    rose: '#D9A5A5',    // soft rose
+    mute: '#8C7571',    // supporting text
+    line: '#EBDAD5',    // borders and dividers
   },
+
+  // Eden Strong Men: charcoal, forest green, and leather brown.
   men: {
-    canvas: '#F6F4EF',
-    primary: '#34453A',   // deep forest
-    secondary: '#89917D', // muted sage
-    accent: '#A27D5B',    // bronze
-    text: '#252721',
-    surface: '#FFFFFF',
+    ink: '#1E2428',     // charcoal
+    bg: '#F1F0EC',      // cool stone
+    bgWarm: '#E6E4DE',  // deeper stone
+    gold: '#8C6239',    // leather / bronze
+    sage: '#5E6B5A',    // olive drab
+    olive: '#3B4A3F',   // deep forest
+    rose: '#7A8A99',    // steel blue
+    mute: '#686D6F',    // steel gray
+    line: '#D4D2CC',
   },
+
+  // Eden Strong Together: the original neutral ivory, forest, and gold.
   together: {
-    canvas: '#F8F5F0',
-    primary: '#49533D',   // deep olive
-    secondary: '#B77E78', // dusty rose
-    accent: '#A27D5B',    // bronze
-    text: '#252721',
-    surface: '#FFFFFF',
+    ink: '#1F2A21',
+    bg: '#F5EFE5',
+    bgWarm: '#EFE7DA',
+    gold: '#9B7B2E',
+    sage: '#A8B5A0',
+    olive: '#5C6B54',
+    rose: '#D4A8A1',
+    mute: '#7A6E5C',
+    line: '#D9CFBE',
   },
 };
 
-// Mobile type scale, kept in rem so it respects the user's OS text-size setting.
+// Shorter names some screens use (landing cards, edition label).
+for (const p of Object.values(PATHS)) {
+  p.canvas = p.bg;
+  p.primary = p.gold;
+  p.text = p.ink;
+  p.surface = '#FFFFFF';
+}
+
 export const TYPE = {
-  pageTitle: { size: '1.75rem', lineHeight: 1.2 },
-  sectionTitle: { size: '1.35rem', lineHeight: 1.25 },
-  cardTitle: { size: '1.15rem', lineHeight: 1.3 },
-  body: { size: '1rem', lineHeight: 1.5 },
-  metadata: { size: '0.85rem', lineHeight: 1.4 },
-  fontDisplay: "'Cormorant Garamond', serif", // campaign headings only
-  fontBody: "'Inter', system-ui, sans-serif", // nav, forms, exercise names, data
+  fontDisplay: "'Cormorant Garamond', Georgia, serif",
+  fontBody: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
 };
 
-// 8-point spacing scale
-export const SPACE = {
-  xs: '0.5rem',
-  sm: '1rem',
-  md: '1.5rem',
-  lg: '2rem',
-  xl: '3rem',
-  gutter: '1.125rem',
-};
+export const SPACE = { gutter: '1.125rem' };
+export const RADIUS = { card: '1.25rem', control: '0.75rem' };
 
-export const RADIUS = {
-  card: '1.25rem',
-  control: '0.75rem',
-};
-
-export const TOUCH_TARGET_MIN = '44px';
-
-// Eden Strong is for everyone, so an unset path falls back to the
-// neutral Together palette.
+// The landing page (before anyone picks) uses the neutral Together look.
 export const DEFAULT_PATH = 'together';
 
 export function getTokens(path) {

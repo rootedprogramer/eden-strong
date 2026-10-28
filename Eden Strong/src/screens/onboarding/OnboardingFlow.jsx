@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams, Navigate } from 'react-router-dom';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
-import { COLORS, FONTS, GOALS, FOLLOW_UPS, VERSES, getEdition, recallEdition } from '../../brand/tokens';
+import { COLORS, FONTS, GOALS, FOLLOW_UPS, VERSES, getEdition, recallEdition, tint } from '../../brand/tokens';
 import { useTheme } from '../../theme/ThemeContext';
 import Vine from '../../components/Vine';
 import Sprig from '../../components/Sprig';
@@ -222,7 +222,7 @@ function PathSelect({ goals, path, setPath }) {
               padding: '16px 18px',
               borderRadius: 14,
               border: `1.5px solid ${path === p.id ? p.color : COLORS.line}`,
-              background: path === p.id ? `${p.color}22` : '#fff',
+              background: path === p.id ? tint(p.color, 13) : '#fff',
               cursor: 'pointer',
             }}
           >
@@ -252,7 +252,7 @@ function PathFollowUp({ path, answer, setAnswer }) {
               padding: '14px 16px',
               borderRadius: 12,
               border: `1.5px solid ${answer === opt ? COLORS.gold : COLORS.line}`,
-              background: answer === opt ? `${COLORS.gold}1a` : '#fff',
+              background: answer === opt ? tint(COLORS.gold, 10) : '#fff',
               fontFamily: FONTS.body,
               fontSize: 14,
               color: COLORS.ink,

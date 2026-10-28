@@ -1,10 +1,15 @@
+import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTheme } from '../theme/ThemeContext';
 import { COLORS, FONTS, TAGLINE, EDITION_LIST, rememberEdition } from '../brand/tokens';
 import { PATHS as EDITION_COLORS } from '../theme/theme';
 import Sprig from '../components/Sprig';
 
 export default function Landing() {
   const navigate = useNavigate();
+  const { setPath } = useTheme();
+  // Before anyone picks, show the neutral Together look.
+  useEffect(() => { setPath('together'); }, []);
 
   const choose = (id) => {
     rememberEdition(id);

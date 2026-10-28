@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useTheme } from '../../theme/ThemeContext';
 import { useNavigate, Link, useSearchParams, Navigate } from 'react-router-dom';
 import { COLORS, FONTS, getEdition, rememberEdition, recallEdition } from '../../brand/tokens';
 import Sprig from '../../components/Sprig';
@@ -8,6 +9,8 @@ export default function SignUp() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const edition = getEdition(params.get('edition') || recallEdition());
+  const { setPath } = useTheme();
+  useEffect(() => { if (edition) setPath(edition.id); }, [edition?.id]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');

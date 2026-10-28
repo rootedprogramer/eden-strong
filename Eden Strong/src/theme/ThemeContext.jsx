@@ -7,23 +7,19 @@
 //   const { path, tokens, setPath } = useTheme();
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { PATHS, TYPE, SPACE, RADIUS, DEFAULT_PATH, getTokens } from './theme';
+import { PATHS, DEFAULT_PATH, getTokens } from './theme';
 
 const ThemeContext = createContext(null);
 
+const COLOR_KEYS = ['ink', 'bg', 'bgWarm', 'gold', 'sage', 'olive', 'rose', 'mute', 'line'];
+
 function applyCssVars(tokens) {
   const root = document.documentElement;
-  root.style.setProperty('--es-canvas', tokens.canvas);
-  root.style.setProperty('--es-primary', tokens.primary);
-  root.style.setProperty('--es-secondary', tokens.secondary);
-  root.style.setProperty('--es-accent', tokens.accent);
-  root.style.setProperty('--es-text', tokens.text);
-  root.style.setProperty('--es-surface', tokens.surface);
-  root.style.setProperty('--es-font-display', TYPE.fontDisplay);
-  root.style.setProperty('--es-font-body', TYPE.fontBody);
-  root.style.setProperty('--es-radius-card', RADIUS.card);
-  root.style.setProperty('--es-radius-control', RADIUS.control);
-  root.style.setProperty('--es-space-gutter', SPACE.gutter);
+  for (const key of COLOR_KEYS) root.style.setProperty(`--es-${key}`, tokens[key]);
+  root.style.setProperty('--es-canvas', tokens.bg);
+  root.style.setProperty('--es-primary', tokens.gold);
+  root.style.setProperty('--es-text', tokens.ink);
+  document.body.style.background = tokens.bg;
 }
 
 export function ThemeProvider({ initialPath, children }) {

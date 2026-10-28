@@ -2,17 +2,25 @@
 // Identity: garden/sanctuary meets quiet strength — devotional without heaviness,
 // strong without aggression.
 
+// Colors come from the active edition's palette (src/theme/theme.js) via CSS
+// variables, so the same screen looks right in Women, Men, and Together.
+// The hex after each comma is a fallback for the first paint.
 export const COLORS = {
-  ink: '#1F2A21',      // deep forest — primary text/dark surfaces
-  bg: '#F5EFE5',        // warm ivory — primary background
-  bgWarm: '#EFE7DA',    // slightly deeper ivory for alternating sections
-  gold: '#9B7B2E',      // aged gold — accents, CTAs, emphasis
-  sage: '#A8B5A0',      // muted sage — secondary accent
-  olive: '#5C6B54',     // deeper olive — "building strength" path
-  rose: '#D4A8A1',      // dusty rose — reserved for the postpartum path
-  mute: '#7A6E5C',      // muted brown-grey for supporting text
-  line: '#D9CFBE',      // hairline borders/dividers
+  ink: 'var(--es-ink, #1F2A21)',       // text and dark buttons
+  bg: 'var(--es-bg, #F5EFE5)',         // primary background
+  bgWarm: 'var(--es-bgWarm, #EFE7DA)', // alternating sections
+  gold: 'var(--es-gold, #9B7B2E)',     // accents, links, highlights
+  sage: 'var(--es-sage, #A8B5A0)',     // secondary accent
+  olive: 'var(--es-olive, #5C6B54)',
+  rose: 'var(--es-rose, #D4A8A1)',
+  mute: 'var(--es-mute, #7A6E5C)',     // supporting text
+  line: 'var(--es-line, #D9CFBE)',     // borders and dividers
 };
+
+// A see-through version of a color, e.g. tint(COLORS.gold, 10) for a 10% wash.
+export function tint(color, percent) {
+  return `color-mix(in srgb, ${color} ${percent}%, transparent)`;
+}
 
 export const FONTS = {
   display: "'Cormorant Garamond', Georgia, serif", // headings, verses — literary, italic-friendly
