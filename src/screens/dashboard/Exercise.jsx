@@ -5,7 +5,7 @@ import { COLORS, FONTS, tint } from '../../brand/tokens';
 import SubHeader from '../../components/SubHeader';
 import ExerciseThumb from '../../components/ExerciseThumb';
 import { supabase } from '../../lib/supabaseClient';
-import { loadToday, todayISO, parseSeconds, plannedReps, prescription, formatClock, youtubeEmbed, SECTIONS, sectionOf } from '../../lib/workout';
+import { loadDayById, todayISO, parseSeconds, plannedReps, prescription, formatClock, youtubeEmbed, SECTIONS, sectionOf } from '../../lib/workout';
 
 const REST_SECONDS = 90;
 
@@ -25,12 +25,15 @@ export default function Exercise() {
 
   useEffect(() => {
     (async () => {
-      const data = await loadToday();
-      const list = data.exercises || [];
+      const { data: userData } = await supabase.auth.getUser();
+      const { data: row } = await supabase.from('program_exercises').select('program_day_id').eq('id', exerciseId).maybeSingle();
+      const loaded = row ? await loadDayById(row.program_day_id) : null;
+      const list = loaded?.exercises || [];
       const i = list.findIndex((e) => e.id === exerciseId);
       if (i < 0) return setCtx({ missing: true });
       const ex = list[i];
-      setCtx({ uid: data.uid, ex, next: list[i + 1] || null, timedTarget: parseSeconds(ex.reps) });
+      const data = { uid: userData?.user?.id };
+      setCtx({ uid: data.uid, ex, next: list[i + 1] || null, dayId: row.program_day_id, timedTarget: parseSeconds(ex.reps) });
 
       // Today's saved sets
       const { data: saved } = await supabase
@@ -92,7 +95,7 @@ export default function Exercise() {
     return (
       <>
         <SubHeader title="Exercise" />
-        <Muted>This exercise isn’t part of today’s workout. <Link to="/dashboard/workout" style={{ color: COLORS.gold }}>Back to today’s workout</Link></Muted>
+        <Muted>This exercise wasn’t found. <Link to="/dashboard/workout" style={{ color: COLORS.gold }}>Back to today’s workout</Link></Muted>
       </>
     );
   }
@@ -234,7 +237,7 @@ export default function Exercise() {
 
         {/* Up next */}
         <button
-          onClick={() => navigate(next ? `/dashboard/workout/${next.id}` : '/dashboard/workout')}
+          onClick={() => navigate(next ? `/dashboard/workout/${next.id}` : `/dashboard/workout?day=${ctx.dayId}`)}
           style={{ marginTop: 16, width: '100%', display: 'flex', alignItems: 'stretch', borderRadius: 18, overflow: 'hidden', background: '#fff', border: `1px solid ${COLORS.line}`, padding: 0, cursor: 'pointer', textAlign: 'left' }}
         >
           {next ? <ExerciseThumb media={next.media} tone={SECTIONS.find((s) => s.key === sectionOf(next))?.tone} size={76} /> : null}
@@ -257,7 +260,7 @@ export default function Exercise() {
 
       {/* Floating buttons: back to the day list, and the rest timer */}
       <div style={{ position: 'fixed', left: '50%', transform: 'translateX(-50%)', bottom: 'calc(78px + env(safe-area-inset-bottom, 0px))', width: '100%', maxWidth: 480, padding: '0 14px', display: 'flex', justifyContent: 'space-between', pointerEvents: 'none', zIndex: 5 }}>
-        <Link to="/dashboard/workout" aria-label="Back to today’s workout" style={{ ...floatBtn, width: 60, padding: 0, justifyContent: 'center', pointerEvents: 'auto' }}>
+        <Link to={`/dashboard/workout?day=${ctx.dayId}`} aria-label="Back to the workout" style={{ ...floatBtn, width: 60, padding: 0, justifyContent: 'center', pointerEvents: 'auto' }}>
           <List size={24} />
         </Link>
         <button onClick={() => setRest(rest === null ? REST_SECONDS : null)} style={{ ...floatBtn, pointerEvents: 'auto', border: 'none', cursor: 'pointer' }}>

@@ -12,7 +12,7 @@ update workout_programs set track = split_part(title, ' — ', 1) where track is
 
 -- Two levels. Change these if you want a different setup.
 update workout_programs set level_key = 'beginner'    where track = 'Rooted & Rising';
-update workout_programs set level_key = 'experienced' where track in ('Vessel & Valor', 'Grit & Glory');
+update workout_programs set level_key = 'experienced' where track in ('Vessel & Valor', 'Grit & Glory', 'Strong & Steadfast');
 update workout_programs set level_key = 'experienced' where level_key in ('intermediate', 'advanced');
 
 -- Everything is a gym program for now. When you add home (dumbbell-only) programs:

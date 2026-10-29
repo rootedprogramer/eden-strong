@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Repeat, CircleCheck, Check, ChevronRight } from 'lucide-react';
 import { COLORS, FONTS, tint } from '../../brand/tokens';
 import SubHeader from '../../components/SubHeader';
 import ExerciseThumb from '../../components/ExerciseThumb';
 import { supabase } from '../../lib/supabaseClient';
-import { SECTIONS, sectionOf, prescription, loadToday, todayISO } from '../../lib/workout';
+import { SECTIONS, sectionOf, prescription, loadToday, loadDayById, todayISO, WEEKDAYS, weekdayForDay } from '../../lib/workout';
 
 // Today's workout: Mobility → Workout → Ab circuit / Deep core → Cardio → Stretch.
 // Tap an exercise to log it set by set. "Mark as complete" moves you to the next day.
 export default function Workout() {
+  const [params] = useSearchParams();
+  const dayParam = params.get('day'); // open a specific day from the program page
   const [data, setData] = useState(null);
   const [doneIds, setDoneIds] = useState(new Set());
   const [completing, setCompleting] = useState(false);
@@ -17,46 +19,86 @@ export default function Workout() {
 
   useEffect(() => {
     (async () => {
-      const today = await loadToday();
-      setData(today);
-      if (today.uid && today.exercises?.length) {
+      setData(null);
+      setCompleted(false);
+      let result;
+      if (dayParam) {
+        const { data: userData } = await supabase.auth.getUser();
+        const loaded = await loadDayById(dayParam);
+        result = loaded ? { uid: userData?.user?.id, ...loaded, chosen: true } : { missing: true };
+        if (loaded && result.uid) {
+          const { data: done } = await supabase
+            .from('workout_completions')
+            .select('id')
+            .eq('user_id', result.uid)
+            .eq('program_day_id', dayParam)
+            .eq('completed_on', todayISO());
+          result.completedToday = (done || []).length > 0;
+        }
+      } else {
+        result = await loadToday();
+      }
+      setData(result);
+      if (result.uid && result.exercises?.length) {
         const { data: sets } = await supabase
           .from('exercise_sets')
           .select('program_exercise_id, done')
-          .eq('user_id', today.uid)
+          .eq('user_id', result.uid)
           .eq('log_date', todayISO());
-        setDoneIds(new Set((sets || []).filter((s) => s.done).map((s) => s.program_exercise_id)));
+        setDoneIds(new Set((sets || []).filter((x) => x.done).map((x) => x.program_exercise_id)));
       }
     })();
-  }, []);
+  }, [dayParam]);
 
   if (!data) return <><SubHeader title="Today’s workout" /><Note>Loading…</Note></>;
 
-  if (!data.day) {
+  if (data.missing || (!data.chosen && !data.enrollment)) {
     return (
       <>
         <SubHeader title="Today’s workout" />
         <div style={{ padding: '8px 18px' }}>
-          <div style={{ fontFamily: FONTS.display, fontSize: 30, color: COLORS.ink }}>No workout yet</div>
-          <Note style={{ padding: '8px 0 0' }}>Choose a program and today’s workout will show up here.</Note>
+          <div style={{ fontFamily: FONTS.display, fontSize: 30, color: COLORS.ink }}>{data.missing ? 'Workout not found' : 'No program yet'}</div>
+          <Note style={{ padding: '8px 0 0' }}>Choose a program and your workouts will show up here, one for each training day.</Note>
           <Link to="/dashboard/program" style={darkButton}>Choose a program</Link>
         </div>
       </>
     );
   }
 
-  const { program, week, dayNumber, day, exercises, enrollment, uid } = data;
-  const title = `${day.day_label || `Day ${dayNumber}`}: ${day.title || 'Workout'}`;
+  // Rest day: nothing scheduled for today's weekday
+  if (!data.day) {
+    const next = data.nextDay;
+    return (
+      <>
+        <SubHeader title={`${WEEKDAYS[data.weekday - 1]}: Rest day`} />
+        <div style={{ padding: '8px 18px' }}>
+          <div style={{ fontFamily: FONTS.display, fontSize: 32, color: COLORS.ink, lineHeight: 1.1 }}>Rest and recover</div>
+          <Note style={{ padding: '8px 0 0' }}>
+            There’s no {data.program.title} workout on {WEEKDAYS[data.weekday - 1]}s. Rest is part of the training.
+          </Note>
+          {next && (
+            <Link to={`/dashboard/workout?day=${next.id}`} style={{ display: 'block', marginTop: 18, padding: '16px 18px', borderRadius: 18, background: '#fff', border: `1px solid ${COLORS.line}`, textDecoration: 'none' }}>
+              <div style={{ fontFamily: FONTS.body, fontSize: 12, fontWeight: 600, color: COLORS.mute }}>Next workout, {WEEKDAYS[next.weekday - 1]}</div>
+              <div style={{ fontFamily: FONTS.body, fontSize: 17, fontWeight: 600, color: COLORS.ink, marginTop: 2 }}>Day {next.day_number}: {next.title}</div>
+            </Link>
+          )}
+        </div>
+      </>
+    );
+  }
+
+  const { program, day, exercises, uid } = data;
+  const weekdayName = WEEKDAYS[weekdayForDay(day) - 1];
+  const title = `Day ${day.day_number}: ${day.title || 'Workout'}`;
 
   const markComplete = async () => {
     setCompleting(true);
     await supabase.from('workout_completions').insert({
       user_id: uid,
-      program_id: enrollment.program_id,
+      program_id: day.program_id,
       program_day_id: day.id,
       completed_on: todayISO(),
     });
-    await supabase.from('program_enrollments').update({ current_day: (enrollment.current_day || 1) + 1 }).eq('id', enrollment.id);
     setCompleting(false);
     setCompleted(true);
   };
@@ -66,14 +108,8 @@ export default function Workout() {
       <SubHeader title={title} />
       <div style={{ padding: '0 16px 32px' }}>
         <div style={{ textAlign: 'center', fontFamily: FONTS.body, fontSize: 13, color: COLORS.mute }}>
-          {program.title}, week {week}
+          {weekdayName}, {program.title}{data.week && !data.chosen ? `, week ${data.week}` : ''}
         </div>
-
-        {data.completedToday && !completed && (
-          <div style={{ marginTop: 12, padding: '12px 14px', borderRadius: 14, background: tint(COLORS.sage, 22), fontFamily: FONTS.body, fontSize: 14, color: COLORS.ink, lineHeight: 1.5 }}>
-            You already finished a workout today. This is your next one, whenever you’re ready.
-          </div>
-        )}
 
         {day.rest_note && <Callout>{day.rest_note}</Callout>}
 
@@ -104,12 +140,12 @@ export default function Workout() {
           </details>
         )}
 
-        {completed ? (
+        {completed || data.completedToday ? (
           <>
             <div style={{ ...bigButton, background: '#fff', color: COLORS.ink, border: `1px solid ${COLORS.line}` }}>
               Completed <Check size={20} />
             </div>
-            <Note style={{ textAlign: 'center', padding: '10px 0 0' }}>Well done. Your next workout is ready when you are.</Note>
+            <Note style={{ textAlign: 'center', padding: '10px 0 0' }}>Well done. See you at your next workout.</Note>
           </>
         ) : (
           <button onClick={markComplete} disabled={completing} style={{ ...bigButton, border: 'none', cursor: 'pointer' }}>

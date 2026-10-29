@@ -179,7 +179,7 @@ export const VERSES = [
 // you add a photo: drop the image in /public/home/ and set image to its path,
 // e.g. image: '/home/programs.jpg'. tone picks the placeholder color.
 export const HOME_TILES = [
-  { id: 'programs', title: 'Programs', sub: 'At home and in the gym', to: '/dashboard/program', image: null, tone: 'ink' },
+  { id: 'programs', title: 'Programs', sub: 'Beginner and experienced', to: '/dashboard/program', image: null, tone: 'ink' },
   { id: 'nutrition', title: 'Nutrition', sub: 'Recipes and meal plans', to: '/dashboard/nutrition/recipes', image: null, tone: 'olive' },
   { id: 'devotions', title: 'Devotions', sub: 'Scripture and reflection for every day', to: '/dashboard/devotion', image: null, tone: 'gold' },
   { id: 'community', title: 'Community', sub: 'Encouragement, prayer, and wins', to: '/dashboard/community', image: null, tone: 'sage' },
@@ -201,5 +201,17 @@ export const PROGRAM_TILES = {
   experienced: { title: 'Experienced', image: null, tone: 'ink' },
 };
 export const LEVEL_ORDER = ['beginner', 'experienced'];
+export const LEVEL_BLURBS = {
+  beginner: 'New to training, or coming back after time away.',
+  experienced: 'Comfortable in the gym and ready to push.',
+};
+// Cards for each program on the program-selection page. Add a photo path to
+// image when you have one, e.g. '/programs/grit-and-glory.jpg'.
+export const TRACK_TILES = {
+  'Rooted & Rising': { image: null, tone: 'sage' },
+  'Vessel & Valor': { image: null, tone: 'olive' },
+  'Grit & Glory': { image: null, tone: 'ink' },
+  'Strong & Steadfast': { image: null, tone: 'gold' },
+};
 // Placeholder colors for the sessions-per-week cards, in order
 export const SESSION_TONES = ['olive', 'gold', 'ink', 'sage'];

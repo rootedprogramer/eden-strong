@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Flame, ChevronRight, MoreVertical } from 'lucide-react';
+import { Plus, Flame, ChevronRight } from 'lucide-react';
 import { COLORS, FONTS, HOME_TILES, SUPPORT_EMAIL, tint } from '../../brand/tokens';
 import Sprig from '../../components/Sprig';
+import { loadToday, WEEKDAYS } from '../../lib/workout';
 import HomeTile from '../../components/HomeTile';
 import { supabase } from '../../lib/supabaseClient';
 
@@ -33,26 +34,16 @@ export default function DashboardHome() {
       if (!uid) return setLoading(false);
       setUserId(uid);
 
-      // Active program and where the member is in it
-      const { data: enrollment } = await supabase
-        .from('program_enrollments')
-        .select('program_id, current_day, workout_programs(title, days_per_week)')
-        .eq('user_id', uid)
-        .eq('active', true)
-        .maybeSingle();
-
-      if (enrollment) {
-        const perWeek = enrollment.workout_programs?.days_per_week || 1;
-        const index = Math.max(0, (enrollment.current_day || 1) - 1);
-        const week = Math.floor(index / perWeek) + 1;
-        const day = (index % perWeek) + 1;
-        const { data: dayData } = await supabase
-          .from('program_days')
-          .select('title')
-          .eq('program_id', enrollment.program_id)
-          .eq('day_number', day)
-          .maybeSingle();
-        setProgram({ title: enrollment.workout_programs?.title, week, day, dayTitle: dayData?.title });
+      // Today's workout, by the calendar (Monday = Day 1, Tuesday = Day 2, …)
+      const today = await loadToday();
+      if (today.enrollment) {
+        setProgram({
+          title: today.program.title,
+          week: today.week,
+          weekdayName: WEEKDAYS[today.weekday - 1],
+          day: today.day ? { number: today.day.day_number, title: today.day.title } : null,
+          next: today.nextDay ? { weekdayName: WEEKDAYS[today.nextDay.weekday - 1], number: today.nextDay.day_number, title: today.nextDay.title, id: today.nextDay.id } : null,
+        });
       }
 
       // Today's nutrition
@@ -179,19 +170,22 @@ export default function DashboardHome() {
         }
       />
       {!loading && program && (
-        <Link to="/dashboard/workout" style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 14, textDecoration: 'none' }}>
-          <div style={{ width: 74, height: 60, borderRadius: 12, background: COLORS.olive, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Link to={program.day ? '/dashboard/workout' : program.next ? `/dashboard/workout?day=${program.next.id}` : '/dashboard/workout'} style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 14, textDecoration: 'none' }}>
+          <div style={{ width: 74, height: 60, borderRadius: 12, background: program.day ? COLORS.olive : COLORS.sage, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Sprig size={30} color="#fff" />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontFamily: FONTS.body, fontSize: 15, fontWeight: 600, color: COLORS.ink, lineHeight: 1.25 }}>
-              {program.title}
+            <div style={{ fontFamily: FONTS.body, fontSize: 12, fontWeight: 600, color: COLORS.gold }}>
+              {program.weekdayName}, week {program.week}
+            </div>
+            <div style={{ fontFamily: FONTS.body, fontSize: 15, fontWeight: 600, color: COLORS.ink, lineHeight: 1.25, marginTop: 2 }}>
+              {program.day ? `Day ${program.day.number}: ${program.day.title}` : 'Rest day'}
             </div>
             <div style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.mute, marginTop: 3 }}>
-              Week {program.week}, Day {program.day}{program.dayTitle ? `: ${program.dayTitle}` : ''}
+              {program.day ? program.title : program.next ? `Next: ${program.next.weekdayName}, Day ${program.next.number}: ${program.next.title}` : program.title}
             </div>
           </div>
-          <MoreVertical size={18} color={COLORS.ink} />
+          <ChevronRight size={20} color={COLORS.ink} />
         </Link>
       )}
       {!loading && !program && (

@@ -53,8 +53,65 @@ export function youtubeEmbed(url) {
   return m ? `https://www.youtube.com/embed/${m[1]}?playsinline=1&rel=0` : null;
 }
 
-// Loads the member's current workout day: program, day, ordered exercises
-// (with any video/thumbnail attached), and whether a workout was completed today.
+export const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+// Monday = 1 … Sunday = 7
+export function weekdayNumber(date = new Date()) {
+  return ((date.getDay() + 6) % 7) + 1;
+}
+
+// Which program day falls on a given weekday (1–7), or null for a rest day.
+// Days with a weekday label (e.g. Grit & Glory's 'Tuesday') use that label.
+// Otherwise Day 1 is Monday, Day 2 is Tuesday, and so on.
+export function dayForWeekday(days, weekday) {
+  const name = WEEKDAYS[weekday - 1].toLowerCase();
+  const labelled = days.filter((d) => d.day_label);
+  if (labelled.length) return labelled.find((d) => d.day_label.toLowerCase() === name) || null;
+  return days.find((d) => d.day_number === weekday) || null;
+}
+
+// The weekday a program day falls on (1–7)
+export function weekdayForDay(day) {
+  if (day.day_label) {
+    const i = WEEKDAYS.findIndex((w) => w.toLowerCase() === day.day_label.toLowerCase());
+    if (i >= 0) return i + 1;
+  }
+  return day.day_number;
+}
+
+function mondayOf(date) {
+  const d = new Date(date);
+  d.setHours(12, 0, 0, 0);
+  d.setDate(d.getDate() - (weekdayNumber(d) - 1));
+  return d;
+}
+
+// Sorts exercises by section, attaches videos/thumbnails
+async function prepareExercises(list) {
+  const rank = Object.fromEntries(SECTIONS.map((s, i) => [s.key, i]));
+  const exercises = [...(list || [])].sort(
+    (a, b) => (rank[sectionOf(a)] ?? 1) - (rank[sectionOf(b)] ?? 1) || (a.sort_order || 0) - (b.sort_order || 0)
+  );
+  const names = [...new Set(exercises.map((e) => e.name))];
+  let media = {};
+  if (names.length) {
+    const { data: rows } = await supabase.from('exercise_media').select('*').in('name', names);
+    media = Object.fromEntries((rows || []).map((r) => [r.name, r]));
+  }
+  return exercises.map((e) => ({ ...e, media: media[e.name] || null }));
+}
+
+// Loads one program day (with exercises) by its id
+export async function loadDayById(dayId) {
+  const { data: day } = await supabase.from('program_days').select('*, program_exercises(*)').eq('id', dayId).maybeSingle();
+  if (!day) return null;
+  const { data: program } = await supabase.from('workout_programs').select('*').eq('id', day.program_id).maybeSingle();
+  return { day, program: program || {}, exercises: await prepareExercises(day.program_exercises) };
+}
+
+// The member's schedule for today, based on the calendar:
+// Monday is Day 1, Tuesday is Day 2, etc. (or each day's weekday label).
+// Returns today's day (or null on a rest day) and the next workout day.
 export async function loadToday() {
   const { data: userData } = await supabase.auth.getUser();
   const uid = userData?.user?.id;
@@ -62,35 +119,36 @@ export async function loadToday() {
 
   const { data: enrollment } = await supabase
     .from('program_enrollments')
-    .select('id, program_id, current_day, workout_programs(*)')
+    .select('id, program_id, current_day, started_at, workout_programs(*)')
     .eq('user_id', uid)
     .eq('active', true)
     .maybeSingle();
   if (!enrollment) return { uid, enrollment: null };
 
   const program = enrollment.workout_programs || {};
-  const perWeek = program.days_per_week || 1;
-  const index = Math.max(0, (enrollment.current_day || 1) - 1);
-  const week = Math.floor(index / perWeek) + 1;
-  const dayNumber = (index % perWeek) + 1;
+  const { data: dayRows } = await supabase.from('program_days').select('*').eq('program_id', enrollment.program_id);
+  const days = (dayRows || []).sort((a, b) => a.day_number - b.day_number);
 
-  const { data: day } = await supabase
-    .from('program_days')
-    .select('*, program_exercises(*)')
-    .eq('program_id', enrollment.program_id)
-    .eq('day_number', dayNumber)
-    .maybeSingle();
+  const now = new Date();
+  const weekday = weekdayNumber(now);
+  const start = enrollment.started_at ? new Date(enrollment.started_at) : now;
+  const weeksIn = Math.floor((mondayOf(now) - mondayOf(start)) / (7 * 86400000)) + 1;
+  const week = Math.max(1, Math.min(weeksIn, program.weeks || weeksIn));
 
-  const rank = Object.fromEntries(SECTIONS.map((s, i) => [s.key, i]));
-  const exercises = [...(day?.program_exercises || [])].sort(
-    (a, b) => (rank[sectionOf(a)] ?? 1) - (rank[sectionOf(b)] ?? 1) || (a.sort_order || 0) - (b.sort_order || 0)
-  );
+  const todayDay = dayForWeekday(days, weekday);
+  let nextDay = null;
+  for (let i = 1; i <= 7 && !nextDay; i++) {
+    const wd = ((weekday - 1 + i) % 7) + 1;
+    const d = dayForWeekday(days, wd);
+    if (d) nextDay = { ...d, weekday: wd };
+  }
 
-  const names = [...new Set(exercises.map((e) => e.name))];
-  let media = {};
-  if (names.length) {
-    const { data: rows } = await supabase.from('exercise_media').select('*').in('name', names);
-    media = Object.fromEntries((rows || []).map((r) => [r.name, r]));
+  let day = null;
+  let exercises = [];
+  if (todayDay) {
+    const { data: full } = await supabase.from('program_days').select('*, program_exercises(*)').eq('id', todayDay.id).maybeSingle();
+    day = full || todayDay;
+    exercises = await prepareExercises(full?.program_exercises);
   }
 
   const { data: doneToday } = await supabase
@@ -103,10 +161,13 @@ export async function loadToday() {
     uid,
     enrollment,
     program,
+    days,
     week,
-    dayNumber,
+    weekday,
     day,
-    exercises: exercises.map((e) => ({ ...e, media: media[e.name] || null })),
-    completedToday: (doneToday || []).length > 0,
+    dayNumber: day?.day_number ?? null,
+    nextDay,
+    exercises,
+    completedToday: (doneToday || []).some((c) => !day || c.program_day_id === day.id),
   };
 }

@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowRight, ChevronDown } from 'lucide-react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { ArrowRight, ChevronDown, ChevronRight } from 'lucide-react';
 import { COLORS, FONTS } from '../../../brand/tokens';
 import SubHeader from '../../../components/SubHeader';
 import Sprig from '../../../components/Sprig';
 import { supabase } from '../../../lib/supabaseClient';
 import { Muted } from './shared';
+import { WEEKDAYS, weekdayForDay } from '../../../lib/workout';
 
 export default function ProgramDetail() {
   const { id } = useParams();
@@ -18,19 +19,16 @@ export default function ProgramDetail() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
-        .from('workout_programs')
-        .select('*, program_days(id, day_number, day_label, title)')
-        .eq('id', id)
-        .maybeSingle();
-      setProgram(data);
+      const { data } = await supabase.from('workout_programs').select('*').eq('id', id).maybeSingle();
+      const { data: dayRows } = await supabase.from('program_days').select('id, day_number, day_label, title, program_id').eq('program_id', id);
+      setProgram(data ? { ...data, program_days: dayRows || [] } : null);
 
       const { data: userData } = await supabase.auth.getUser();
       const uid = userData?.user?.id;
       if (!uid) return setEnrollment(null);
       const { data: active } = await supabase
         .from('program_enrollments')
-        .select('id, program_id, current_day')
+        .select('id, program_id, current_day, started_at')
         .eq('user_id', uid)
         .eq('active', true)
         .maybeSingle();
@@ -50,7 +48,9 @@ export default function ProgramDetail() {
   const days = [...(program.program_days || [])].sort((a, b) => a.day_number - b.day_number);
   const isMine = enrollment && enrollment.program_id === program.id;
   const perWeek = program.days_per_week || 1;
-  const myWeek = isMine ? Math.floor(Math.max(0, enrollment.current_day - 1) / perWeek) + 1 : null;
+  const myWeek = isMine
+    ? Math.min(program.weeks || 99, Math.floor((Date.now() - new Date(enrollment.started_at || Date.now()).getTime()) / (7 * 86400000)) + 1)
+    : null;
 
   const start = async () => {
     if (isMine) return navigate('/dashboard/workout');
@@ -129,13 +129,9 @@ export default function ProgramDetail() {
               <div style={{ fontFamily: FONTS.body, fontSize: 15, color: COLORS.ink, lineHeight: 1.6, marginTop: 10 }}>{program.description}</div>
             )}
             <div style={{ fontFamily: FONTS.display, fontSize: 22, color: COLORS.ink, marginTop: 24 }}>Your week</div>
+            <Muted style={{ padding: 0, marginTop: 2 }}>Tap a day to open that workout.</Muted>
             <div style={{ marginTop: 8 }}>
-              {days.map((d) => (
-                <div key={d.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '11px 0', borderBottom: `1px solid ${COLORS.line}`, fontFamily: FONTS.body, fontSize: 14 }}>
-                  <span style={{ color: COLORS.mute }}>{d.day_label || `Day ${d.day_number}`}</span>
-                  <span style={{ color: COLORS.ink, fontWeight: 500, textAlign: 'right' }}>{d.title}</span>
-                </div>
-              ))}
+              {days.map((d) => <DayRow key={d.id} d={d} />)}
             </div>
             {program.guide && (
               <>
@@ -183,12 +179,7 @@ export default function ProgramDetail() {
                   </button>
                   {open && (
                     <div style={{ padding: '4px 16px 8px' }}>
-                      {days.map((d) => (
-                        <div key={d.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '11px 0', borderBottom: `1px solid ${COLORS.line}`, fontFamily: FONTS.body, fontSize: 14 }}>
-                          <span style={{ color: COLORS.mute }}>{d.day_label || `Day ${d.day_number}`}</span>
-                          <span style={{ color: COLORS.ink, fontWeight: 500, textAlign: 'right' }}>{d.title}</span>
-                        </div>
-                      ))}
+                      {days.map((d) => <DayRow key={d.id} d={d} />)}
                     </div>
                   )}
                 </div>
@@ -231,5 +222,19 @@ export default function ProgramDetail() {
         </div>
       )}
     </>
+  );
+}
+
+// One training day: weekday, day number and focus. Opens that day's workout.
+function DayRow({ d }) {
+  return (
+    <Link
+      to={`/dashboard/workout?day=${d.id}`}
+      style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 0', borderBottom: `1px solid ${COLORS.line}`, fontFamily: FONTS.body, fontSize: 14, textDecoration: 'none' }}
+    >
+      <span style={{ width: 92, flexShrink: 0, color: COLORS.mute }}>{WEEKDAYS[weekdayForDay(d) - 1]}</span>
+      <span style={{ flex: 1, color: COLORS.ink, fontWeight: 600 }}>Day {d.day_number}: {d.title}</span>
+      <ChevronRight size={18} color={COLORS.mute} />
+    </Link>
   );
 }

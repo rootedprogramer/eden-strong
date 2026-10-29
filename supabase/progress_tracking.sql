@@ -43,19 +43,25 @@ drop policy if exists "Members manage their own photos" on progress_photos;
 create policy "Members manage their own photos" on progress_photos for all
   using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
-insert into storage.buckets (id, name, public)
-values ('progress-photos', 'progress-photos', false)
-on conflict (id) do nothing;
+-- Photo storage. Wrapped so that if your project doesn't allow creating
+-- storage rules from the SQL Editor, everything else still finishes.
+do $$
+begin
+  insert into storage.buckets (id, name, public)
+  values ('progress-photos', 'progress-photos', false)
+  on conflict (id) do nothing;
 
--- Each member's photos go in a folder named with their user id
-drop policy if exists "Members upload their own progress photos" on storage.objects;
-create policy "Members upload their own progress photos" on storage.objects for insert to authenticated
-  with check (bucket_id = 'progress-photos' and (storage.foldername(name))[1] = auth.uid()::text);
+  drop policy if exists "Members upload their own progress photos" on storage.objects;
+  create policy "Members upload their own progress photos" on storage.objects for insert to authenticated
+    with check (bucket_id = 'progress-photos' and (storage.foldername(name))[1] = auth.uid()::text);
 
-drop policy if exists "Members view their own progress photos" on storage.objects;
-create policy "Members view their own progress photos" on storage.objects for select to authenticated
-  using (bucket_id = 'progress-photos' and (storage.foldername(name))[1] = auth.uid()::text);
+  drop policy if exists "Members view their own progress photos" on storage.objects;
+  create policy "Members view their own progress photos" on storage.objects for select to authenticated
+    using (bucket_id = 'progress-photos' and (storage.foldername(name))[1] = auth.uid()::text);
 
-drop policy if exists "Members delete their own progress photos" on storage.objects;
-create policy "Members delete their own progress photos" on storage.objects for delete to authenticated
-  using (bucket_id = 'progress-photos' and (storage.foldername(name))[1] = auth.uid()::text);
+  drop policy if exists "Members delete their own progress photos" on storage.objects;
+  create policy "Members delete their own progress photos" on storage.objects for delete to authenticated
+    using (bucket_id = 'progress-photos' and (storage.foldername(name))[1] = auth.uid()::text);
+exception when others then
+  raise notice 'Progress photo storage was not set up: %', sqlerrm;
+end $$;

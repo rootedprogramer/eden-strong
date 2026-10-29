@@ -1,57 +1,41 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { COLORS, FONTS, PROGRAM_TILES, SESSION_TONES } from '../../../brand/tokens';
+import { SESSION_TONES } from '../../../brand/tokens';
 import SubHeader from '../../../components/SubHeader';
 import HomeTile from '../../../components/HomeTile';
 import { loadPrograms } from '../../../lib/programs';
-import { Muted, pagePad, tileStack } from './shared';
+import { Muted, PageIntro, pagePad, tileStack } from './shared';
 
+// Step 3: choose the split (3 to 6 days a week)
 export default function ProgramSplits() {
-  const { location, level } = useParams();
+  const { level, track } = useParams();
+  const name = decodeURIComponent(track);
   const [programs, setPrograms] = useState(null);
 
   useEffect(() => {
-    (async () => {
-      const { programs: all } = await loadPrograms();
-      setPrograms(
-        all
-          .filter((p) => p.location === location && p.level_key === level)
-          .sort((a, b) => a.track.localeCompare(b.track) || (a.days_per_week || 0) - (b.days_per_week || 0))
-      );
-    })();
-  }, [location, level]);
-
-  // Group by track in case a level ever has more than one
-  const tracks = [];
-  (programs || []).forEach((p) => {
-    let t = tracks.find((x) => x.name === p.track);
-    if (!t) tracks.push((t = { name: p.track, items: [] }));
-    t.items.push(p);
-  });
+    loadPrograms().then(({ programs: all }) => {
+      setPrograms(all.filter((p) => p.level_key === level && p.track === name).sort((a, b) => (a.days_per_week || 0) - (b.days_per_week || 0)));
+    });
+  }, [level, name]);
 
   return (
     <>
-      <SubHeader title={PROGRAM_TILES[level]?.title || 'Programs'} />
+      <SubHeader title={name} />
       <div style={pagePad}>
-        {programs && programs.length === 0 && <Muted style={{ marginTop: 12 }}>No programs here yet.</Muted>}
-        {tracks.map((t) => (
-          <div key={t.name} style={{ marginTop: 8 }}>
-            <div style={{ fontFamily: FONTS.display, fontSize: 30, fontWeight: 500, color: COLORS.ink }}>{t.name}</div>
-            {t.items[0]?.description && <Muted style={{ marginTop: 4 }}>{t.items[0].description}</Muted>}
-            <div style={tileStack}>
-              {t.items.map((p, i) => (
-                <HomeTile
-                  key={p.id}
-                  title={`${p.days_per_week} sessions a week`}
-                  to={`/dashboard/programs/view/${p.id}`}
-                  image={p.image}
-                  tone={SESSION_TONES[i % SESSION_TONES.length]}
-                  height={180}
-                />
-              ))}
-            </div>
-          </div>
-        ))}
+        <PageIntro title="How many days a week?">{programs?.[0]?.description}</PageIntro>
+        {programs && programs.length === 0 && <Muted style={{ marginTop: 16 }}>No splits found for this program.</Muted>}
+        <div style={tileStack}>
+          {(programs || []).map((p, i) => (
+            <HomeTile
+              key={p.id}
+              title={`${p.days_per_week} days a week`}
+              to={`/dashboard/programs/view/${p.id}`}
+              image={p.image}
+              tone={SESSION_TONES[i % SESSION_TONES.length]}
+              height={170}
+            />
+          ))}
+        </div>
       </div>
     </>
   );
