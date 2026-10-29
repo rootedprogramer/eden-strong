@@ -7,15 +7,14 @@ import DashboardLayout from './screens/dashboard/DashboardLayout';
 import DashboardHome from './screens/dashboard/Home';
 import Devotion from './screens/dashboard/Devotion';
 import ProgramsIntro from './screens/dashboard/programs/ProgramsIntro';
-import ProgramTracks from './screens/dashboard/programs/ProgramTracks';
+import ProgramLevels from './screens/dashboard/programs/ProgramLevels';
 import ProgramSplits from './screens/dashboard/programs/ProgramSplits';
 import ProgramDetail from './screens/dashboard/programs/ProgramDetail';
 import LogWorkout from './screens/dashboard/LogWorkout';
 import Profile from './screens/dashboard/Profile';
 import Nutrition from './screens/dashboard/Nutrition';
 import RecipeBook from './screens/dashboard/RecipeBook';
-import Recipe from './screens/dashboard/Recipe';
-import TapCook from './screens/dashboard/TapCook';
+import DailyBread from './screens/dashboard/DailyBread';
 import CookRecipe from './screens/dashboard/CookRecipe';
 import Community from './screens/dashboard/Community';
 import Progress from './screens/dashboard/Progress';
@@ -53,14 +52,13 @@ export default function App() {
           <Route path="devotion" element={<Devotion />} />
           <Route path="program" element={<ProgramsIntro />} />
           <Route path="programs/view/:id" element={<ProgramDetail />} />
-          <Route path="programs/level/:level" element={<ProgramTracks />} />
-          <Route path="programs/level/:level/:track" element={<ProgramSplits />} />
+          <Route path="programs/:location" element={<ProgramLevels />} />
+          <Route path="programs/:location/:level" element={<ProgramSplits />} />
           <Route path="log" element={<LogWorkout />} />
           <Route path="profile" element={<Profile />} />
           <Route path="nutrition" element={<Nutrition />} />
           <Route path="nutrition/recipes" element={<RecipeBook />} />
-          <Route path="nutrition/recipes/:id" element={<Recipe />} />
-          <Route path="nutrition/tap-cook" element={<TapCook />} />
+          <Route path="nutrition/daily-bread" element={<DailyBread />} />
           <Route path="nutrition/cook/:id" element={<CookRecipe />} />
           <Route path="community" element={<Community />} />
           <Route path="progress" element={<Progress />} />

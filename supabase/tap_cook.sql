@@ -1,11 +1,11 @@
--- Eden Strong — Tap Cook
+-- Eden Strong - Daily Bread
 -- Run ONCE in the Supabase SQL editor, AFTER migration_editions.sql
 -- (it uses public.my_edition() and the couples table from that file).
 -- Safe to re-run: every change checks whether it's already there.
 
--- ─────────────────────────────────────────────────────────────
+-- -------------------------------------------------------------
 -- 1. Extra recipe fields
--- ─────────────────────────────────────────────────────────────
+-- -------------------------------------------------------------
 alter table recipes add column if not exists minutes int;
 alter table recipes add column if not exists serves int default 2;
 alter table recipes add column if not exists tags text[] default '{}';            -- protein | recovery | energy
@@ -21,13 +21,14 @@ alter table recipes add column if not exists edition text
 -- the member's own edition.
 drop policy if exists "Anyone can read recipes" on recipes;
 drop policy if exists "Members read shared recipes and their edition's recipes" on recipes;
-create policy "Members read shared recipes and their edition's recipes"
+drop policy if exists "Members read shared and own edition recipes" on recipes;
+create policy "Members read shared and own edition recipes"
   on recipes for select
   using (edition is null or edition = public.my_edition());
 
--- ─────────────────────────────────────────────────────────────
+-- -------------------------------------------------------------
 -- 2. The member's kitchen: pantry + grocery list
--- ─────────────────────────────────────────────────────────────
+-- -------------------------------------------------------------
 create table if not exists kitchen_items (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
@@ -49,7 +50,7 @@ as $$
   select case when partner_a = auth.uid() then partner_b else partner_a end
   from couples
   where (partner_a = auth.uid() or partner_b = auth.uid())
-    and partner_b is not null
+and partner_b is not null
   limit 1
 $$;
 
@@ -72,143 +73,377 @@ create policy "Members and spouses remove kitchen items"
   on kitchen_items for delete
   using (user_id = auth.uid() or user_id = public.my_partner_id());
 
--- ─────────────────────────────────────────────────────────────
--- 3. Starter recipes
--- ─────────────────────────────────────────────────────────────
--- Calories and macros are per serving and approximate. Edit freely in the
--- Table Editor. Each insert skips itself if a recipe with that title exists.
+-- 3. Starter recipes. Each one is skipped if a recipe with that title already exists.
+-- Calories and macros are per serving and approximate.
 
-insert into recipes (title, minutes, serves, calories, protein, fat, carbs, tags, ingredient_keys, ingredients, steps, verse_text, verse_ref, cook_together, edition)
-select * from (values
-(
-  'Sheet-pan chicken and sweet potatoes', 35, 2, 430, 38, 12, 40,
-  array['protein','recovery'], array['chicken','sweet_potato','broccoli'],
-  E'2 chicken breasts, cut into chunks\n2 medium sweet potatoes, cubed\n2 cups broccoli florets\n2 tbsp olive oil\n1 tsp garlic powder, 1 tsp paprika, salt and pepper',
-  '[{"text":"Heat the oven to 425°F and line a sheet pan."},
-    {"text":"Toss the sweet potatoes with half the oil and seasoning. Spread on the pan and roast.","timer":900},
-    {"text":"Toss the chicken and broccoli with the rest of the oil and seasoning. Add to the pan and roast until the chicken is cooked through.","timer":1200},
-    {"text":"Divide between two plates."}]'::jsonb,
-  'O give thanks unto the Lord; for he is good.', 'Psalm 107:1', false, null
-),
-(
-  'Turkey taco bowls', 25, 3, 520, 40, 14, 58,
-  array['protein'], array['ground_turkey','rice','black_beans','salsa'],
-  E'1 lb ground turkey\n1½ cups cooked rice\n1 can black beans, rinsed\n½ cup salsa\n2 tsp chili powder, 1 tsp cumin, salt',
-  '[{"text":"Start the rice if it isn''t cooked yet.","timer":900},
-    {"text":"Brown the turkey in a skillet over medium-high heat, breaking it up as it cooks.","timer":420},
-    {"text":"Stir in the spices, beans, and salsa. Simmer until warmed through.","timer":300},
-    {"text":"Spoon rice into bowls and top with the turkey mixture."}]'::jsonb,
-  'Give us this day our daily bread.', 'Matthew 6:11', false, null
-),
-(
-  'Veggie egg scramble', 10, 1, 320, 24, 21, 7,
-  array['protein','energy'], array['eggs','spinach','bell_pepper','cheese'],
-  E'3 eggs\n1 handful spinach\n½ bell pepper, diced\n2 tbsp shredded cheese\n1 tsp olive oil, salt and pepper',
-  '[{"text":"Warm the oil in a nonstick pan and cook the pepper until soft.","timer":180},
-    {"text":"Add the spinach and stir until wilted."},
-    {"text":"Whisk the eggs with a pinch of salt, pour in, and stir gently until just set.","timer":120},
-    {"text":"Top with cheese and serve."}]'::jsonb,
-  'This is the day which the Lord hath made; we will rejoice and be glad in it.', 'Psalm 118:24', false, null
-),
-(
-  'Berry overnight oats', 5, 1, 380, 22, 8, 56,
-  array['energy'], array['oats','milk','greek_yogurt','berries','honey'],
-  E'½ cup oats\n½ cup milk\n½ cup Greek yogurt\n½ cup berries\n1 tsp honey',
-  '[{"text":"Stir the oats, milk, yogurt, and honey together in a jar."},
-    {"text":"Top with berries, cover, and refrigerate overnight."},
-    {"text":"Eat cold or warm it up in the morning."}]'::jsonb,
-  'My God shall supply all your need.', 'Philippians 4:19', false, null
-),
-(
-  'Lemon garlic salmon with quinoa', 25, 2, 480, 36, 18, 40,
-  array['protein','recovery'], array['salmon','quinoa','lemon','garlic','spinach'],
-  E'2 salmon fillets\n¾ cup quinoa\n1 lemon\n2 cloves garlic, minced\n2 handfuls spinach\n1 tbsp olive oil, salt and pepper',
-  '[{"text":"Rinse the quinoa and simmer it in 1½ cups water, covered.","timer":900},
-    {"text":"Season the salmon. Sear skin-side down in the oil over medium-high heat.","timer":240},
-    {"text":"Flip, add the garlic and the juice of half the lemon, and cook until flaky.","timer":180},
-    {"text":"Stir the spinach into the hot quinoa until wilted. Serve with the salmon and lemon wedges."}]'::jsonb,
-  'Every good gift and every perfect gift is from above.', 'James 1:17', false, null
-),
-(
-  'Garlic shrimp stir-fry', 20, 2, 430, 32, 8, 55,
-  array['protein'], array['shrimp','broccoli','bell_pepper','rice','soy_sauce','garlic'],
-  E'¾ lb shrimp, peeled\n2 cups broccoli florets\n1 bell pepper, sliced\n1½ cups cooked rice\n3 tbsp soy sauce\n2 cloves garlic, minced\n1 tbsp oil',
-  '[{"text":"Start the rice if it isn''t cooked yet.","timer":900},
-    {"text":"Heat the oil in a large skillet. Stir-fry the broccoli and pepper.","timer":240},
-    {"text":"Add the shrimp and garlic. Cook until the shrimp turn pink.","timer":180},
-    {"text":"Stir in the soy sauce and serve over rice."}]'::jsonb,
-  'Taste and see that the Lord is good.', 'Psalm 34:8', false, null
-),
-(
-  'Chickpea Greek salad', 15, 2, 340, 13, 14, 42,
-  array['energy'], array['chickpeas','cucumber','tomato','onion','lemon'],
-  E'1 can chickpeas, rinsed\n1 cucumber, chopped\n2 tomatoes, chopped\n¼ red onion, thinly sliced\n1 lemon\n2 tbsp olive oil, oregano, salt and pepper',
-  '[{"text":"Chop the cucumber, tomatoes, and onion and add to a bowl with the chickpeas."},
-    {"text":"Whisk the lemon juice, oil, oregano, salt, and pepper. Pour over and toss."},
-    {"text":"Let it sit a few minutes so the flavors come together.","timer":300}]'::jsonb,
-  'Man shall not live by bread alone, but by every word that proceedeth out of the mouth of God.', 'Matthew 4:4', false, null
-),
-(
-  'Black bean quesadillas', 15, 2, 450, 22, 16, 52,
-  array['energy'], array['tortillas','black_beans','cheese','salsa'],
-  E'4 tortillas\n1 can black beans, rinsed and lightly mashed\n1 cup shredded cheese\nSalsa for dipping',
-  '[{"text":"Spread beans and cheese over half of each tortilla and fold."},
-    {"text":"Cook in a dry skillet over medium heat until golden on the bottom.","timer":180},
-    {"text":"Flip and cook the other side until the cheese melts.","timer":180},
-    {"text":"Cut into wedges and serve with salsa."}]'::jsonb,
-  'Whether therefore ye eat, or drink, or whatsoever ye do, do all to the glory of God.', '1 Corinthians 10:31', false, null
-),
-(
-  'Peanut butter banana yogurt bowl', 5, 1, 410, 26, 14, 46,
-  array['energy','recovery'], array['greek_yogurt','banana','peanut_butter','honey'],
-  E'1 cup Greek yogurt\n1 banana, sliced\n1 tbsp peanut butter\n1 tsp honey',
-  '[{"text":"Spoon the yogurt into a bowl."},
-    {"text":"Top with banana, a spoonful of peanut butter, and a drizzle of honey."}]'::jsonb,
-  'Those who hope in the Lord will renew their strength.', 'Isaiah 40:31', false, null
-),
-(
-  'Turkey zucchini skillet', 25, 3, 360, 30, 16, 18,
-  array['protein'], array['ground_turkey','zucchini','onion','canned_tomatoes','garlic'],
-  E'1 lb ground turkey\n2 zucchini, diced\n1 onion, diced\n1 can diced tomatoes\n2 cloves garlic, minced\n1 tsp Italian seasoning, salt and pepper',
-  '[{"text":"Brown the turkey and onion in a large skillet.","timer":420},
-    {"text":"Add the garlic and zucchini and cook until the zucchini softens.","timer":300},
-    {"text":"Stir in the tomatoes and seasoning. Simmer to thicken.","timer":480},
-    {"text":"Serve on its own or over rice."}]'::jsonb,
-  'O give thanks unto the Lord; for he is good.', 'Psalm 107:1', false, null
-),
-(
-  'Chicken avocado wraps', 20, 2, 480, 36, 20, 38,
-  array['protein'], array['chicken','tortillas','avocado','tomato','spinach'],
-  E'2 chicken breasts\n2 large tortillas\n1 avocado\n1 tomato, sliced\n1 handful spinach\nSalt, pepper, and a squeeze of lime if you have it',
-  '[{"text":"Season the chicken and cook in a skillet over medium-high heat.","timer":360},
-    {"text":"Flip and cook until done through.","timer":360},
-    {"text":"Rest the chicken, then slice it.","timer":180},
-    {"text":"Mash the avocado onto the tortillas, add spinach, tomato, and chicken, and roll up."}]'::jsonb,
-  'Give us this day our daily bread.', 'Matthew 6:11', false, null
-),
-(
-  'Date-night steak and roasted vegetables', 40, 2, 520, 40, 20, 36,
-  array['protein','recovery'], array['lean_beef','sweet_potato','broccoli','garlic'],
-  E'2 sirloin steaks\n2 sweet potatoes, cubed\n2 cups broccoli florets\n3 cloves garlic\n2 tbsp olive oil, salt and pepper',
-  '[{"who":1,"text":"Heat the oven to 425°F. Toss the sweet potatoes in oil and salt and roast.","timer":1200},
-    {"who":2,"text":"Pat the steaks dry and season well. Let them sit at room temperature.","timer":900},
-    {"who":1,"text":"Add the broccoli and smashed garlic to the pan and roast until crisp at the edges.","timer":600},
-    {"who":2,"text":"Sear the steaks in a hot skillet, flipping once, to your liking.","timer":480},
-    {"who":2,"text":"Rest the steaks before slicing.","timer":300},
-    {"who":1,"text":"Set the table and plate the vegetables."}]'::jsonb,
-  'Two are better than one.', 'Ecclesiastes 4:9', true, 'together'
-),
-(
-  'Build-your-own burrito bowls', 30, 2, 560, 38, 18, 62,
-  array['protein'], array['chicken','rice','black_beans','avocado','lime','salsa'],
-  E'2 chicken breasts\n1½ cups cooked rice\n1 can black beans\n1 avocado\n1 lime\nSalsa\nChili powder, cumin, salt',
-  '[{"who":1,"text":"Start the rice.","timer":900},
-    {"who":2,"text":"Season the chicken with chili powder, cumin, and salt and cook in a skillet.","timer":720},
-    {"who":1,"text":"Warm the beans with a pinch of salt."},
-    {"who":2,"text":"Rest and slice the chicken.","timer":180},
-    {"who":1,"text":"Slice the avocado and cut the lime into wedges."},
-    {"text":"Build your bowls however each of you likes them."}]'::jsonb,
-  'Breaking bread at home, they took their food with gladness and singleness of heart.', 'Acts 2:46', true, 'together'
-)
-) as v(title, minutes, serves, calories, protein, fat, carbs, tags, ingredient_keys, ingredients, steps, verse_text, verse_ref, cook_together, edition)
-where not exists (select 1 from recipes r where r.title = v.title);
+INSERT INTO recipes (title, minutes, serves, calories, protein, fat, carbs, tags, ingredient_keys, ingredients, steps, verse_text, verse_ref, cook_together, edition)
+SELECT $q$Berry overnight oats$q$, 5, 1, 380, 22, 8, 56,
+  ARRAY[$q$energy$q$]::text[], ARRAY[$q$oats$q$,$q$milk$q$,$q$greek_yogurt$q$,$q$berries$q$,$q$honey$q$]::text[],
+  $q$1/2 cup oats
+1/2 cup milk
+1/2 cup Greek yogurt
+1/2 cup berries
+1 tsp honey$q$,
+  $q$[
+ {
+  "text": "Stir the oats, milk, yogurt, and honey together in a jar."
+ },
+ {
+  "text": "Top with berries, cover, and refrigerate overnight."
+ },
+ {
+  "text": "Eat cold or warm it up in the morning."
+ }
+]$q$::jsonb,
+  $q$My God shall supply all your need.$q$, $q$Philippians 4:19$q$, false, NULL
+WHERE NOT EXISTS (SELECT 1 FROM recipes WHERE title = $q$Berry overnight oats$q$);
+
+INSERT INTO recipes (title, minutes, serves, calories, protein, fat, carbs, tags, ingredient_keys, ingredients, steps, verse_text, verse_ref, cook_together, edition)
+SELECT $q$Black bean quesadillas$q$, 15, 2, 450, 22, 16, 52,
+  ARRAY[$q$energy$q$]::text[], ARRAY[$q$tortillas$q$,$q$black_beans$q$,$q$cheese$q$,$q$salsa$q$]::text[],
+  $q$4 tortillas
+1 can black beans, rinsed and lightly mashed
+1 cup shredded cheese
+Salsa for dipping$q$,
+  $q$[
+ {
+  "text": "Spread beans and cheese over half of each tortilla and fold."
+ },
+ {
+  "text": "Cook in a dry skillet over medium heat until golden on the bottom.",
+  "timer": 180
+ },
+ {
+  "text": "Flip and cook the other side until the cheese melts.",
+  "timer": 180
+ },
+ {
+  "text": "Cut into wedges and serve with salsa."
+ }
+]$q$::jsonb,
+  $q$Whether therefore ye eat, or drink, or whatsoever ye do, do all to the glory of God.$q$, $q$1 Corinthians 10:31$q$, false, NULL
+WHERE NOT EXISTS (SELECT 1 FROM recipes WHERE title = $q$Black bean quesadillas$q$);
+
+INSERT INTO recipes (title, minutes, serves, calories, protein, fat, carbs, tags, ingredient_keys, ingredients, steps, verse_text, verse_ref, cook_together, edition)
+SELECT $q$Build-your-own burrito bowls$q$, 30, 2, 560, 38, 18, 62,
+  ARRAY[$q$protein$q$]::text[], ARRAY[$q$chicken$q$,$q$rice$q$,$q$black_beans$q$,$q$avocado$q$,$q$lime$q$,$q$salsa$q$]::text[],
+  $q$2 chicken breasts
+1 1/2 cups cooked rice
+1 can black beans
+1 avocado
+1 lime
+Salsa
+Chili powder, cumin, salt$q$,
+  $q$[
+ {
+  "who": 1,
+  "text": "Start the rice.",
+  "timer": 900
+ },
+ {
+  "who": 2,
+  "text": "Season the chicken with chili powder, cumin, and salt and cook in a skillet.",
+  "timer": 720
+ },
+ {
+  "who": 1,
+  "text": "Warm the beans with a pinch of salt."
+ },
+ {
+  "who": 2,
+  "text": "Rest and slice the chicken.",
+  "timer": 180
+ },
+ {
+  "who": 1,
+  "text": "Slice the avocado and cut the lime into wedges."
+ },
+ {
+  "text": "Build your bowls however each of you likes them."
+ }
+]$q$::jsonb,
+  $q$Breaking bread at home, they took their food with gladness and singleness of heart.$q$, $q$Acts 2:46$q$, true, $q$together$q$
+WHERE NOT EXISTS (SELECT 1 FROM recipes WHERE title = $q$Build-your-own burrito bowls$q$);
+
+INSERT INTO recipes (title, minutes, serves, calories, protein, fat, carbs, tags, ingredient_keys, ingredients, steps, verse_text, verse_ref, cook_together, edition)
+SELECT $q$Chicken avocado wraps$q$, 20, 2, 480, 36, 20, 38,
+  ARRAY[$q$protein$q$]::text[], ARRAY[$q$chicken$q$,$q$tortillas$q$,$q$avocado$q$,$q$tomato$q$,$q$spinach$q$]::text[],
+  $q$2 chicken breasts
+2 large tortillas
+1 avocado
+1 tomato, sliced
+1 handful spinach
+Salt, pepper, and a squeeze of lime if you have it$q$,
+  $q$[
+ {
+  "text": "Season the chicken and cook in a skillet over medium-high heat.",
+  "timer": 360
+ },
+ {
+  "text": "Flip and cook until done through.",
+  "timer": 360
+ },
+ {
+  "text": "Rest the chicken, then slice it.",
+  "timer": 180
+ },
+ {
+  "text": "Mash the avocado onto the tortillas, add spinach, tomato, and chicken, and roll up."
+ }
+]$q$::jsonb,
+  $q$Give us this day our daily bread.$q$, $q$Matthew 6:11$q$, false, NULL
+WHERE NOT EXISTS (SELECT 1 FROM recipes WHERE title = $q$Chicken avocado wraps$q$);
+
+INSERT INTO recipes (title, minutes, serves, calories, protein, fat, carbs, tags, ingredient_keys, ingredients, steps, verse_text, verse_ref, cook_together, edition)
+SELECT $q$Chickpea Greek salad$q$, 15, 2, 340, 13, 14, 42,
+  ARRAY[$q$energy$q$]::text[], ARRAY[$q$chickpeas$q$,$q$cucumber$q$,$q$tomato$q$,$q$onion$q$,$q$lemon$q$]::text[],
+  $q$1 can chickpeas, rinsed
+1 cucumber, chopped
+2 tomatoes, chopped
+1/4 red onion, thinly sliced
+1 lemon
+2 tbsp olive oil, oregano, salt and pepper$q$,
+  $q$[
+ {
+  "text": "Chop the cucumber, tomatoes, and onion and add to a bowl with the chickpeas."
+ },
+ {
+  "text": "Whisk the lemon juice, oil, oregano, salt, and pepper. Pour over and toss."
+ },
+ {
+  "text": "Let it sit a few minutes so the flavors come together.",
+  "timer": 300
+ }
+]$q$::jsonb,
+  $q$Man shall not live by bread alone, but by every word that proceedeth out of the mouth of God.$q$, $q$Matthew 4:4$q$, false, NULL
+WHERE NOT EXISTS (SELECT 1 FROM recipes WHERE title = $q$Chickpea Greek salad$q$);
+
+INSERT INTO recipes (title, minutes, serves, calories, protein, fat, carbs, tags, ingredient_keys, ingredients, steps, verse_text, verse_ref, cook_together, edition)
+SELECT $q$Date-night steak and roasted vegetables$q$, 40, 2, 520, 40, 20, 36,
+  ARRAY[$q$protein$q$,$q$recovery$q$]::text[], ARRAY[$q$lean_beef$q$,$q$sweet_potato$q$,$q$broccoli$q$,$q$garlic$q$]::text[],
+  $q$2 sirloin steaks
+2 sweet potatoes, cubed
+2 cups broccoli florets
+3 cloves garlic
+2 tbsp olive oil, salt and pepper$q$,
+  $q$[
+ {
+  "who": 1,
+  "text": "Heat the oven to 425 F. Toss the sweet potatoes in oil and salt and roast.",
+  "timer": 1200
+ },
+ {
+  "who": 2,
+  "text": "Pat the steaks dry and season well. Let them sit at room temperature.",
+  "timer": 900
+ },
+ {
+  "who": 1,
+  "text": "Add the broccoli and smashed garlic to the pan and roast until crisp at the edges.",
+  "timer": 600
+ },
+ {
+  "who": 2,
+  "text": "Sear the steaks in a hot skillet, flipping once, to your liking.",
+  "timer": 480
+ },
+ {
+  "who": 2,
+  "text": "Rest the steaks before slicing.",
+  "timer": 300
+ },
+ {
+  "who": 1,
+  "text": "Set the table and plate the vegetables."
+ }
+]$q$::jsonb,
+  $q$Two are better than one.$q$, $q$Ecclesiastes 4:9$q$, true, $q$together$q$
+WHERE NOT EXISTS (SELECT 1 FROM recipes WHERE title = $q$Date-night steak and roasted vegetables$q$);
+
+INSERT INTO recipes (title, minutes, serves, calories, protein, fat, carbs, tags, ingredient_keys, ingredients, steps, verse_text, verse_ref, cook_together, edition)
+SELECT $q$Garlic shrimp stir-fry$q$, 20, 2, 430, 32, 8, 55,
+  ARRAY[$q$protein$q$]::text[], ARRAY[$q$shrimp$q$,$q$broccoli$q$,$q$bell_pepper$q$,$q$rice$q$,$q$soy_sauce$q$,$q$garlic$q$]::text[],
+  $q$3/4 lb shrimp, peeled
+2 cups broccoli florets
+1 bell pepper, sliced
+1 1/2 cups cooked rice
+3 tbsp soy sauce
+2 cloves garlic, minced
+1 tbsp oil$q$,
+  $q$[
+ {
+  "text": "Start the rice if it isn't cooked yet.",
+  "timer": 900
+ },
+ {
+  "text": "Heat the oil in a large skillet. Stir-fry the broccoli and pepper.",
+  "timer": 240
+ },
+ {
+  "text": "Add the shrimp and garlic. Cook until the shrimp turn pink.",
+  "timer": 180
+ },
+ {
+  "text": "Stir in the soy sauce and serve over rice."
+ }
+]$q$::jsonb,
+  $q$Taste and see that the Lord is good.$q$, $q$Psalm 34:8$q$, false, NULL
+WHERE NOT EXISTS (SELECT 1 FROM recipes WHERE title = $q$Garlic shrimp stir-fry$q$);
+
+INSERT INTO recipes (title, minutes, serves, calories, protein, fat, carbs, tags, ingredient_keys, ingredients, steps, verse_text, verse_ref, cook_together, edition)
+SELECT $q$Lemon garlic salmon with quinoa$q$, 25, 2, 480, 36, 18, 40,
+  ARRAY[$q$protein$q$,$q$recovery$q$]::text[], ARRAY[$q$salmon$q$,$q$quinoa$q$,$q$lemon$q$,$q$garlic$q$,$q$spinach$q$]::text[],
+  $q$2 salmon fillets
+3/4 cup quinoa
+1 lemon
+2 cloves garlic, minced
+2 handfuls spinach
+1 tbsp olive oil, salt and pepper$q$,
+  $q$[
+ {
+  "text": "Rinse the quinoa and simmer it in 1\u00bd cups water, covered.",
+  "timer": 900
+ },
+ {
+  "text": "Season the salmon. Sear skin-side down in the oil over medium-high heat.",
+  "timer": 240
+ },
+ {
+  "text": "Flip, add the garlic and the juice of half the lemon, and cook until flaky.",
+  "timer": 180
+ },
+ {
+  "text": "Stir the spinach into the hot quinoa until wilted. Serve with the salmon and lemon wedges."
+ }
+]$q$::jsonb,
+  $q$Every good gift and every perfect gift is from above.$q$, $q$James 1:17$q$, false, NULL
+WHERE NOT EXISTS (SELECT 1 FROM recipes WHERE title = $q$Lemon garlic salmon with quinoa$q$);
+
+INSERT INTO recipes (title, minutes, serves, calories, protein, fat, carbs, tags, ingredient_keys, ingredients, steps, verse_text, verse_ref, cook_together, edition)
+SELECT $q$Peanut butter banana yogurt bowl$q$, 5, 1, 410, 26, 14, 46,
+  ARRAY[$q$energy$q$,$q$recovery$q$]::text[], ARRAY[$q$greek_yogurt$q$,$q$banana$q$,$q$peanut_butter$q$,$q$honey$q$]::text[],
+  $q$1 cup Greek yogurt
+1 banana, sliced
+1 tbsp peanut butter
+1 tsp honey$q$,
+  $q$[
+ {
+  "text": "Spoon the yogurt into a bowl."
+ },
+ {
+  "text": "Top with banana, a spoonful of peanut butter, and a drizzle of honey."
+ }
+]$q$::jsonb,
+  $q$Those who hope in the Lord will renew their strength.$q$, $q$Isaiah 40:31$q$, false, NULL
+WHERE NOT EXISTS (SELECT 1 FROM recipes WHERE title = $q$Peanut butter banana yogurt bowl$q$);
+
+INSERT INTO recipes (title, minutes, serves, calories, protein, fat, carbs, tags, ingredient_keys, ingredients, steps, verse_text, verse_ref, cook_together, edition)
+SELECT $q$Sheet-pan chicken and sweet potatoes$q$, 35, 2, 430, 38, 12, 40,
+  ARRAY[$q$protein$q$,$q$recovery$q$]::text[], ARRAY[$q$chicken$q$,$q$sweet_potato$q$,$q$broccoli$q$]::text[],
+  $q$2 chicken breasts, cubed
+2 medium sweet potatoes, cubed
+2 cups broccoli florets
+2 tbsp olive oil
+1 tsp garlic powder, 1 tsp paprika, salt and pepper$q$,
+  $q$[
+ {
+  "text": "Heat the oven to 425 F and line a sheet pan."
+ },
+ {
+  "text": "Toss the sweet potatoes with half the oil and seasoning. Spread on the pan and roast.",
+  "timer": 900
+ },
+ {
+  "text": "Toss the chicken and broccoli with the rest of the oil and seasoning. Add to the pan and roast until the chicken is cooked through.",
+  "timer": 1200
+ },
+ {
+  "text": "Divide between two plates."
+ }
+]$q$::jsonb,
+  $q$O give thanks unto the Lord, for he is good.$q$, $q$Psalm 107:1$q$, false, NULL
+WHERE NOT EXISTS (SELECT 1 FROM recipes WHERE title = $q$Sheet-pan chicken and sweet potatoes$q$);
+
+INSERT INTO recipes (title, minutes, serves, calories, protein, fat, carbs, tags, ingredient_keys, ingredients, steps, verse_text, verse_ref, cook_together, edition)
+SELECT $q$Turkey taco bowls$q$, 25, 3, 520, 40, 14, 58,
+  ARRAY[$q$protein$q$]::text[], ARRAY[$q$ground_turkey$q$,$q$rice$q$,$q$black_beans$q$,$q$salsa$q$]::text[],
+  $q$1 lb ground turkey
+1 1/2 cups cooked rice
+1 can black beans, rinsed
+1/2 cup salsa
+2 tsp chili powder, 1 tsp cumin, salt$q$,
+  $q$[
+ {
+  "text": "Start the rice if it isn't cooked yet.",
+  "timer": 900
+ },
+ {
+  "text": "Brown the turkey in a skillet over medium-high heat, breaking it up as it cooks.",
+  "timer": 420
+ },
+ {
+  "text": "Stir in the spices, beans, and salsa. Simmer until warmed through.",
+  "timer": 300
+ },
+ {
+  "text": "Spoon rice into bowls and top with the turkey mixture."
+ }
+]$q$::jsonb,
+  $q$Give us this day our daily bread.$q$, $q$Matthew 6:11$q$, false, NULL
+WHERE NOT EXISTS (SELECT 1 FROM recipes WHERE title = $q$Turkey taco bowls$q$);
+
+INSERT INTO recipes (title, minutes, serves, calories, protein, fat, carbs, tags, ingredient_keys, ingredients, steps, verse_text, verse_ref, cook_together, edition)
+SELECT $q$Turkey zucchini skillet$q$, 25, 3, 360, 30, 16, 18,
+  ARRAY[$q$protein$q$]::text[], ARRAY[$q$ground_turkey$q$,$q$zucchini$q$,$q$onion$q$,$q$canned_tomatoes$q$,$q$garlic$q$]::text[],
+  $q$1 lb ground turkey
+2 zucchini, diced
+1 onion, diced
+1 can diced tomatoes
+2 cloves garlic, minced
+1 tsp Italian seasoning, salt and pepper$q$,
+  $q$[
+ {
+  "text": "Brown the turkey and onion in a large skillet.",
+  "timer": 420
+ },
+ {
+  "text": "Add the garlic and zucchini and cook until the zucchini softens.",
+  "timer": 300
+ },
+ {
+  "text": "Stir in the tomatoes and seasoning. Simmer to thicken.",
+  "timer": 480
+ },
+ {
+  "text": "Serve on its own or over rice."
+ }
+]$q$::jsonb,
+  $q$O give thanks unto the Lord, for he is good.$q$, $q$Psalm 107:1$q$, false, NULL
+WHERE NOT EXISTS (SELECT 1 FROM recipes WHERE title = $q$Turkey zucchini skillet$q$);
+
+INSERT INTO recipes (title, minutes, serves, calories, protein, fat, carbs, tags, ingredient_keys, ingredients, steps, verse_text, verse_ref, cook_together, edition)
+SELECT $q$Veggie egg scramble$q$, 10, 1, 320, 24, 21, 7,
+  ARRAY[$q$protein$q$,$q$energy$q$]::text[], ARRAY[$q$eggs$q$,$q$spinach$q$,$q$bell_pepper$q$,$q$cheese$q$]::text[],
+  $q$3 eggs
+1 handful spinach
+1/2 bell pepper, diced
+2 tbsp shredded cheese
+1 tsp olive oil, salt and pepper$q$,
+  $q$[
+ {
+  "text": "Warm the oil in a nonstick pan and cook the pepper until soft.",
+  "timer": 180
+ },
+ {
+  "text": "Add the spinach and stir until wilted."
+ },
+ {
+  "text": "Whisk the eggs with a pinch of salt, pour in, and stir gently until just set.",
+  "timer": 120
+ },
+ {
+  "text": "Top with cheese and serve."
+ }
+]$q$::jsonb,
+  $q$This is the day which the Lord hath made, we will rejoice and be glad in it.$q$, $q$Psalm 118:24$q$, false, NULL
+WHERE NOT EXISTS (SELECT 1 FROM recipes WHERE title = $q$Veggie egg scramble$q$);

@@ -1,4 +1,4 @@
-// Tap Cook — ingredient catalog, recipe matching, and the member's kitchen
+// Daily Bread — ingredient catalog, recipe matching, and the member's kitchen
 // (pantry + grocery list). In Eden Strong Together, linked spouses share one
 // kitchen: the database lets each spouse read and change the other's rows.
 

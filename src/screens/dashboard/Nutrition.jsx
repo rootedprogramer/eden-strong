@@ -78,8 +78,8 @@ export default function Nutrition() {
           Nutrition
         </div>
         <div style={{ display: 'flex', gap: 16 }}>
-          <Link to="/dashboard/nutrition/tap-cook" style={{ fontFamily: FONTS.body, fontSize: 13, fontWeight: 600, color: COLORS.gold, textDecoration: 'none' }}>
-            Tap Cook
+          <Link to="/dashboard/nutrition/daily-bread" style={{ fontFamily: FONTS.body, fontSize: 13, fontWeight: 600, color: COLORS.gold, textDecoration: 'none' }}>
+            Daily Bread
           </Link>
           <Link to="/dashboard/nutrition/recipes" style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.gold, textDecoration: 'none' }}>
             Recipe Book

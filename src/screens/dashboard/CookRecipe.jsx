@@ -102,7 +102,7 @@ export default function CookRecipe() {
           <button onClick={logMeal} disabled={logging} style={{ ...darkButton, width: '100%', marginTop: 32 }}>
             {logging ? 'Logging…' : 'Log this meal'}
           </button>
-          <button onClick={() => navigate('/dashboard/nutrition/tap-cook')} style={{ ...outlineButton, width: '100%', marginTop: 10 }}>
+          <button onClick={() => navigate('/dashboard/nutrition/daily-bread')} style={{ ...outlineButton, width: '100%', marginTop: 10 }}>
             Not now
           </button>
           <Note style={{ textAlign: 'center' }}>
