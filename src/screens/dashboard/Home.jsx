@@ -295,7 +295,7 @@ export default function DashboardHome() {
           <div style={{ fontFamily: FONTS.display, fontSize: 28, color: COLORS.ink, marginTop: 30 }}>From the recipe book</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12, marginTop: 12 }}>
             {recipes.map((r, i) => (
-              <Link key={r.id} to="/dashboard/nutrition/recipes" style={{ textDecoration: 'none' }}>
+              <Link key={r.id} to={`/dashboard/nutrition/recipes/${r.id}`} style={{ textDecoration: 'none' }}>
                 <div style={{ aspectRatio: '4 / 3', borderRadius: 16, background: i % 2 ? COLORS.sage : COLORS.gold, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Sprig size={34} color="#fff" />
                 </div>

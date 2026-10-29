@@ -77,9 +77,14 @@ export default function Nutrition() {
         <div style={{ fontFamily: FONTS.display, fontSize: 26, color: COLORS.ink, fontStyle: 'italic' }}>
           Nutrition
         </div>
-        <Link to="/dashboard/nutrition/recipes" style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.gold, textDecoration: 'none' }}>
-          Recipe Book
-        </Link>
+        <div style={{ display: 'flex', gap: 16 }}>
+          <Link to="/dashboard/nutrition/tap-cook" style={{ fontFamily: FONTS.body, fontSize: 13, fontWeight: 600, color: COLORS.gold, textDecoration: 'none' }}>
+            Tap Cook
+          </Link>
+          <Link to="/dashboard/nutrition/recipes" style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.gold, textDecoration: 'none' }}>
+            Recipe Book
+          </Link>
+        </div>
       </div>
 
       <WeekStrip />

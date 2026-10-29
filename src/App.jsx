@@ -14,6 +14,7 @@ import LogWorkout from './screens/dashboard/LogWorkout';
 import Profile from './screens/dashboard/Profile';
 import Nutrition from './screens/dashboard/Nutrition';
 import RecipeBook from './screens/dashboard/RecipeBook';
+import Recipe from './screens/dashboard/Recipe';
 import Community from './screens/dashboard/Community';
 import Progress from './screens/dashboard/Progress';
 import ProgressChart from './screens/dashboard/ProgressChart';
@@ -56,6 +57,7 @@ export default function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="nutrition" element={<Nutrition />} />
           <Route path="nutrition/recipes" element={<RecipeBook />} />
+          <Route path="nutrition/recipes/:id" element={<Recipe />} />
           <Route path="community" element={<Community />} />
           <Route path="progress" element={<Progress />} />
           <Route path="progress/chart/:id" element={<ProgressChart />} />
