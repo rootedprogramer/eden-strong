@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { COLORS, FONTS, PROGRAM_TILES } from '../../../brand/tokens';
 import SubHeader from '../../../components/SubHeader';
 import HomeTile from '../../../components/HomeTile';
-import { supabase } from '../../../lib/supabaseClient';
+import { loadPrograms } from '../../../lib/programs';
 import { PageIntro, Muted, pagePad, tileStack } from './shared';
 
 export default function ProgramsIntro() {
@@ -10,9 +10,9 @@ export default function ProgramsIntro() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from('workout_programs').select('location');
+      const { programs } = await loadPrograms();
       const c = { gym: 0, home: 0 };
-      (data || []).forEach((p) => { c[p.location || 'gym'] = (c[p.location || 'gym'] || 0) + 1; });
+      programs.forEach((p) => { c[p.location] = (c[p.location] || 0) + 1; });
       setCounts(c);
     })();
   }, []);

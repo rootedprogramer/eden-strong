@@ -14,6 +14,7 @@ export default function DashboardHome() {
   const [nutrition, setNutrition] = useState({ goal: null, totals: { calories: 0, carbs: 0, fat: 0, protein: 0 } });
   const [habits, setHabits] = useState([]);
   const [recipes, setRecipes] = useState([]);
+  const [devotion, setDevotion] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const loadHabits = async (uid) => {
@@ -74,6 +75,14 @@ export default function DashboardHome() {
 
       await loadHabits(uid);
 
+      const { data: devProgress } = await supabase.from('devotion_progress').select('current_day').eq('user_id', uid).maybeSingle();
+      const { data: dev } = await supabase
+        .from('daily_devotions')
+        .select('scripture_ref, scripture_text')
+        .eq('day_number', devProgress?.current_day || 1)
+        .maybeSingle();
+      setDevotion(dev || null);
+
       const { data: recipeRows } = await supabase.from('recipes').select('id, title, calories').limit(2);
       setRecipes(recipeRows || []);
 
@@ -102,35 +111,60 @@ export default function DashboardHome() {
       <SectionHead title="Dashboard" action={<Pill to="/dashboard/habits">View all</Pill>} />
       <WeekRow />
 
-      {/* Faith first: today's devotion, styled like the reference's banner */}
+      {/* Faith first: today's devotion */}
       <Link
         to="/dashboard/devotion"
         style={{
-          display: 'flex',
+          position: 'relative',
+          display: 'block',
           marginTop: 22,
-          borderRadius: 18,
+          minHeight: 230,
+          padding: '22px 22px 20px',
+          borderRadius: 22,
           overflow: 'hidden',
-          background: '#fff',
-          border: `1px solid ${COLORS.line}`,
+          background: COLORS.ink,
           textDecoration: 'none',
         }}
       >
-        <div style={{ width: 96, flexShrink: 0, background: COLORS.ink, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '14px 8px' }}>
-          <Sprig size={30} color={COLORS.rose} />
-          <span style={{ fontFamily: FONTS.body, fontSize: 11, fontWeight: 600, color: COLORS.rose, textAlign: 'center', lineHeight: 1.2 }}>
-            Start here
-          </span>
+        <div style={{ position: 'absolute', right: -24, top: -18, opacity: 0.14 }}>
+          <Sprig size={250} color="#fff" />
         </div>
-        <div style={{ flex: 1, padding: '16px 14px 16px 18px', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontFamily: FONTS.display, fontSize: 20, color: COLORS.ink, lineHeight: 1.15 }}>
-              Today’s devotion and Bible reading
+        <span style={{ position: 'relative', display: 'inline-block', padding: '5px 12px', borderRadius: 999, background: COLORS.rose, color: COLORS.ink, fontFamily: FONTS.body, fontSize: 12, fontWeight: 600 }}>
+          Start here
+        </span>
+        <div style={{ position: 'relative', fontFamily: FONTS.display, fontSize: 32, fontWeight: 500, color: '#fff', lineHeight: 1.05, marginTop: 14 }}>
+          Today’s devotion and Bible reading
+        </div>
+        {devotion ? (
+          <>
+            <div style={{ position: 'relative', fontFamily: FONTS.body, fontSize: 13, fontWeight: 600, color: COLORS.rose, marginTop: 12 }}>
+              {devotion.scripture_ref}
             </div>
-            <div style={{ fontFamily: FONTS.body, fontSize: 12, color: COLORS.mute, marginTop: 4 }}>
-              A few quiet minutes before anything else
+            <div
+              style={{
+                position: 'relative',
+                fontFamily: FONTS.display,
+                fontSize: 18,
+                fontStyle: 'italic',
+                color: 'rgba(255,255,255,0.9)',
+                lineHeight: 1.4,
+                marginTop: 6,
+                display: '-webkit-box',
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}
+            >
+              {devotion.scripture_text}
             </div>
+          </>
+        ) : (
+          <div style={{ position: 'relative', fontFamily: FONTS.body, fontSize: 14, color: 'rgba(255,255,255,0.85)', marginTop: 10, lineHeight: 1.5 }}>
+            A few quiet minutes with God before anything else.
           </div>
-          <ChevronRight size={20} color={COLORS.ink} />
+        )}
+        <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 18, padding: '11px 18px', borderRadius: 999, background: '#fff', color: COLORS.ink, fontFamily: FONTS.body, fontSize: 14, fontWeight: 600 }}>
+          Read today’s devotion <ChevronRight size={16} />
         </div>
       </Link>
 

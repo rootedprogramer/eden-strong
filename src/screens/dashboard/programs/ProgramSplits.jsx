@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { COLORS, FONTS, PROGRAM_TILES, SESSION_TONES } from '../../../brand/tokens';
 import SubHeader from '../../../components/SubHeader';
 import HomeTile from '../../../components/HomeTile';
-import { supabase } from '../../../lib/supabaseClient';
+import { loadPrograms } from '../../../lib/programs';
 import { Muted, pagePad, tileStack } from './shared';
 
 export default function ProgramSplits() {
@@ -12,13 +12,12 @@ export default function ProgramSplits() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
-        .from('workout_programs')
-        .select('id, title, track, days_per_week, description, image')
-        .eq('location', location)
-        .eq('level_key', level)
-        .order('days_per_week', { ascending: true });
-      setPrograms(data || []);
+      const { programs: all } = await loadPrograms();
+      setPrograms(
+        all
+          .filter((p) => p.location === location && p.level_key === level)
+          .sort((a, b) => a.track.localeCompare(b.track) || (a.days_per_week || 0) - (b.days_per_week || 0))
+      );
     })();
   }, [location, level]);
 
