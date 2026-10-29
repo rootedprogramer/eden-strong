@@ -145,7 +145,7 @@ export default function DashboardHome() {
         }
       />
       {!loading && program && (
-        <Link to="/dashboard/log" style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 14, textDecoration: 'none' }}>
+        <Link to="/dashboard/workout" style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 14, textDecoration: 'none' }}>
           <div style={{ width: 74, height: 60, borderRadius: 12, background: COLORS.olive, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Sprig size={30} color="#fff" />
           </div>

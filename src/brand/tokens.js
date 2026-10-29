@@ -189,3 +189,18 @@ export const HOME_TILES = [
 // Shown in the "Questions?" card at the bottom of the home page.
 // Leave empty to point people to the Community tab instead.
 export const SUPPORT_EMAIL = '';
+
+// ─── Programs pages ─────────────────────────────────────────
+// Photos for the Programs flow. Put images in /public/programs/ and set the
+// path here, e.g. gym: '/programs/gym.jpg'. Until then each card shows a
+// solid color block. tone picks that color.
+export const PROGRAM_TILES = {
+  gym: { title: 'Gym', image: null, tone: 'ink' },
+  home: { title: 'Home', image: null, tone: 'olive' },
+  beginner: { title: 'Beginner', image: null, tone: 'sage' },
+  intermediate: { title: 'Intermediate', image: null, tone: 'olive' },
+  advanced: { title: 'Advanced', image: null, tone: 'ink' },
+};
+export const LEVEL_ORDER = ['beginner', 'intermediate', 'advanced'];
+// Placeholder colors for the sessions-per-week cards, in order
+export const SESSION_TONES = ['olive', 'gold', 'ink', 'sage'];
