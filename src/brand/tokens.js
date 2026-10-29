@@ -198,9 +198,8 @@ export const PROGRAM_TILES = {
   gym: { title: 'Gym', image: null, tone: 'ink' },
   home: { title: 'Home', image: null, tone: 'olive' },
   beginner: { title: 'Beginner', image: null, tone: 'sage' },
-  intermediate: { title: 'Intermediate', image: null, tone: 'olive' },
-  advanced: { title: 'Advanced', image: null, tone: 'ink' },
+  experienced: { title: 'Experienced', image: null, tone: 'ink' },
 };
-export const LEVEL_ORDER = ['beginner', 'intermediate', 'advanced'];
+export const LEVEL_ORDER = ['beginner', 'experienced'];
 // Placeholder colors for the sessions-per-week cards, in order
 export const SESSION_TONES = ['olive', 'gold', 'ink', 'sage'];

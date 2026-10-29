@@ -146,7 +146,7 @@ Abductions and adductions: control both directions. No bouncing your way through
 begin
   -- 3 Days
   insert into workout_programs (title, description, weeks, days_per_week, level, sort_order, guide, core_note)
-  values ('Grit & Glory — 3 Days', 'Heavy weight, hard sets, real progressive overload. Fewer exercises, nothing easy about them.', 6, 3, 'Advanced', 8, g, c)
+  values ('Grit & Glory — 3 Days', 'Heavy weight, hard sets, real progressive overload. Fewer exercises, nothing easy about them.', 6, 3, 'Experienced', 8, g, c)
   returning id into prog;
   d := gg_day(prog, 1, 'Tuesday', 'Heavy Glutes', heavy_rest, heavy_focus);           perform gg_heavy(d); perform gg_core(d, 'B');
   d := gg_day(prog, 2, 'Thursday', 'Glutes & Legs', legs_rest, legs_focus);           perform gg_legs(d);  perform gg_core(d, 'A');
@@ -154,7 +154,7 @@ begin
 
   -- 5 Days (Friday off; every day still ends with a deep core finisher)
   insert into workout_programs (title, description, weeks, days_per_week, level, sort_order, guide, core_note)
-  values ('Grit & Glory — 5 Days', 'The glute days plus back and upper body in between, with Friday off before your Saturday glute day.', 6, 5, 'Advanced', 9, g, c)
+  values ('Grit & Glory — 5 Days', 'The glute days plus back and upper body in between, with Friday off before your Saturday glute day.', 6, 5, 'Experienced', 9, g, c)
   returning id into prog;
   d := gg_day(prog, 1, 'Monday', 'Back & Biceps', null, null);                        perform gg_back_bi(d); perform gg_core(d, 'A');
   d := gg_day(prog, 2, 'Tuesday', 'Heavy Glutes', heavy_rest, heavy_focus);           perform gg_heavy(d);   perform gg_core(d, 'B');
@@ -164,7 +164,7 @@ begin
 
   -- 6 Days
   insert into workout_programs (title, description, weeks, days_per_week, level, sort_order, guide, core_note)
-  values ('Grit & Glory — 6 Days', 'The glute days plus back, upper body, and conditioning in between, so your lower body gets time to recover.', 6, 6, 'Advanced', 10, g, c)
+  values ('Grit & Glory — 6 Days', 'The glute days plus back, upper body, and conditioning in between, so your lower body gets time to recover.', 6, 6, 'Experienced', 10, g, c)
   returning id into prog;
   d := gg_day(prog, 1, 'Monday', 'Back & Biceps', null, null);                        perform gg_back_bi(d);      perform gg_core(d, 'A');
   d := gg_day(prog, 2, 'Tuesday', 'Heavy Glutes', heavy_rest, heavy_focus);           perform gg_heavy(d);        perform gg_core(d, 'B');
@@ -179,7 +179,7 @@ alter table workout_programs add column if not exists track text;
 alter table workout_programs add column if not exists level_key text;
 alter table workout_programs add column if not exists location text default 'gym';
 alter table workout_programs add column if not exists image text;
-update workout_programs set track = 'Grit & Glory', level_key = 'advanced', location = 'gym'
+update workout_programs set track = 'Grit & Glory', level_key = 'experienced', location = 'gym'
 where title like 'Grit & Glory%';
 
 -- ── Clean up helpers ────────────────────────────────────────────────────────

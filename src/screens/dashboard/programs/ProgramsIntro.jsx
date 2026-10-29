@@ -26,7 +26,7 @@ export default function ProgramsIntro() {
         </PageIntro>
         <ul style={{ fontFamily: FONTS.body, fontSize: 15, color: COLORS.ink, lineHeight: 1.7, margin: '8px 0 0', paddingLeft: 20 }}>
           <li>Gym programs, with home programs on the way</li>
-          <li>Beginner, intermediate, and advanced options</li>
+          <li>Beginner and experienced options</li>
           <li>3 to 6 training days a week</li>
           <li>A deep core finisher and a devotion to go with your training</li>
         </ul>
