@@ -1,12 +1,12 @@
 import { Play, Dumbbell } from 'lucide-react';
-import { COLORS } from '../brand/tokens';
+import { COLORS, toneColor } from '../brand/tokens';
 
 // Square image on the left of an exercise card. Uses the exercise's thumbnail
 // when one is set; otherwise a color block in the section's tone.
 export default function ExerciseThumb({ media, tone = 'ink', size = 92 }) {
   const hasVideo = !!media?.video_url;
   return (
-    <div style={{ position: 'relative', width: size, alignSelf: 'stretch', minHeight: size, flexShrink: 0, background: COLORS[tone] || COLORS.ink, overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: size, alignSelf: 'stretch', minHeight: size, flexShrink: 0, background: toneColor(tone), overflow: 'hidden' }}>
       {media?.thumbnail_url && (
         <img src={media.thumbnail_url} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
       )}

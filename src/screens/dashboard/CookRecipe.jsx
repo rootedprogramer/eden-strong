@@ -102,7 +102,7 @@ export default function CookRecipe() {
           <button onClick={logMeal} disabled={logging} style={{ ...darkButton, width: '100%', marginTop: 32 }}>
             {logging ? 'Logging…' : 'Log this meal'}
           </button>
-          <button onClick={() => navigate('/dashboard/nutrition/daily-bread')} style={{ ...outlineButton, width: '100%', marginTop: 10 }}>
+          <button onClick={() => navigate('/dashboard/nutrition/tap-cook')} style={{ ...outlineButton, width: '100%', marginTop: 10 }}>
             Not now
           </button>
           <Note style={{ textAlign: 'center' }}>
@@ -139,7 +139,7 @@ export default function CookRecipe() {
 
         <div style={{ marginTop: 22, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
           {[['Calories', recipe.calories, ''], ['Protein', recipe.protein, 'g'], ['Carbs', recipe.carbs, 'g'], ['Fat', recipe.fat, 'g']].map(([label, v, unit]) => (
-            <div key={label} style={{ padding: '10px 6px', borderRadius: 12, background: '#fff', border: `1px solid ${COLORS.line}`, textAlign: 'center' }}>
+            <div key={label} style={{ padding: '10px 6px', borderRadius: 12, background: COLORS.surface, border: `1px solid ${COLORS.line}`, textAlign: 'center' }}>
               <div style={{ fontFamily: FONTS.display, fontSize: 22, color: COLORS.ink }}>{v ?? '–'}{v != null ? unit : ''}</div>
               <div style={{ fontFamily: FONTS.body, fontSize: 11, color: COLORS.mute }}>{label}</div>
             </div>
@@ -218,7 +218,7 @@ function StepTimer({ seconds }) {
   const ss = String(left % 60).padStart(2, '0');
 
   return (
-    <div style={{ marginTop: 24, padding: '16px 18px', borderRadius: 18, background: done ? tint(COLORS.olive, 18) : '#fff', border: `1px solid ${done ? COLORS.olive : COLORS.line}`, display: 'flex', alignItems: 'center', gap: 14 }}>
+    <div style={{ marginTop: 24, padding: '16px 18px', borderRadius: 18, background: done ? tint(COLORS.olive, 18) : COLORS.surface, border: `1px solid ${done ? COLORS.olive : COLORS.line}`, display: 'flex', alignItems: 'center', gap: 14 }}>
       <div style={{ flex: 1 }} aria-live="polite">
         <div style={{ fontFamily: FONTS.display, fontSize: 40, lineHeight: 1, color: COLORS.ink, fontVariantNumeric: 'tabular-nums' }}>
           {done ? 'Time’s up' : `${mm}:${ss}`}

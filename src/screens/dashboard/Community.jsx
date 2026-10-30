@@ -91,7 +91,7 @@ export default function Community() {
         {posts.map((post) => {
           const liked = (post.post_likes || []).some((l) => l.user_id === userId);
           return (
-            <div key={post.id} style={{ padding: 16, borderRadius: 16, background: '#fff', border: `1px solid ${COLORS.line}` }}>
+            <div key={post.id} style={{ padding: 16, borderRadius: 16, background: COLORS.surface, border: `1px solid ${COLORS.line}` }}>
               <div style={{ fontFamily: FONTS.body, fontSize: 13, fontWeight: 600, color: COLORS.ink }}>
                 {post.author_name}
               </div>

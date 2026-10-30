@@ -5,6 +5,7 @@ import { COLORS, FONTS, getEdition } from '../../brand/tokens';
 import { useTheme } from '../../theme/ThemeContext';
 import { supabase } from '../../lib/supabaseClient';
 import BottomNav from '../../components/BottomNav';
+import Monogram from '../../components/Monogram';
 
 // Loads the member's profile once, switches the theme to their edition, and
 // hands { profile, edition } to every dashboard screen via useOutletContext().
@@ -30,6 +31,7 @@ export default function DashboardLayout() {
   // Signed in but never finished onboarding (or picked an edition): start over.
   const edition = getEdition(state.profile?.edition);
   if (!edition) return <Navigate to="/" replace />;
+  if (typeof document !== 'undefined') document.title = edition.name;
 
   return (
     <div style={{ minHeight: '100vh', background: COLORS.bg }}>
@@ -50,13 +52,11 @@ export default function DashboardLayout() {
           <Link to="/dashboard/profile" aria-label="Your profile" style={{ color: COLORS.ink, display: 'flex' }}>
             <CircleUserRound size={28} strokeWidth={1.5} />
           </Link>
-          <Link to="/dashboard" style={{ textAlign: 'center', textDecoration: 'none' }}>
-            <div style={{ fontFamily: FONTS.display, fontSize: 26, fontWeight: 500, color: COLORS.ink, lineHeight: 1 }}>
-              Eden Strong
-            </div>
-            <div style={{ fontFamily: FONTS.body, fontSize: 10, letterSpacing: '0.24em', textTransform: 'uppercase', fontWeight: 600, color: tokens.primary, marginTop: 4 }}>
-              {edition.short}
-            </div>
+          <Link to="/dashboard" aria-label={`${edition.name} home`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, textDecoration: 'none', color: COLORS.ink }}>
+            <Monogram letters={edition.monogram} size={30} color={tokens.primary} />
+            <span style={{ fontFamily: FONTS.brand, fontSize: 16, fontWeight: 500, letterSpacing: '0.16em', textTransform: 'uppercase', color: COLORS.ink, whiteSpace: 'nowrap' }}>
+              {edition.name}
+            </span>
           </Link>
           <span />
         </header>

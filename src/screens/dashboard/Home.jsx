@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import { Plus, Flame, ChevronRight } from 'lucide-react';
 import { COLORS, FONTS, HOME_TILES, SUPPORT_EMAIL, tint } from '../../brand/tokens';
 import Sprig from '../../components/Sprig';
@@ -10,6 +10,7 @@ import { supabase } from '../../lib/supabaseClient';
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
 export default function DashboardHome() {
+  const { edition } = useOutletContext() || {};
   const [userId, setUserId] = useState(null);
   const [program, setProgram] = useState(null); // { title, week, day, dayTitle }
   const [nutrition, setNutrition] = useState({ goal: null, totals: { calories: 0, carbs: 0, fat: 0, protein: 0 } });
@@ -100,6 +101,9 @@ export default function DashboardHome() {
     <div style={{ padding: '20px 18px 32px' }}>
       {/* Dashboard heading + week */}
       <SectionHead title="Dashboard" action={<Pill to="/dashboard/habits">View all</Pill>} />
+      {edition && (
+        <div style={{ fontFamily: FONTS.script, fontSize: 26, color: COLORS.gold, marginTop: 2, lineHeight: 1.2 }}>{edition.script}</div>
+      )}
       <WeekRow />
 
       {/* Faith first: today's devotion */}
@@ -113,14 +117,14 @@ export default function DashboardHome() {
           padding: '22px 22px 20px',
           borderRadius: 22,
           overflow: 'hidden',
-          background: COLORS.ink,
+          background: COLORS.deep,
           textDecoration: 'none',
         }}
       >
         <div style={{ position: 'absolute', right: -24, top: -18, opacity: 0.14 }}>
           <Sprig size={250} color="#fff" />
         </div>
-        <span style={{ position: 'relative', display: 'inline-block', padding: '5px 12px', borderRadius: 999, background: COLORS.rose, color: COLORS.ink, fontFamily: FONTS.body, fontSize: 12, fontWeight: 600 }}>
+        <span style={{ position: 'relative', display: 'inline-block', padding: '5px 12px', borderRadius: 999, background: COLORS.rose, color: '#171817', fontFamily: FONTS.body, fontSize: 12, fontWeight: 600 }}>
           Start here
         </span>
         <div style={{ position: 'relative', fontFamily: FONTS.display, fontSize: 32, fontWeight: 500, color: '#fff', lineHeight: 1.05, marginTop: 14 }}>
@@ -154,7 +158,7 @@ export default function DashboardHome() {
             A few quiet minutes with God before anything else.
           </div>
         )}
-        <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 18, padding: '11px 18px', borderRadius: 999, background: '#fff', color: COLORS.ink, fontFamily: FONTS.body, fontSize: 14, fontWeight: 600 }}>
+        <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 18, padding: '11px 18px', borderRadius: 999, background: COLORS.surface, color: COLORS.ink, fontFamily: FONTS.body, fontSize: 14, fontWeight: 600 }}>
           Read today’s devotion <ChevronRight size={16} />
         </div>
       </Link>
@@ -199,7 +203,7 @@ export default function DashboardHome() {
 
       {/* Nutrition */}
       <SectionHead title="Nutrition" style={{ marginTop: 28 }} />
-      <Link to="/dashboard/nutrition" style={{ display: 'block', marginTop: 12, padding: '16px 18px 18px', borderRadius: 18, background: COLORS.ink, textDecoration: 'none' }}>
+      <Link to="/dashboard/nutrition" style={{ display: 'block', marginTop: 12, padding: '16px 18px 18px', borderRadius: 18, background: COLORS.deep, textDecoration: 'none' }}>
         <div style={{ height: 6, borderRadius: 3, background: tint('#ffffff', 18) }}>
           <div style={{ width: `${calPct}%`, height: 6, borderRadius: 3, background: COLORS.rose }} />
         </div>
@@ -252,7 +256,7 @@ export default function DashboardHome() {
                 padding: '16px 14px',
                 borderRadius: 16,
                 border: 'none',
-                background: COLORS.ink,
+                background: COLORS.deep,
                 color: '#fff',
                 cursor: 'pointer',
                 textAlign: 'left',
@@ -304,7 +308,7 @@ export default function DashboardHome() {
       )}
 
       {/* Questions */}
-      <div style={{ marginTop: 30, padding: '22px 20px', borderRadius: 20, background: '#fff', border: `1px solid ${COLORS.line}`, textAlign: 'center' }}>
+      <div style={{ marginTop: 30, padding: '22px 20px', borderRadius: 20, background: COLORS.surface, border: `1px solid ${COLORS.line}`, textAlign: 'center' }}>
         <div style={{ fontFamily: FONTS.display, fontSize: 28, color: COLORS.ink }}>Questions?</div>
         {SUPPORT_EMAIL ? (
           <div style={{ fontFamily: FONTS.body, fontSize: 14, color: COLORS.ink, marginTop: 8, lineHeight: 1.5 }}>

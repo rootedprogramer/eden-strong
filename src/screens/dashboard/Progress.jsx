@@ -104,7 +104,7 @@ function ProgressTab() {
         {cards.map((c) => {
           const l = latest[c.name];
           return (
-            <Link key={c.id} to={`/dashboard/progress/chart/${c.id}`} style={{ padding: '16px 12px', borderRadius: 18, background: '#fff', border: `1px solid ${COLORS.line}`, textAlign: 'center', textDecoration: 'none' }}>
+            <Link key={c.id} to={`/dashboard/progress/chart/${c.id}`} style={{ padding: '16px 12px', borderRadius: 18, background: COLORS.surface, border: `1px solid ${COLORS.line}`, textAlign: 'center', textDecoration: 'none' }}>
               <div style={{ fontFamily: FONTS.body, fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: COLORS.mute }}>{c.name}</div>
               <div style={{ fontFamily: FONTS.body, fontSize: 26, fontWeight: 700, color: COLORS.ink, marginTop: 8 }}>
                 {l ? `${Number(l.value)}${c.unit ? ` ${c.unit}` : ''}` : '--'}
@@ -127,7 +127,7 @@ function ProgressTab() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
         {(charts || []).map((c) => (
-          <div key={c.id} style={{ position: 'relative', display: 'flex', alignItems: 'center', borderRadius: 18, background: '#fff', border: `1px solid ${COLORS.line}` }}>
+          <div key={c.id} style={{ position: 'relative', display: 'flex', alignItems: 'center', borderRadius: 18, background: COLORS.surface, border: `1px solid ${COLORS.line}` }}>
             <Link to={`/dashboard/progress/chart/${c.id}`} style={{ flex: 1, padding: '18px 18px', fontFamily: FONTS.body, fontSize: 17, fontWeight: 600, color: COLORS.ink, textDecoration: 'none' }}>
               {c.name}
             </Link>
@@ -135,7 +135,7 @@ function ProgressTab() {
               <MoreVertical size={20} />
             </button>
             {menuFor === c.id && (
-              <button onClick={() => removeChart(c)} style={{ position: 'absolute', right: 12, top: '100%', marginTop: 4, zIndex: 3, display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderRadius: 12, border: `1px solid ${COLORS.line}`, background: '#fff', fontFamily: FONTS.body, fontSize: 14, color: '#B0413E', cursor: 'pointer' }}>
+              <button onClick={() => removeChart(c)} style={{ position: 'absolute', right: 12, top: '100%', marginTop: 4, zIndex: 3, display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderRadius: 12, border: `1px solid ${COLORS.line}`, background: COLORS.surface, fontFamily: FONTS.body, fontSize: 14, color: '#B0413E', cursor: 'pointer' }}>
                 <Trash2 size={16} /> Delete chart
               </button>
             )}
@@ -215,7 +215,7 @@ function AddChartSheet({ uid, onClose, onSaved }) {
     <Sheet title="Add chart" onClose={onClose}>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
         {presets.map(([n, u]) => (
-          <button key={n} onClick={() => { setName(n); setUnit(u); }} style={{ padding: '8px 14px', borderRadius: 999, border: `1px solid ${COLORS.line}`, background: name === n ? COLORS.ink : '#fff', color: name === n ? COLORS.bg : COLORS.ink, fontFamily: FONTS.body, fontSize: 14, cursor: 'pointer' }}>
+          <button key={n} onClick={() => { setName(n); setUnit(u); }} style={{ padding: '8px 14px', borderRadius: 999, border: `1px solid ${COLORS.line}`, background: name === n ? COLORS.ink : COLORS.surface, color: name === n ? COLORS.bg : COLORS.ink, fontFamily: FONTS.body, fontSize: 14, cursor: 'pointer' }}>
             {n}
           </button>
         ))}
@@ -285,7 +285,7 @@ function PRsTab() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 16 }}>
         {shown.map((r) => (
-          <button key={r.name} onClick={() => setEditing(r)} style={{ textAlign: 'left', padding: '18px 18px', borderRadius: 18, background: '#fff', border: `1px solid ${COLORS.line}`, cursor: 'pointer' }}>
+          <button key={r.name} onClick={() => setEditing(r)} style={{ textAlign: 'left', padding: '18px 18px', borderRadius: 18, background: COLORS.surface, border: `1px solid ${COLORS.line}`, cursor: 'pointer' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontFamily: FONTS.body, fontSize: 17, fontWeight: 600, color: COLORS.ink }}>{r.name}</span>
               <MoreVertical size={18} color={COLORS.ink} />
@@ -444,10 +444,10 @@ function PhotosTab() {
         <div role="dialog" aria-modal="true" aria-label="Photo" onClick={() => setOpen(null)} style={{ position: 'fixed', inset: 0, zIndex: 20, background: 'rgba(0,0,0,0.9)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
           <img src={open.url} alt="" style={{ maxWidth: '100%', maxHeight: '78vh', borderRadius: 12 }} onClick={(e) => e.stopPropagation()} />
           <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
-            <button onClick={(e) => { e.stopPropagation(); remove(open); }} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 18px', borderRadius: 999, border: 'none', background: '#fff', color: '#B0413E', fontFamily: FONTS.body, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
+            <button onClick={(e) => { e.stopPropagation(); remove(open); }} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 18px', borderRadius: 999, border: 'none', background: COLORS.surface, color: '#B0413E', fontFamily: FONTS.body, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
               <Trash2 size={16} /> Delete
             </button>
-            <button onClick={() => setOpen(null)} style={{ padding: '12px 18px', borderRadius: 999, border: 'none', background: '#fff', color: COLORS.ink, fontFamily: FONTS.body, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
+            <button onClick={() => setOpen(null)} style={{ padding: '12px 18px', borderRadius: 999, border: 'none', background: COLORS.surface, color: COLORS.ink, fontFamily: FONTS.body, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
               Close
             </button>
           </div>

@@ -148,7 +148,7 @@ export default function ProgramDetail() {
               const week = i + 1;
               const open = openWeek === week;
               return (
-                <div key={week} style={{ borderRadius: 20, overflow: 'hidden', background: '#fff', border: `1px solid ${COLORS.line}` }}>
+                <div key={week} style={{ borderRadius: 20, overflow: 'hidden', background: COLORS.surface, border: `1px solid ${COLORS.line}` }}>
                   <button
                     onClick={() => setOpenWeek(open ? null : week)}
                     aria-expanded={open}
@@ -158,7 +158,7 @@ export default function ProgramDetail() {
                       width: '100%',
                       height: 120,
                       border: 'none',
-                      background: week % 2 ? COLORS.ink : COLORS.olive,
+                      background: week % 2 ? COLORS.deep : COLORS.olive,
                       cursor: 'pointer',
                       textAlign: 'left',
                       overflow: 'hidden',

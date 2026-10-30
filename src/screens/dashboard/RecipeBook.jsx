@@ -1,86 +1,113 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { COLORS, FONTS } from '../../brand/tokens';
+import { Link } from 'react-router-dom';
+import { COLORS, FONTS, toneColor } from '../../brand/tokens';
+import SubHeader from '../../components/SubHeader';
+import Sprig from '../../components/Sprig';
 import { supabase } from '../../lib/supabaseClient';
 
-const todayISO = () => new Date().toISOString().slice(0, 10);
+export const RECIPE_CATEGORIES = [
+  { key: 'Smoothies', tone: 'rose' },
+  { key: 'Snacks', tone: 'gold' },
+  { key: 'Breakfasts', tone: 'sage' },
+  { key: 'Lunches', tone: 'olive' },
+  { key: 'Dinners', tone: 'ink' },
+  { key: 'Desserts', tone: 'rose' },
+];
+
+// Recipes added without a category are placed by their name
+export function guessCategory(r) {
+  if (r.category) return r.category;
+  const t = String(r.title || '').toLowerCase();
+  if (/smoothie|shake/.test(t)) return 'Smoothies';
+  if (/oat|pancake|waffle|egg|scramble|breakfast|yogurt bowl|granola|toast/.test(t)) return 'Breakfasts';
+  if (/cookie|brownie|crumble|cheesecake|dessert|bites|bark|ice cream|cake/.test(t)) return 'Desserts';
+  if (/snack|dip|roll-up|hummus|jerky/.test(t)) return 'Snacks';
+  if (/salad|wrap|sandwich|quesadilla|soup|lunch/.test(t)) return 'Lunches';
+  return 'Dinners';
+}
+
+export const toneFor = (category) => RECIPE_CATEGORIES.find((c) => c.key === category)?.tone || 'olive';
 
 export default function RecipeBook() {
-  const [recipes, setRecipes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [logging, setLogging] = useState(null);
-  const navigate = useNavigate();
+  const [recipes, setRecipes] = useState(null);
+  const [filter, setFilter] = useState('All');
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from('recipes').select('*').order('title', { ascending: true });
-      setRecipes(data || []);
-      setLoading(false);
+      const { data } = await supabase.from('recipes').select('*');
+      const rank = Object.fromEntries(RECIPE_CATEGORIES.map((c, i) => [c.key, i]));
+      setRecipes(
+        (data || []).map((r) => ({ ...r, category: guessCategory(r) })).sort(
+          (a, b) => (rank[a.category] ?? 99) - (rank[b.category] ?? 99) || (a.sort_order ?? 999) - (b.sort_order ?? 999) || a.title.localeCompare(b.title)
+        )
+      );
     })();
   }, []);
 
-  const logRecipe = async (r) => {
-    setLogging(r.id);
-    const { data: userData } = await supabase.auth.getUser();
-    const userId = userData?.user?.id;
-    if (userId) {
-      await supabase.from('meal_logs').insert({
-        user_id: userId,
-        name: r.title,
-        calories: r.calories,
-        protein: r.protein,
-        fat: r.fat,
-        carbs: r.carbs,
-        log_date: todayISO(),
-        logged_at: new Date().toISOString(),
-      });
-    }
-    setLogging(null);
-    navigate('/dashboard/nutrition');
-  };
+  const present = RECIPE_CATEGORIES.filter((c) => (recipes || []).some((r) => r.category === c.key)).map((c) => c.key);
+  const shown = (recipes || []).filter((r) => filter === 'All' || r.category === filter);
 
   return (
-    <div style={{ padding: '24px 24px 24px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ fontFamily: FONTS.display, fontSize: 26, color: COLORS.ink, fontStyle: 'italic' }}>
-          Recipe Book
-        </div>
-        <Link to="/dashboard/nutrition/daily-bread" style={{ fontFamily: FONTS.body, fontSize: 13, fontWeight: 600, color: COLORS.gold, textDecoration: 'none' }}>
-          Daily Bread
-        </Link>
-      </div>
+    <>
+      <SubHeader title="Recipe book" />
+      <div style={{ padding: '4px 16px 32px' }}>
+        <h1 style={{ margin: 0, fontFamily: FONTS.display, fontSize: 32, fontWeight: 500, color: COLORS.ink, lineHeight: 1.1 }}>Fuel your strength</h1>
+        <p style={{ fontFamily: FONTS.body, fontSize: 14, color: COLORS.mute, lineHeight: 1.55, margin: '6px 0 0' }}>
+          High-protein recipes that make eating well easier, not a math exam. Nutrition is an estimate per serving.
+        </p>
 
-      <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {loading && <div style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.mute }}>Loading…</div>}
-        {!loading && recipes.length === 0 && (
-          <div style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.mute }}>
-            No recipes published yet — add rows to `recipes` in Supabase.
+        {present.length > 0 && (
+          <div role="tablist" aria-label="Recipe categories" style={{ display: 'flex', gap: 8, overflowX: 'auto', margin: '16px -16px 0', padding: '0 16px 4px' }}>
+            {['All', ...present].map((c) => (
+              <button
+                key={c}
+                role="tab"
+                aria-selected={filter === c}
+                onClick={() => setFilter(c)}
+                style={{ flexShrink: 0, padding: '9px 16px', borderRadius: 999, border: `1px solid ${filter === c ? COLORS.ink : COLORS.line}`, background: filter === c ? COLORS.ink : COLORS.surface, color: filter === c ? COLORS.bg : COLORS.ink, fontFamily: FONTS.body, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+              >
+                {c}
+              </button>
+            ))}
           </div>
         )}
-        {recipes.map((r) => (
-          <div key={r.id} style={{ padding: 18, borderRadius: 16, background: '#fff', border: `1px solid ${COLORS.line}` }}>
-            <Link to={`/dashboard/nutrition/cook/${r.id}`} style={{ fontFamily: FONTS.display, fontSize: 18, color: COLORS.ink, fontStyle: 'italic', textDecoration: 'none' }}>{r.title}</Link>
-            <div style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.mute, marginTop: 4 }}>
-              {r.calories} cal · {r.protein}g protein · {r.fat}g fat · {r.carbs}g carbs
-            </div>
-            {r.ingredients && (
-              <div style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.ink, marginTop: 10, whiteSpace: 'pre-line' }}>
-                {r.ingredients}
+
+        {recipes === null && <p style={muted}>Loading…</p>}
+        {recipes && recipes.length === 0 && <p style={muted}>No recipes yet.</p>}
+
+        {(filter === 'All' ? present : [filter]).map((cat) => {
+          const items = shown.filter((r) => r.category === cat);
+          if (!items.length) return null;
+          return (
+            <section key={cat} style={{ marginTop: 22 }}>
+              {filter === 'All' && <h2 style={{ margin: '0 0 10px', fontFamily: FONTS.display, fontSize: 26, fontWeight: 500, color: COLORS.ink }}>{cat}</h2>}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12 }}>
+                {items.map((r) => <RecipeCard key={r.id} r={r} />)}
               </div>
-            )}
-            <button
-              onClick={() => logRecipe(r)}
-              disabled={logging === r.id}
-              style={{
-                marginTop: 14, fontFamily: FONTS.body, fontSize: 13, fontWeight: 500, color: COLORS.bg,
-                background: COLORS.ink, border: 'none', padding: '10px 18px', borderRadius: 999, cursor: 'pointer',
-              }}
-            >
-              {logging === r.id ? 'Logging…' : 'Log this meal'}
-            </button>
-          </div>
-        ))}
+            </section>
+          );
+        })}
+
       </div>
-    </div>
+    </>
   );
 }
+
+function RecipeCard({ r }) {
+  return (
+    <Link to={`/dashboard/nutrition/recipes/${r.id}`} style={{ textDecoration: 'none' }}>
+      <div style={{ position: 'relative', aspectRatio: '4 / 3', borderRadius: 16, overflow: 'hidden', background: toneColor(toneFor(r.category)), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {r.image ? <img src={r.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <Sprig size={34} color="#fff" />}
+        {r.protein != null && (
+          <span style={{ position: 'absolute', left: 8, bottom: 8, padding: '4px 9px', borderRadius: 999, background: COLORS.surface, fontFamily: FONTS.body, fontSize: 12, fontWeight: 700, color: COLORS.ink }}>
+            {Number(r.protein)}g protein
+          </span>
+        )}
+      </div>
+      <div style={{ fontFamily: FONTS.body, fontSize: 14, fontWeight: 600, color: COLORS.ink, marginTop: 8, lineHeight: 1.25 }}>{r.title}</div>
+      {r.calories != null && <div style={{ fontFamily: FONTS.body, fontSize: 12, color: COLORS.mute, marginTop: 2 }}>{r.calories} calories</div>}
+    </Link>
+  );
+}
+
+const muted = { fontFamily: FONTS.body, fontSize: 14, color: COLORS.mute, marginTop: 16 };

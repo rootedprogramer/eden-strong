@@ -107,7 +107,7 @@ export default function Devotion() {
       </div>
 
       {devotion.prompt && (
-        <div style={{ marginTop: 24, padding: 16, borderRadius: 14, background: '#fff', border: `1px solid ${COLORS.line}` }}>
+        <div style={{ marginTop: 24, padding: 16, borderRadius: 14, background: COLORS.surface, border: `1px solid ${COLORS.line}` }}>
           <div style={{ fontFamily: FONTS.body, fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: COLORS.mute }}>
             Reflect
           </div>

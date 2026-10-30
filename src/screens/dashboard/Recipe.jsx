@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { COLORS, FONTS, tint } from '../../brand/tokens';
+import { COLORS, FONTS, tint, toneColor } from '../../brand/tokens';
 import SubHeader from '../../components/SubHeader';
 import Sprig from '../../components/Sprig';
 import { supabase } from '../../lib/supabaseClient';
 import { todayISO } from '../../lib/workout';
-import { toneFor } from './RecipeBook';
+import { toneFor, guessCategory } from './RecipeBook';
 
 export default function Recipe() {
   const { id } = useParams();
@@ -16,7 +16,7 @@ export default function Recipe() {
   useEffect(() => {
     (async () => {
       const { data } = await supabase.from('recipes').select('*').eq('id', id).maybeSingle();
-      setR(data || null);
+      setR(data ? { ...data, category: guessCategory(data) } : null);
     })();
   }, [id]);
 
@@ -49,7 +49,7 @@ export default function Recipe() {
   return (
     <>
       <SubHeader title={r.category || 'Recipe'} />
-      <div style={{ position: 'relative', height: 220, background: COLORS[toneFor(r.category)], overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ position: 'relative', height: 220, background: toneColor(toneFor(r.category)), overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {r.image ? <img src={r.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <Sprig size={70} color="#fff" />}
       </div>
 
@@ -84,7 +84,7 @@ export default function Recipe() {
 
         {r.tip && (
           <div style={{ marginTop: 18, padding: '14px 16px', borderRadius: 16, background: tint(COLORS.sage, 22), fontFamily: FONTS.body, fontSize: 14, color: COLORS.ink, lineHeight: 1.55 }}>
-            <span style={{ fontWeight: 700 }}>Eden Strong tip: </span>{r.tip}
+            <span style={{ fontWeight: 700 }}>Tip: </span>{r.tip}
           </div>
         )}
 
@@ -101,7 +101,7 @@ export default function Recipe() {
 
 function Stat({ label, value }) {
   return (
-    <div style={{ padding: '12px 8px', borderRadius: 14, background: '#fff', border: `1px solid ${COLORS.line}`, textAlign: 'center' }}>
+    <div style={{ padding: '12px 8px', borderRadius: 14, background: COLORS.surface, border: `1px solid ${COLORS.line}`, textAlign: 'center' }}>
       <div style={{ fontFamily: FONTS.body, fontSize: 17, fontWeight: 700, color: COLORS.ink }}>{value}</div>
       <div style={{ fontFamily: FONTS.body, fontSize: 12, color: COLORS.mute, marginTop: 2 }}>{label}</div>
     </div>

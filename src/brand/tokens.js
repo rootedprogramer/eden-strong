@@ -1,4 +1,5 @@
-// Eden Strong brand tokens
+// Brand tokens for the three communities: Eden Strong (women),
+// Faith Over Flesh (men), and One Accord (couples)
 // Identity: garden/sanctuary meets quiet strength — devotional without heaviness,
 // strong without aggression.
 
@@ -15,7 +16,18 @@ export const COLORS = {
   rose: 'var(--es-rose, #D4A8A1)',
   mute: 'var(--es-mute, #7A6E5C)',     // supporting text
   line: 'var(--es-line, #D9CFBE)',     // borders and dividers
+  surface: 'var(--es-surface, #FFFFFF)', // cards and inputs
+  deep: 'var(--es-deep, #171817)',     // dark feature panels (devotion card, habits)
+  goldTile: 'var(--es-goldTile, #987778)', // accent color as a card background
 };
+
+// Background for a placeholder block by tone name. 'ink' maps to the dark
+// panel color so white text stays readable in every brand's theme.
+export function toneColor(tone) {
+  if (!tone || tone === 'ink') return COLORS.deep;
+  if (tone === 'gold') return COLORS.goldTile;
+  return COLORS[tone] || COLORS.deep;
+}
 
 // A see-through version of a color, e.g. tint(COLORS.gold, 10) for a 10% wash.
 export function tint(color, percent) {
@@ -23,36 +35,65 @@ export function tint(color, percent) {
 }
 
 export const FONTS = {
-  display: "'Cormorant Garamond', Georgia, serif", // headings, verses — literary, italic-friendly
-  body: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+  display: "'Cormorant Garamond', Georgia, serif", // headings and verses: elegant, timeless, biblical
+  body: "'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif", // everything else: clean, modern, strong
+  brand: "'Cinzel', 'Cormorant Garamond', Georgia, serif", // brand names and small spaced labels
+  script: "'Allura', 'Brush Script MT', cursive", // personal accent lines: "She is Eden Strong."
 };
 
-export const TAGLINE = 'Faith-rooted fitness and community for men, women, and couples in every season.';
+export const TAGLINE = 'One mission. Three expressions. A shared foundation in Christ.';
 
-// ─── Editions ───────────────────────────────────────────────
-// Eden Strong is three separate experiences under one roof. A member picks
-// their edition on the landing page and only ever sees that edition's name,
-// colors, goals, and community. (Colors per edition live in src/theme/theme.js.)
+// ─── Editions (each one is its own brand) ───────────────────
+// Three separate communities, housed in one site for now. Each will become
+// its own app later, so everything brand-specific lives here: name,
+// wordmark, audience, tagline, and copy. (Colors are in src/theme/theme.js.)
 export const EDITIONS = {
   women: {
     id: 'women',
-    name: 'Eden Strong Women',
+    name: 'Eden Strong',
+    wordmark: ['Eden', 'Strong'],
+    monogram: ['E', 'S'],
+    pillars: 'Faith / Fitness / Purpose',
+    script: 'She is Eden Strong.',
+    verse: { text: 'Commit to the Lord whatever you do, and he will establish your plans.', ref: 'Proverbs 16:3' },
+    welcomeImage: '/brand/eden-strong-welcome.jpg',
+    card: { bg: '#987778', ink: '#F5F0E8' },
+    audience: 'For women',
     short: 'Women',
-    pitch: 'Strength, rest, and faith for every season of womanhood.',
+    tagline: 'Faith-rooted fitness for women in every season.',
+    pitch: 'Faith-led wellness and strength.',
     community: 'Encouragement, prayer requests, and wins from women walking this with you.',
   },
   men: {
     id: 'men',
-    name: 'Eden Strong Men',
+    name: 'Faith Over Flesh',
+    wordmark: ['Faith Over', 'Flesh'],
+    monogram: ['F', 'F'],
+    pillars: 'Stronger than yesterday',
+    script: 'Discipline builds freedom.',
+    verse: { text: 'For the Spirit God gave us does not make us timid, but gives us power, love and self-discipline.', ref: '2 Timothy 1:7' },
+    welcomeImage: '/brand/faith-over-flesh-welcome.jpg',
+    card: { bg: '#171817', ink: '#F2EDE4' },
+    audience: 'For men',
     short: 'Men',
-    pitch: 'Disciplined training and steady faith for the men others lean on.',
+    tagline: 'Disciplined training and steady faith for men.',
+    pitch: 'Discipline, strength, and faith.',
     community: 'Encouragement, prayer requests, and wins from men walking this with you.',
   },
   together: {
     id: 'together',
-    name: 'Eden Strong Together',
-    short: 'Together',
-    pitch: 'Train, eat, and pray side by side as a couple.',
+    name: 'One Accord',
+    wordmark: ['One', 'Accord'],
+    monogram: ['O', 'A'],
+    pillars: 'United in Christ. Stronger together.',
+    script: 'Two hearts. One foundation. One purpose.',
+    verse: { text: 'Two are better than one, because they have a good reward for their toil.', ref: 'Ecclesiastes 4:9' },
+    welcomeImage: null,
+    card: { bg: '#656D56', ink: '#F5F0E8' },
+    audience: 'For couples',
+    short: 'Couples',
+    tagline: 'Train, eat, and pray side by side as a couple.',
+    pitch: 'Growing in Christ together.',
     community: 'Encouragement, prayer requests, and wins from couples walking this with you.',
   },
 };
@@ -179,9 +220,8 @@ export const VERSES = [
 // you add a photo: drop the image in /public/home/ and set image to its path,
 // e.g. image: '/home/programs.jpg'. tone picks the placeholder color.
 export const HOME_TILES = [
-  { id: 'programs', title: 'Programs', sub: 'At home and in the gym', to: '/dashboard/program', image: null, tone: 'ink' },
+  { id: 'programs', title: 'Programs', sub: 'Beginner and experienced', to: '/dashboard/program', image: null, tone: 'ink' },
   { id: 'nutrition', title: 'Nutrition', sub: 'Recipes and meal plans', to: '/dashboard/nutrition/recipes', image: null, tone: 'olive' },
-  { id: 'dailybread', title: 'Daily Bread', sub: 'Tap what’s in your kitchen, see what you can make', to: '/dashboard/nutrition/daily-bread', image: null, tone: 'gold' },
   { id: 'devotions', title: 'Devotions', sub: 'Scripture and reflection for every day', to: '/dashboard/devotion', image: null, tone: 'gold' },
   { id: 'community', title: 'Community', sub: 'Encouragement, prayer, and wins', to: '/dashboard/community', image: null, tone: 'sage' },
   { id: 'coaches', title: 'Meet your coaches', sub: 'Lex and John', to: '/dashboard/coaches', image: null, tone: 'ink' },
@@ -199,9 +239,20 @@ export const PROGRAM_TILES = {
   gym: { title: 'Gym', image: null, tone: 'ink' },
   home: { title: 'Home', image: null, tone: 'olive' },
   beginner: { title: 'Beginner', image: null, tone: 'sage' },
-  intermediate: { title: 'Intermediate', image: null, tone: 'olive' },
-  advanced: { title: 'Advanced', image: null, tone: 'ink' },
+  experienced: { title: 'Experienced', image: null, tone: 'ink' },
 };
-export const LEVEL_ORDER = ['beginner', 'intermediate', 'advanced'];
+export const LEVEL_ORDER = ['beginner', 'experienced'];
+export const LEVEL_BLURBS = {
+  beginner: 'New to training, or coming back after time away.',
+  experienced: 'Comfortable in the gym and ready to push.',
+};
+// Cards for each program on the program-selection page. Add a photo path to
+// image when you have one, e.g. '/programs/grit-and-glory.jpg'.
+export const TRACK_TILES = {
+  'Rooted & Rising': { image: null, tone: 'sage' },
+  'Vessel & Valor': { image: null, tone: 'olive' },
+  'Grit & Glory': { image: null, tone: 'ink' },
+  'Strong & Steadfast': { image: null, tone: 'gold' },
+};
 // Placeholder colors for the sessions-per-week cards, in order
 export const SESSION_TONES = ['olive', 'gold', 'ink', 'sage'];

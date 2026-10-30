@@ -27,7 +27,7 @@ export default function LineChart({ points, start, end, unit }) {
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Chart of ${points.length} entries${unit ? ` in ${unit}` : ''}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
-      <rect x={L} y={T} width={W - L - R} height={H - T - B} fill="#fff" stroke={COLORS.line} />
+      <rect x={L} y={T} width={W - L - R} height={H - T - B} fill={COLORS.surface} stroke={COLORS.line} />
       {ticks.map((v, i) => (
         <g key={i}>
           <line x1={L} x2={W - R} y1={y(v)} y2={y(v)} stroke={COLORS.line} strokeWidth="1" />

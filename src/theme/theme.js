@@ -4,45 +4,58 @@
 // ThemeContext fills in from the active edition below. So changing a hex
 // value here recolors that whole edition.
 
+// Shared brand palette: Obsidian #171817, Charcoal #333633, Olive #656D56,
+// Linen #D8CFC0, Ivory #F5F0E8, plus Dusty Mauve #987778 for Eden Strong.
 export const PATHS = {
-  // Eden Strong Women: soft blush and dusty rose, kept quiet so it reads
-  // warm rather than "pink app". Sage keeps the garden feel.
+  // Eden Strong (women): ivory and linen with dusty mauve. Light.
   women: {
-    ink: '#3A2B2F',     // deep berry-brown: text, dark buttons
-    bg: '#FBF6F4',      // blush-white background
-    bgWarm: '#F5EAE6',  // slightly deeper blush for alternating sections
-    gold: '#B06F78',    // dusty rose: accents, links, highlights
-    sage: '#A9B4A0',    // muted sage
-    olive: '#6B7A62',   // deeper green
-    rose: '#D9A5A5',    // soft rose
-    mute: '#8C7571',    // supporting text
-    line: '#EBDAD5',    // borders and dividers
+    dark: false,
+    ink: '#171817',     // obsidian text and buttons
+    bg: '#F5F0E8',      // ivory
+    bgWarm: '#ECE4D9',  // soft linen for the header and nav
+    surface: '#FFFDF9', // cards
+    deep: '#2B2426',    // mauve-black feature panels
+    gold: '#987778',    // dusty mauve accent
+    goldTile: '#987778', // accent as a card background (white text on top)
+    sage: '#8E9580',    // light olive
+    olive: '#656D56',   // olive
+    rose: '#C4A3A0',    // soft mauve
+    mute: '#6F6762',
+    line: '#E3D9CD',
   },
 
-  // Eden Strong Men: charcoal, forest green, and leather brown.
+  // Faith Over Flesh (men): obsidian, charcoal, and stone. Dark.
   men: {
-    ink: '#1E2428',     // charcoal
-    bg: '#F1F0EC',      // cool stone
-    bgWarm: '#E6E4DE',  // deeper stone
-    gold: '#8C6239',    // leather / bronze
-    sage: '#5E6B5A',    // olive drab
-    olive: '#3B4A3F',   // deep forest
-    rose: '#7A8A99',    // steel blue
-    mute: '#686D6F',    // steel gray
-    line: '#D4D2CC',
+    dark: true,
+    ink: '#F2EDE4',     // bone white text; buttons are bone with black text
+    bg: '#0F0F0E',      // near-black
+    bgWarm: '#171817',  // obsidian header and nav
+    surface: '#1F201E', // charcoal cards
+    deep: '#2A2B28',    // raised charcoal panels
+    gold: '#D8CFC0',    // linen / stone accent
+    goldTile: '#5C574E', // warm stone card (white text on top)
+    sage: '#7D8470',    // muted olive
+    olive: '#656D56',   // olive
+    rose: '#A9A396',    // stone
+    mute: '#A29C91',
+    line: '#33342F',
   },
 
-  // Eden Strong Together: the original neutral ivory, forest, and gold.
+  // One Accord (couples): obsidian with olive and ivory. Dark.
   together: {
-    ink: '#1F2A21',
-    bg: '#F5EFE5',
-    bgWarm: '#EFE7DA',
-    gold: '#9B7B2E',
-    sage: '#A8B5A0',
-    olive: '#5C6B54',
-    rose: '#D4A8A1',
-    mute: '#7A6E5C',
-    line: '#D9CFBE',
+    dark: true,
+    ink: '#F5F0E8',     // ivory text; buttons are ivory with dark text
+    bg: '#121311',      // obsidian
+    bgWarm: '#1A1C18',
+    surface: '#22251F', // olive-charcoal cards
+    deep: '#2E3328',    // deep olive panels
+    gold: '#B9BE9E',    // light olive accent
+    goldTile: '#4B5141', // deep olive card (white text on top)
+    sage: '#8A9277',
+    olive: '#656D56',
+    rose: '#987778',    // dusty mauve, a small shared accent
+    mute: '#B0A99C',
+    line: '#363A31',
   },
 };
 
@@ -51,7 +64,7 @@ for (const p of Object.values(PATHS)) {
   p.canvas = p.bg;
   p.primary = p.gold;
   p.text = p.ink;
-  p.surface = '#FFFFFF';
+  
 }
 
 export const TYPE = {

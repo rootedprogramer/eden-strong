@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams, Navigate } from 'react-router-dom';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { COLORS, FONTS, GOALS, FOLLOW_UPS, VERSES, getEdition, recallEdition, tint } from '../../brand/tokens';
 import { useTheme } from '../../theme/ThemeContext';
+import Monogram from '../../components/Monogram';
 import Vine from '../../components/Vine';
 import Sprig from '../../components/Sprig';
 import { supabase } from '../../lib/supabaseClient';
@@ -50,8 +51,8 @@ export default function OnboardingFlow() {
   if (!edition) return <Navigate to="/" replace />;
 
   return (
-    <div style={{ minHeight: '100vh', background: COLORS.bg, display: 'flex', flexDirection: 'column' }}>
-      <div style={{ flex: 1 }}>
+    <div style={{ minHeight: '100vh', maxWidth: 480, margin: '0 auto', background: COLORS.bg, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 1, position: 'relative', minHeight: 420 }}>
         {step < 3 && <VerseSplash verse={VERSES[step]} bgAlt={step % 2 === 1} edition={edition} tokens={tokens} />}
         {step === 3 && <BrandScreen edition={edition} tokens={tokens} />}
         {step === 4 && <NameCapture name={name} setName={setName} />}
@@ -160,22 +161,22 @@ function VerseSplash({ verse, bgAlt, edition, tokens }) {
 }
 
 function BrandScreen({ edition, tokens }) {
-  return (
-    <div style={{ minHeight: '70vh', background: COLORS.bg, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '60px 32px 24px' }}>
-      <div>
-        <Sprig size={44} color={COLORS.gold} />
-        <div style={{ fontFamily: FONTS.display, fontSize: 52, lineHeight: 0.95, color: COLORS.ink, fontWeight: 400, marginTop: 28, letterSpacing: '-0.02em' }}>
-          Eden
-          <br />
-          <span style={{ fontStyle: 'italic', fontWeight: 300 }}>Strong</span>
-        </div>
-        <div style={{ marginTop: 10, fontFamily: FONTS.body, fontSize: 13, letterSpacing: '0.22em', textTransform: 'uppercase', color: tokens.primary, fontWeight: 600 }}>
-          {edition.short}
-        </div>
-        <div style={{ marginTop: 18, fontFamily: FONTS.body, fontSize: 14, color: COLORS.mute, lineHeight: 1.5, maxWidth: 260 }}>
-          {edition.pitch}
-        </div>
+  // Brands with artwork (Eden Strong, Faith Over Flesh) show it full screen
+  if (edition.welcomeImage) {
+    return (
+      <div style={{ position: 'absolute', inset: 0, background: '#000' }}>
+        <img src={edition.welcomeImage} alt={`${edition.name}. ${edition.verse.text} ${edition.verse.ref}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
       </div>
+    );
+  }
+  return (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '0 28px', color: COLORS.ink }}>
+      <Monogram letters={edition.monogram} size={110} color={tokens.ink} />
+      <div style={{ fontFamily: FONTS.brand, fontSize: 30, fontWeight: 500, letterSpacing: '0.18em', textTransform: 'uppercase', marginTop: 22 }}>{edition.name}</div>
+      <div style={{ fontFamily: FONTS.brand, fontSize: 12, letterSpacing: '0.2em', textTransform: 'uppercase', color: COLORS.mute, marginTop: 10 }}>{edition.pillars}</div>
+      <div style={{ fontFamily: FONTS.script, fontSize: 32, color: tokens.primary, marginTop: 26, lineHeight: 1.2 }}>{edition.script}</div>
+      <div style={{ fontFamily: FONTS.display, fontSize: 18, fontStyle: 'italic', color: COLORS.ink, marginTop: 26, lineHeight: 1.5, maxWidth: 300 }}>“{edition.verse.text}”</div>
+      <div style={{ fontFamily: FONTS.brand, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: COLORS.mute, marginTop: 10 }}>{edition.verse.ref}</div>
     </div>
   );
 }
@@ -197,7 +198,7 @@ function NameCapture({ name, setName }) {
           padding: '14px 16px',
           borderRadius: 12,
           border: `1px solid ${COLORS.line}`,
-          background: '#fff',
+          background: COLORS.surface,
           color: COLORS.ink,
           outline: 'none',
         }}
@@ -222,7 +223,7 @@ function PathSelect({ goals, path, setPath }) {
               padding: '16px 18px',
               borderRadius: 14,
               border: `1.5px solid ${path === p.id ? p.color : COLORS.line}`,
-              background: path === p.id ? tint(p.color, 13) : '#fff',
+              background: path === p.id ? tint(p.color, 13) : COLORS.surface,
               cursor: 'pointer',
             }}
           >
@@ -252,7 +253,7 @@ function PathFollowUp({ path, answer, setAnswer }) {
               padding: '14px 16px',
               borderRadius: 12,
               border: `1.5px solid ${answer === opt ? COLORS.gold : COLORS.line}`,
-              background: answer === opt ? tint(COLORS.gold, 10) : '#fff',
+              background: answer === opt ? tint(COLORS.gold, 10) : COLORS.surface,
               fontFamily: FONTS.body,
               fontSize: 14,
               color: COLORS.ink,

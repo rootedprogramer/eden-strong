@@ -68,7 +68,7 @@ export default function ProgressChart() {
       <div style={{ padding: '6px 16px 120px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
           <button onClick={() => setEnd(addDays(end, -days))} aria-label="Earlier" style={arrowBtn}><ChevronLeft size={20} /></button>
-          <label style={{ position: 'relative', display: 'flex', alignItems: 'center', padding: '9px 14px', borderRadius: 12, border: `1.5px solid ${COLORS.ink}`, background: '#fff', fontFamily: FONTS.body, fontSize: 15, fontWeight: 600, color: COLORS.ink }}>
+          <label style={{ position: 'relative', display: 'flex', alignItems: 'center', padding: '9px 14px', borderRadius: 12, border: `1.5px solid ${COLORS.ink}`, background: COLORS.surface, fontFamily: FONTS.body, fontSize: 15, fontWeight: 600, color: COLORS.ink }}>
             {md(start)} – {md(end)}
             <select
               aria-label="Date range"
@@ -100,7 +100,7 @@ export default function ProgressChart() {
             <p style={{ fontFamily: FONTS.body, fontSize: 14, color: COLORS.mute }}>No entries yet. Tap Add entry to log your first one.</p>
           )}
           {entries.map((e) => (
-            <div key={e.id} style={{ display: 'flex', alignItems: 'center', padding: '16px 8px 16px 18px', borderRadius: 18, background: '#fff', border: `1px solid ${COLORS.line}` }}>
+            <div key={e.id} style={{ display: 'flex', alignItems: 'center', padding: '16px 8px 16px 18px', borderRadius: 18, background: COLORS.surface, border: `1px solid ${COLORS.line}` }}>
               <span style={{ flex: 1, fontFamily: FONTS.body, fontSize: 16, fontWeight: 600, color: COLORS.ink }}>
                 {new Date(e.log_date + 'T12:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
               </span>
@@ -122,4 +122,4 @@ export default function ProgressChart() {
   );
 }
 
-const arrowBtn = { width: 40, height: 40, borderRadius: 12, border: `1px solid ${COLORS.line}`, background: '#fff', color: COLORS.ink, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' };
+const arrowBtn = { width: 40, height: 40, borderRadius: 12, border: `1px solid ${COLORS.line}`, background: COLORS.surface, color: COLORS.ink, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' };

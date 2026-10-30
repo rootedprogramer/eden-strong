@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { COLORS, FONTS } from '../../brand/tokens';
 import WeekStrip from '../../components/WeekStrip';
+import { loadMyMealPlan } from './MealPlan';
+import { WEEKDAYS, weekdayNumber } from '../../lib/workout';
 import { supabase } from '../../lib/supabaseClient';
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
@@ -78,8 +80,8 @@ export default function Nutrition() {
           Nutrition
         </div>
         <div style={{ display: 'flex', gap: 16 }}>
-          <Link to="/dashboard/nutrition/daily-bread" style={{ fontFamily: FONTS.body, fontSize: 13, fontWeight: 600, color: COLORS.gold, textDecoration: 'none' }}>
-            Daily Bread
+          <Link to="/dashboard/nutrition/tap-cook" style={{ fontFamily: FONTS.body, fontSize: 13, fontWeight: 600, color: COLORS.gold, textDecoration: 'none' }}>
+            Tap Cook
           </Link>
           <Link to="/dashboard/nutrition/recipes" style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.gold, textDecoration: 'none' }}>
             Recipe Book
@@ -89,8 +91,10 @@ export default function Nutrition() {
 
       <WeekStrip />
 
+      <MealPlanCard />
+
       {!loading && !goal && (
-        <div style={{ marginTop: 20, padding: 18, borderRadius: 16, background: '#fff', border: `1px solid ${COLORS.line}` }}>
+        <div style={{ marginTop: 20, padding: 18, borderRadius: 16, background: COLORS.surface, border: `1px solid ${COLORS.line}` }}>
           <div style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.mute, lineHeight: 1.5 }}>
             No nutrition goals set yet. Set daily calorie and macro targets to start tracking.
           </div>
@@ -141,7 +145,7 @@ export default function Nutrition() {
         </div>
         <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
           {meals.map((m) => (
-            <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 14px', borderRadius: 12, background: '#fff', border: `1px solid ${COLORS.line}` }}>
+            <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 14px', borderRadius: 12, background: COLORS.surface, border: `1px solid ${COLORS.line}` }}>
               <span style={{ fontFamily: FONTS.body, fontSize: 14, color: COLORS.ink }}>{m.name}</span>
               <span style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.mute }}>{m.calories} cal</span>
             </div>
@@ -221,7 +225,27 @@ const inputStyle = {
   padding: '12px 14px',
   borderRadius: 12,
   border: `1px solid ${COLORS.line}`,
-  background: '#fff',
+  background: COLORS.surface,
   color: COLORS.ink,
   outline: 'none',
 };
+
+// Shows the member's assigned meal plan, with today's meals, when they have one
+function MealPlanCard() {
+  const [data, setData] = useState(undefined);
+  useEffect(() => { loadMyMealPlan().then(setData); }, []);
+  if (!data) return null;
+  const today = weekdayNumber();
+  const meals = data.items.filter((i) => i.day_number === today);
+  return (
+    <Link to="/dashboard/nutrition/plan" style={{ display: 'block', marginTop: 20, padding: 18, borderRadius: 18, background: COLORS.deep, textDecoration: 'none' }}>
+      <div style={{ fontFamily: FONTS.body, fontSize: 12, fontWeight: 600, color: COLORS.rose }}>Your meal plan</div>
+      <div style={{ fontFamily: FONTS.display, fontSize: 24, color: '#fff', marginTop: 4 }}>{data.plan.title}</div>
+      <div style={{ fontFamily: FONTS.body, fontSize: 13, color: 'rgba(255,255,255,0.85)', marginTop: 8, lineHeight: 1.5 }}>
+        {meals.length
+          ? `${WEEKDAYS[today - 1]}: ${meals.map((m) => m.recipe.title).join(', ')}`
+          : `Nothing planned for ${WEEKDAYS[today - 1]}. Tap to see the week.`}
+      </div>
+    </Link>
+  );
+}

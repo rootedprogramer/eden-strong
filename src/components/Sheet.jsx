@@ -41,7 +41,7 @@ export const fieldInput = {
   padding: '13px 14px',
   borderRadius: 14,
   border: `1px solid ${COLORS.line}`,
-  background: '#fff',
+  background: COLORS.surface,
   fontFamily: FONTS.body,
   fontSize: 16,
   color: COLORS.ink,

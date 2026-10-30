@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { List, Timer, Square, Play, Plus, Check, ChevronRight, Dumbbell } from 'lucide-react';
-import { COLORS, FONTS, tint } from '../../brand/tokens';
+import { COLORS, FONTS, tint, toneColor } from '../../brand/tokens';
 import SubHeader from '../../components/SubHeader';
 import ExerciseThumb from '../../components/ExerciseThumb';
 import { supabase } from '../../lib/supabaseClient';
@@ -163,7 +163,7 @@ export default function Exercise() {
       <Media media={ex.media} tone={sectionTone} />
 
       <div style={{ padding: '14px 14px 150px' }}>
-        <div style={{ padding: '18px 16px', borderRadius: 22, background: '#fff', border: `1px solid ${COLORS.line}` }}>
+        <div style={{ padding: '18px 16px', borderRadius: 22, background: COLORS.surface, border: `1px solid ${COLORS.line}` }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
             <div style={{ fontFamily: FONTS.body, fontSize: 18, fontWeight: 600, color: COLORS.ink }}>{dateLabel}</div>
             <div style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.mute }}>Goal: {prescription(ex)}</div>
@@ -238,7 +238,7 @@ export default function Exercise() {
         {/* Up next */}
         <button
           onClick={() => navigate(next ? `/dashboard/workout/${next.id}` : `/dashboard/workout?day=${ctx.dayId}`)}
-          style={{ marginTop: 16, width: '100%', display: 'flex', alignItems: 'stretch', borderRadius: 18, overflow: 'hidden', background: '#fff', border: `1px solid ${COLORS.line}`, padding: 0, cursor: 'pointer', textAlign: 'left' }}
+          style={{ marginTop: 16, width: '100%', display: 'flex', alignItems: 'stretch', borderRadius: 18, overflow: 'hidden', background: COLORS.surface, border: `1px solid ${COLORS.line}`, padding: 0, cursor: 'pointer', textAlign: 'left' }}
         >
           {next ? <ExerciseThumb media={next.media} tone={SECTIONS.find((s) => s.key === sectionOf(next))?.tone} size={76} /> : null}
           <div style={{ flex: 1, padding: '14px 16px' }}>
@@ -281,7 +281,7 @@ function Media({ media, tone }) {
     return <video src={media.video_url} poster={media.thumbnail_url || undefined} controls playsInline style={{ ...box, objectFit: 'contain' }} />;
   }
   return (
-    <div style={{ ...box, background: COLORS[tone] || COLORS.ink, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+    <div style={{ ...box, background: toneColor(tone), display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
       {media?.thumbnail_url ? (
         <img src={media.thumbnail_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       ) : (

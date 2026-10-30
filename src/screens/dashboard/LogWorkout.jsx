@@ -66,7 +66,7 @@ export default function LogWorkout() {
               padding: '10px 16px',
               borderRadius: 999,
               border: `1.5px solid ${feeling === f ? COLORS.gold : COLORS.line}`,
-              background: feeling === f ? tint(COLORS.gold, 10) : '#fff',
+              background: feeling === f ? tint(COLORS.gold, 10) : COLORS.surface,
               fontFamily: FONTS.body,
               fontSize: 13,
               color: COLORS.ink,

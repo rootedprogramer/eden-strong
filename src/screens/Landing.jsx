@@ -1,15 +1,25 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FONTS, TAGLINE, EDITION_LIST, rememberEdition } from '../brand/tokens';
 import { useTheme } from '../theme/ThemeContext';
-import { COLORS, FONTS, TAGLINE, EDITION_LIST, rememberEdition } from '../brand/tokens';
-import { PATHS as EDITION_COLORS } from '../theme/theme';
-import Sprig from '../components/Sprig';
+import Monogram from '../components/Monogram';
+
+// The shared front door for all three brands. Uses fixed brand-family colors
+// (ivory, obsidian) rather than any one brand's theme.
+const IVORY = '#F5F0E8';
+const LINEN = '#D8CFC0';
+const OBSIDIAN = '#171817';
+const MUTE = '#6F6A63';
 
 export default function Landing() {
   const navigate = useNavigate();
   const { setPath } = useTheme();
-  // Before anyone picks, show the neutral Together look.
-  useEffect(() => { setPath('together'); }, []);
+
+  useEffect(() => {
+    setPath('women');
+    document.title = 'Eden Strong, Faith Over Flesh, One Accord';
+    document.body.style.background = IVORY;
+  }, []);
 
   const choose = (id) => {
     rememberEdition(id);
@@ -17,64 +27,67 @@ export default function Landing() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: COLORS.bg, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '60px 32px 48px', gap: 40 }}>
-      <div>
-        <Sprig size={44} color={COLORS.gold} />
-        <div style={{ fontFamily: FONTS.display, fontSize: 56, lineHeight: 0.95, color: COLORS.ink, marginTop: 28, letterSpacing: '-0.02em' }}>
-          Eden
-          <br />
-          <span style={{ fontStyle: 'italic', fontWeight: 300 }}>Strong</span>
+    <div style={{ minHeight: '100vh', background: IVORY, color: OBSIDIAN }}>
+      <div style={{ maxWidth: 480, margin: '0 auto', padding: '56px 22px 40px', display: 'flex', flexDirection: 'column', minHeight: '100vh', boxSizing: 'border-box' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontFamily: FONTS.brand, fontSize: 12, letterSpacing: '0.32em', textTransform: 'uppercase', color: MUTE }}>The brand family</div>
+          <div aria-hidden="true" style={{ fontFamily: FONTS.brand, fontSize: 30, lineHeight: 1, margin: '18px 0 6px' }}>✝</div>
+          <h1 style={{ margin: 0, fontFamily: FONTS.brand, fontWeight: 500, fontSize: 30, letterSpacing: '0.12em', lineHeight: 1.25 }}>
+            Faith. Fitness.
+            <br />
+            Purpose.
+          </h1>
+          <p style={{ fontFamily: FONTS.body, fontSize: 14, color: MUTE, lineHeight: 1.6, margin: '14px auto 0', maxWidth: 320 }}>{TAGLINE}</p>
         </div>
-        <div style={{ marginTop: 18, fontFamily: FONTS.body, fontSize: 15, color: COLORS.mute, lineHeight: 1.5, maxWidth: 320 }}>
-          {TAGLINE}
-        </div>
-      </div>
 
-      <div>
-        <div style={{ fontFamily: FONTS.display, fontSize: 22, color: COLORS.ink, fontStyle: 'italic', marginBottom: 14 }}>
-          Choose your Eden Strong
+        <div style={{ fontFamily: FONTS.brand, fontSize: 13, letterSpacing: '0.24em', textTransform: 'uppercase', textAlign: 'center', marginTop: 34 }}>
+          Choose your community
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {EDITION_LIST.map((ed) => {
-            const c = EDITION_COLORS[ed.id];
-            return (
-              <button
-                key={ed.id}
-                onClick={() => choose(ed.id)}
-                style={{
-                  textAlign: 'left',
-                  padding: '18px 20px',
-                  borderRadius: 16,
-                  border: `1.5px solid ${c.primary}`,
-                  background: c.canvas,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 4,
-                }}
-              >
-                <span style={{ fontFamily: FONTS.body, fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: c.primary, fontWeight: 600 }}>
-                  Eden Strong
+        <div style={{ height: 1, background: LINEN, margin: '12px 40px 0' }} />
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 18 }}>
+          {EDITION_LIST.map((ed) => (
+            <button
+              key={ed.id}
+              onClick={() => choose(ed.id)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 18,
+                padding: '20px 20px',
+                borderRadius: 18,
+                border: 'none',
+                background: ed.card.bg,
+                color: ed.card.ink,
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}
+            >
+              <Monogram letters={ed.monogram} size={58} />
+              <span style={{ flex: 1 }}>
+                <span style={{ display: 'block', fontFamily: FONTS.brand, fontSize: 19, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', lineHeight: 1.2 }}>
+                  {ed.name}
                 </span>
-                <span style={{ fontFamily: FONTS.display, fontSize: 26, color: COLORS.ink, fontStyle: 'italic', lineHeight: 1.1 }}>
+                <span style={{ display: 'block', fontFamily: FONTS.brand, fontSize: 11, letterSpacing: '0.26em', textTransform: 'uppercase', opacity: 0.85, marginTop: 5 }}>
                   {ed.short}
                 </span>
-                <span style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.mute, lineHeight: 1.45 }}>
-                  {ed.pitch}
-                </span>
-              </button>
-            );
-          })}
+                <span style={{ display: 'block', fontFamily: FONTS.body, fontSize: 13, opacity: 0.9, marginTop: 8, lineHeight: 1.4 }}>{ed.pitch}</span>
+              </span>
+            </button>
+          ))}
         </div>
-        <div style={{ marginTop: 14, fontFamily: FONTS.body, fontSize: 13, color: COLORS.mute, textAlign: 'center' }}>
-          Founding members — $10/mo
+
+        <div style={{ fontFamily: FONTS.script, fontSize: 30, textAlign: 'center', marginTop: 26, color: OBSIDIAN }}>
+          Different paths. Same purpose.
         </div>
-        <Link
-          to="/signin"
-          style={{ display: 'block', textAlign: 'center', fontFamily: FONTS.body, fontSize: 14, color: COLORS.mute, padding: '10px', textDecoration: 'none' }}
-        >
-          Already a member? Sign in
-        </Link>
+
+        <div style={{ flex: 1 }} />
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <div style={{ fontFamily: FONTS.body, fontSize: 13, color: MUTE }}>Founding members, $10 a month</div>
+          <Link to="/signin" style={{ display: 'inline-block', marginTop: 8, padding: 10, fontFamily: FONTS.body, fontSize: 14, fontWeight: 600, color: OBSIDIAN }}>
+            Already a member? Sign in
+          </Link>
+        </div>
       </div>
     </div>
   );

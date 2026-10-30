@@ -1,4 +1,4 @@
-import { COLORS, FONTS } from '../../brand/tokens';
+import { COLORS, FONTS, toneColor } from '../../brand/tokens';
 import Sprig from '../../components/Sprig';
 
 // Edit the names, roles, and bios below. Add a photo by putting the image in
@@ -14,8 +14,8 @@ export default function Coaches() {
       <div style={{ fontFamily: FONTS.display, fontSize: 30, fontWeight: 500, color: COLORS.ink }}>Meet your coaches</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 18 }}>
         {COACHES.map((c) => (
-          <div key={c.name} style={{ borderRadius: 20, overflow: 'hidden', background: '#fff', border: `1px solid ${COLORS.line}` }}>
-            <div style={{ height: 200, background: COLORS[c.tone], display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div key={c.name} style={{ borderRadius: 20, overflow: 'hidden', background: COLORS.surface, border: `1px solid ${COLORS.line}` }}>
+            <div style={{ height: 200, background: toneColor(c.tone), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {c.photo ? (
                 <img src={c.photo} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (

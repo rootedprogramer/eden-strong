@@ -11,7 +11,7 @@ import { PATHS, DEFAULT_PATH, getTokens } from './theme';
 
 const ThemeContext = createContext(null);
 
-const COLOR_KEYS = ['ink', 'bg', 'bgWarm', 'gold', 'sage', 'olive', 'rose', 'mute', 'line'];
+const COLOR_KEYS = ['ink', 'bg', 'bgWarm', 'gold', 'sage', 'olive', 'rose', 'mute', 'line', 'surface', 'deep', 'goldTile'];
 
 function applyCssVars(tokens) {
   const root = document.documentElement;
@@ -20,6 +20,8 @@ function applyCssVars(tokens) {
   root.style.setProperty('--es-primary', tokens.gold);
   root.style.setProperty('--es-text', tokens.ink);
   document.body.style.background = tokens.bg;
+  // Lets the phone draw form controls, scrollbars and the date picker in the right mode
+  root.style.colorScheme = tokens.dark ? 'dark' : 'light';
 }
 
 export function ThemeProvider({ initialPath, children }) {

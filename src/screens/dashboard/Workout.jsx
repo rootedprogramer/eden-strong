@@ -77,7 +77,7 @@ export default function Workout() {
             There’s no {data.program.title} workout on {WEEKDAYS[data.weekday - 1]}s. Rest is part of the training.
           </Note>
           {next && (
-            <Link to={`/dashboard/workout?day=${next.id}`} style={{ display: 'block', marginTop: 18, padding: '16px 18px', borderRadius: 18, background: '#fff', border: `1px solid ${COLORS.line}`, textDecoration: 'none' }}>
+            <Link to={`/dashboard/workout?day=${next.id}`} style={{ display: 'block', marginTop: 18, padding: '16px 18px', borderRadius: 18, background: COLORS.surface, border: `1px solid ${COLORS.line}`, textDecoration: 'none' }}>
               <div style={{ fontFamily: FONTS.body, fontSize: 12, fontWeight: 600, color: COLORS.mute }}>Next workout, {WEEKDAYS[next.weekday - 1]}</div>
               <div style={{ fontFamily: FONTS.body, fontSize: 17, fontWeight: 600, color: COLORS.ink, marginTop: 2 }}>Day {next.day_number}: {next.title}</div>
             </Link>
@@ -134,7 +134,7 @@ export default function Workout() {
         )}
 
         {program.guide && (
-          <details style={{ marginTop: 16, padding: '14px 16px', borderRadius: 16, background: '#fff', border: `1px solid ${COLORS.line}` }}>
+          <details style={{ marginTop: 16, padding: '14px 16px', borderRadius: 16, background: COLORS.surface, border: `1px solid ${COLORS.line}` }}>
             <summary style={{ fontFamily: FONTS.body, fontSize: 14, fontWeight: 600, color: COLORS.ink, cursor: 'pointer' }}>Warm-up, effort, and form rules</summary>
             <div style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.ink, lineHeight: 1.6, marginTop: 10, whiteSpace: 'pre-line' }}>{program.guide}</div>
           </details>
@@ -142,7 +142,7 @@ export default function Workout() {
 
         {completed || data.completedToday ? (
           <>
-            <div style={{ ...bigButton, background: '#fff', color: COLORS.ink, border: `1px solid ${COLORS.line}` }}>
+            <div style={{ ...bigButton, background: COLORS.surface, color: COLORS.ink, border: `1px solid ${COLORS.line}` }}>
               Completed <Check size={20} />
             </div>
             <Note style={{ textAlign: 'center', padding: '10px 0 0' }}>Well done. See you at your next workout.</Note>
@@ -189,7 +189,7 @@ function Card({ ex, tone, done, inSuperset }) {
   return (
     <Link
       to={`/dashboard/workout/${ex.id}`}
-      style={{ display: 'flex', alignItems: 'stretch', borderRadius: 18, overflow: 'hidden', background: '#fff', border: `1px solid ${COLORS.line}`, textDecoration: 'none' }}
+      style={{ display: 'flex', alignItems: 'stretch', borderRadius: 18, overflow: 'hidden', background: COLORS.surface, border: `1px solid ${COLORS.line}`, textDecoration: 'none' }}
     >
       <ExerciseThumb media={ex.media} tone={tone} />
       <div style={{ flex: 1, minWidth: 0, padding: '14px 12px 14px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>

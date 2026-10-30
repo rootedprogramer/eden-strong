@@ -114,7 +114,7 @@ export default function TapCook() {
                       fontFamily: FONTS.body, fontSize: 14, fontWeight: on ? 600 : 400,
                       padding: '9px 14px', borderRadius: 999, cursor: 'pointer',
                       border: `1px solid ${on ? COLORS.ink : COLORS.line}`,
-                      background: on ? COLORS.ink : '#fff',
+                      background: on ? COLORS.ink : COLORS.surface,
                       color: on ? COLORS.bg : COLORS.ink,
                       transition: 'background 120ms, color 120ms',
                     }}
@@ -210,7 +210,7 @@ export default function TapCook() {
 
 function RecipeRow({ recipe, children }) {
   return (
-    <div style={{ padding: '14px 16px', borderRadius: 16, background: '#fff', border: `1px solid ${COLORS.line}` }}>
+    <div style={{ padding: '14px 16px', borderRadius: 16, background: COLORS.surface, border: `1px solid ${COLORS.line}` }}>
       <Link to={`/dashboard/nutrition/cook/${recipe.id}`} style={{ textDecoration: 'none', display: 'block' }}>
         <div style={{ fontFamily: FONTS.display, fontSize: 21, fontWeight: 500, color: COLORS.ink, lineHeight: 1.2 }}>
           {recipe.title}
@@ -252,7 +252,7 @@ function GroceryList({ items, onBought, onRemove }) {
                 <button
                   onClick={() => onBought(g.item)}
                   aria-label={`Bought ${g.label}`}
-                  style={{ width: 24, height: 24, borderRadius: '50%', border: `1.5px solid ${COLORS.ink}`, background: '#fff', cursor: 'pointer', flexShrink: 0 }}
+                  style={{ width: 24, height: 24, borderRadius: '50%', border: `1.5px solid ${COLORS.ink}`, background: COLORS.surface, cursor: 'pointer', flexShrink: 0 }}
                 />
                 <span style={{ flex: 1, fontFamily: FONTS.body, fontSize: 15, color: COLORS.ink }}>{g.label}</span>
                 <button onClick={() => onRemove(g.item)} aria-label={`Remove ${g.label}`} style={{ background: 'none', border: 'none', color: COLORS.mute, cursor: 'pointer', display: 'flex', padding: 4 }}>

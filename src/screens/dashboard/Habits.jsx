@@ -106,7 +106,7 @@ export default function Habits() {
             key={h.id}
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '14px 16px', borderRadius: 12, background: '#fff', border: `1px solid ${COLORS.line}`,
+              padding: '14px 16px', borderRadius: 12, background: COLORS.surface, border: `1px solid ${COLORS.line}`,
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>

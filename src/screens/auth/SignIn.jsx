@@ -65,7 +65,7 @@ const inputStyle = {
   padding: '14px 16px',
   borderRadius: 12,
   border: `1px solid ${COLORS.line}`,
-  background: '#fff',
+  background: COLORS.surface,
   color: COLORS.ink,
   outline: 'none',
 };

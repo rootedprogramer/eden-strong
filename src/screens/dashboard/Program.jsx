@@ -55,7 +55,7 @@ export default function Program() {
           </div>
         )}
         {programs.map((p) => (
-          <div key={p.id} style={{ padding: 18, borderRadius: 16, background: '#fff', border: `1px solid ${COLORS.line}` }}>
+          <div key={p.id} style={{ padding: 18, borderRadius: 16, background: COLORS.surface, border: `1px solid ${COLORS.line}` }}>
             <div style={{ fontFamily: FONTS.display, fontSize: 18, color: COLORS.ink, fontStyle: 'italic' }}>{p.title}</div>
             <div style={{ fontFamily: FONTS.body, fontSize: 13, color: COLORS.mute, marginTop: 4 }}>
               {p.weeks} weeks · {p.days_per_week}x/week · {p.level}
