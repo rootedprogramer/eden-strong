@@ -6,6 +6,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { supabase } from '../../lib/supabaseClient';
 import BottomNav from '../../components/BottomNav';
 import Monogram from '../../components/Monogram';
+import { SITE_BRAND, siteUrlFor } from '../../brand/site';
 
 // Loads the member's profile once, switches the theme to their edition, and
 // hands { profile, edition } to every dashboard screen via useOutletContext().
@@ -19,8 +20,10 @@ export default function DashboardLayout() {
       const userId = userData?.user?.id;
       if (!userId) return setState({ loading: false, profile: null });
       const { data } = await supabase.from('user_profiles').select('*').eq('id', userId).single();
-      if (data?.edition) setPath(data.edition);
-      setState({ loading: false, profile: data });
+      const { data: adminRow } = await supabase.from('admins').select('user_id').eq('user_id', userId).maybeSingle();
+      if (SITE_BRAND) setPath(SITE_BRAND);
+      else if (data?.edition) setPath(data.edition);
+      setState({ loading: false, profile: data, isAdmin: !!adminRow });
     })();
   }, []);
 
@@ -29,8 +32,16 @@ export default function DashboardLayout() {
   }
 
   // Signed in but never finished onboarding (or picked an edition): start over.
-  const edition = getEdition(state.profile?.edition);
-  if (!edition) return <Navigate to="/" replace />;
+  const ownEdition = getEdition(state.profile?.edition);
+  if (!ownEdition) return <Navigate to={SITE_BRAND ? '/onboarding' : '/'} replace />;
+
+  // A member of another brand signed in here: send them to their own site.
+  // Admins can open every site.
+  if (SITE_BRAND && ownEdition.id !== SITE_BRAND && !state.isAdmin) {
+    return <WrongSite own={ownEdition} here={getEdition(SITE_BRAND)} />;
+  }
+
+  const edition = SITE_BRAND ? getEdition(SITE_BRAND) : ownEdition;
   if (typeof document !== 'undefined') document.title = edition.name;
 
   return (
@@ -63,6 +74,33 @@ export default function DashboardLayout() {
         <Outlet context={{ profile: state.profile, edition }} />
       </div>
       <BottomNav />
+    </div>
+  );
+}
+
+function WrongSite({ own, here }) {
+  const url = siteUrlFor(own.id);
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    window.location.assign('/');
+  };
+  return (
+    <div style={{ minHeight: '100vh', background: COLORS.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 28 }}>
+      <div style={{ maxWidth: 380, textAlign: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center' }}><Monogram letters={own.monogram} size={64} color={COLORS.gold} /></div>
+        <h1 style={{ margin: '18px 0 0', fontFamily: FONTS.display, fontSize: 30, fontWeight: 500, color: COLORS.ink, lineHeight: 1.15 }}>Your account is with {own.name}</h1>
+        <p style={{ fontFamily: FONTS.body, fontSize: 15, color: COLORS.mute, lineHeight: 1.6, margin: '12px 0 0' }}>
+          This is the {here.name} site. Your programs, progress, and community are waiting on {own.name}.
+        </p>
+        {url && (
+          <a href={url} style={{ display: 'block', marginTop: 22, padding: 15, borderRadius: 16, background: COLORS.ink, color: COLORS.bg, fontFamily: FONTS.body, fontSize: 15, fontWeight: 600, textDecoration: 'none' }}>
+            Go to {own.name}
+          </a>
+        )}
+        <button onClick={signOut} style={{ marginTop: 12, padding: 12, background: 'none', border: 'none', color: COLORS.mute, fontFamily: FONTS.body, fontSize: 14, cursor: 'pointer' }}>
+          Sign out
+        </button>
+      </div>
     </div>
   );
 }

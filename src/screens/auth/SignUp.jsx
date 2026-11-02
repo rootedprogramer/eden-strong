@@ -4,12 +4,14 @@ import { useNavigate, Link, useSearchParams, Navigate } from 'react-router-dom';
 import { COLORS, FONTS, getEdition, rememberEdition, recallEdition } from '../../brand/tokens';
 import Sprig from '../../components/Sprig';
 import { supabase } from '../../lib/supabaseClient';
+import { SITE_BRAND } from '../../brand/site';
 import { BrandMark } from '../../components/BrandArt';
 
 export default function SignUp() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const edition = getEdition(params.get('edition') || recallEdition());
+  // On a brand's own website, everyone joins that brand
+  const edition = getEdition(SITE_BRAND || params.get('edition') || recallEdition());
   const { setPath } = useTheme();
   useEffect(() => { if (edition) setPath(edition.id); }, [edition?.id]);
   const [email, setEmail] = useState('');
@@ -38,7 +40,8 @@ export default function SignUp() {
     <div style={{ minHeight: '100vh', background: COLORS.bg, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px 32px' }}>
       <BrandMark kind="small" size={36} color={COLORS.gold} />
       <div style={{ marginTop: 16, fontFamily: FONTS.body, fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: COLORS.mute }}>
-        {edition.name} · <Link to="/" style={{ color: COLORS.gold, textTransform: 'none', letterSpacing: 0 }}>change</Link>
+        {edition.name}
+        {!SITE_BRAND && <> · <Link to="/" style={{ color: COLORS.gold, textTransform: 'none', letterSpacing: 0 }}>change</Link></>}
       </div>
       <div style={{ fontFamily: FONTS.display, fontSize: 32, color: COLORS.ink, marginTop: 20, fontStyle: 'italic' }}>
         Begin your season
