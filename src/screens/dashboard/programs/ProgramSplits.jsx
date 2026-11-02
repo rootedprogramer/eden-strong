@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { SESSION_TONES } from '../../../brand/tokens';
+import { SESSION_TONES, brandArt } from '../../../brand/tokens';
 import SubHeader from '../../../components/SubHeader';
 import HomeTile from '../../../components/HomeTile';
 import { loadPrograms } from '../../../lib/programs';
 import { Muted, PageIntro, pagePad, tileStack } from './shared';
+import { useTheme } from '../../../theme/ThemeContext';
 
 // Step 3: choose the split (3 to 6 days a week)
 export default function ProgramSplits() {
+  const art = brandArt(useTheme().path);
   const { level, track } = useParams();
   const name = decodeURIComponent(track);
   const [programs, setPrograms] = useState(null);
@@ -26,11 +28,11 @@ export default function ProgramSplits() {
         {programs && programs.length === 0 && <Muted style={{ marginTop: 16 }}>No splits found for this program.</Muted>}
         <div style={tileStack}>
           {(programs || []).map((p, i) => (
-            <HomeTile
+            <HomeTile art="program"
               key={p.id}
               title={`${p.days_per_week} days a week`}
               to={`/dashboard/programs/view/${p.id}`}
-              image={p.image}
+              image={p.image || art.splits[i % art.splits.length]}
               tone={SESSION_TONES[i % SESSION_TONES.length]}
               height={170}
             />

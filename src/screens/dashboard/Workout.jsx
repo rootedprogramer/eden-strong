@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Repeat, CircleCheck, Check, ChevronRight } from 'lucide-react';
-import { COLORS, FONTS, tint } from '../../brand/tokens';
+import { COLORS, FONTS, tint, brandArt, dayKind } from '../../brand/tokens';
 import SubHeader from '../../components/SubHeader';
 import ExerciseThumb from '../../components/ExerciseThumb';
 import { supabase } from '../../lib/supabaseClient';
 import { SECTIONS, sectionOf, prescription, loadToday, loadDayById, todayISO, WEEKDAYS, weekdayForDay } from '../../lib/workout';
+import { useTheme } from '../../theme/ThemeContext';
 
 // Today's workout: Mobility → Workout → Ab circuit / Deep core → Cardio → Stretch.
 // Tap an exercise to log it set by set. "Mark as complete" moves you to the next day.
 export default function Workout() {
+  const art = brandArt(useTheme().path);
   const [params] = useSearchParams();
   const dayParam = params.get('day'); // open a specific day from the program page
   const [data, setData] = useState(null);
@@ -71,6 +73,7 @@ export default function Workout() {
     return (
       <>
         <SubHeader title={`${WEEKDAYS[data.weekday - 1]}: Rest day`} />
+        {art.days.rest && <DayHero src={art.days.rest} />}
         <div style={{ padding: '8px 18px' }}>
           <div style={{ fontFamily: FONTS.display, fontSize: 32, color: COLORS.ink, lineHeight: 1.1 }}>Rest and recover</div>
           <Note style={{ padding: '8px 0 0' }}>
@@ -106,6 +109,7 @@ export default function Workout() {
   return (
     <>
       <SubHeader title={title} />
+      {art.days[dayKind(day.title)] && <DayHero src={art.days[dayKind(day.title)]} />}
       <div style={{ padding: '0 16px 32px' }}>
         <div style={{ textAlign: 'center', fontFamily: FONTS.body, fontSize: 13, color: COLORS.mute }}>
           {weekdayName}, {program.title}{data.week && !data.chosen ? `, week ${data.week}` : ''}
@@ -250,3 +254,12 @@ const darkButton = {
   fontSize: 14,
   fontWeight: 600,
 };
+
+// Photo across the top of a workout day, matched to its focus
+function DayHero({ src }) {
+  return (
+    <div style={{ height: 170, overflow: 'hidden', marginBottom: 6 }}>
+      <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+    </div>
+  );
+}

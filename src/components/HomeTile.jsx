@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
 import { COLORS, FONTS, toneColor } from '../brand/tokens';
 import Sprig from './Sprig';
+import CardArt from './BrandArt';
 
 // Large photo card with the title over the bottom of the image. Until a photo
 // is added, it shows a solid block in one of the edition's colors with a
 // faint sprig, so the page still looks finished.
-export default function HomeTile({ title, sub, to, image, tone = 'ink', height = 210 }) {
+export default function HomeTile({ title, sub, to, image, tone = 'ink', height = 210, art = 'feature' }) {
   const base = toneColor(tone);
   return (
     <Link
@@ -23,9 +24,7 @@ export default function HomeTile({ title, sub, to, image, tone = 'ink', height =
       {image ? (
         <img src={image} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
       ) : (
-        <div style={{ position: 'absolute', right: -18, top: -10, opacity: 0.18, color: '#fff' }}>
-          <Sprig size={height + 40} color="#fff" />
-        </div>
+        <CardArt kind={art} size={height + 40} />
       )}
       {/* Darkens the bottom so white text stays readable over a photo */}
       {image && <div

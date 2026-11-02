@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
-import { COLORS, FONTS, LEVEL_ORDER, LEVEL_BLURBS, PROGRAM_TILES } from '../../../brand/tokens';
+import { COLORS, FONTS, LEVEL_ORDER, LEVEL_BLURBS, PROGRAM_TILES, brandArt } from '../../../brand/tokens';
 import SubHeader from '../../../components/SubHeader';
 import HomeTile from '../../../components/HomeTile';
 import { loadPrograms } from '../../../lib/programs';
 import { PageIntro, Muted, pagePad, tileStack } from './shared';
+import { useTheme } from '../../../theme/ThemeContext';
 
 // Step 1: Programs → choose Beginner or Experienced
 export default function ProgramsIntro() {
+  const art = brandArt(useTheme().path);
   const [state, setState] = useState(null); // { programs, error }
 
   useEffect(() => { loadPrograms().then(setState); }, []);
@@ -48,12 +50,12 @@ export default function ProgramsIntro() {
 
         <div style={tileStack}>
           {levels.map((l) => (
-            <HomeTile
+            <HomeTile art="program"
               key={l}
               title={PROGRAM_TILES[l].title}
               sub={LEVEL_BLURBS[l]}
               to={`/dashboard/programs/level/${l}`}
-              image={PROGRAM_TILES[l].image}
+              image={PROGRAM_TILES[l].image || art.levels[l]}
               tone={PROGRAM_TILES[l].tone}
             />
           ))}

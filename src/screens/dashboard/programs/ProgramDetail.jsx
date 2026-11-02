@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowRight, ChevronDown, ChevronRight } from 'lucide-react';
-import { COLORS, FONTS } from '../../../brand/tokens';
+import { COLORS, FONTS, brandArt } from '../../../brand/tokens';
 import SubHeader from '../../../components/SubHeader';
 import Sprig from '../../../components/Sprig';
 import { supabase } from '../../../lib/supabaseClient';
 import { Muted } from './shared';
 import { WEEKDAYS, weekdayForDay } from '../../../lib/workout';
+import CardArt from '../../../components/BrandArt';
+import { useTheme } from '../../../theme/ThemeContext';
 
 export default function ProgramDetail() {
+  const art = brandArt(useTheme().path);
   const { id } = useParams();
   const navigate = useNavigate();
   const [program, setProgram] = useState(null);
@@ -45,6 +48,7 @@ export default function ProgramDetail() {
     );
   }
 
+  const heroImage = program.image || art.tracks[program.track || String(program.title).split(/\s[—–-]\s/)[0]] || null;
   const days = [...(program.program_days || [])].sort((a, b) => a.day_number - b.day_number);
   const isMine = enrollment && enrollment.program_id === program.id;
   const perWeek = program.days_per_week || 1;
@@ -77,15 +81,13 @@ export default function ProgramDetail() {
 
       {/* Hero */}
       <div style={{ position: 'relative', height: 240, background: COLORS.olive, overflow: 'hidden' }}>
-        {program.image ? (
-          <img src={program.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        {heroImage ? (
+          <img src={heroImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         ) : (
-          <div style={{ position: 'absolute', right: -10, top: -20, opacity: 0.2 }}>
-            <Sprig size={300} color="#fff" />
-          </div>
+          <CardArt kind="program" size={300} opacity={0.2} />
         )}
         <div style={{ position: 'absolute', left: 20, bottom: 18, right: 20 }}>
-          <div style={{ fontFamily: FONTS.display, fontSize: 34, fontWeight: 500, color: '#fff', lineHeight: 1, textShadow: program.image ? '0 1px 12px rgba(0,0,0,0.4)' : 'none' }}>
+          <div style={{ fontFamily: FONTS.display, fontSize: 34, fontWeight: 500, color: '#fff', lineHeight: 1, textShadow: heroImage ? '0 1px 12px rgba(0,0,0,0.6)' : 'none' }}>
             {program.track || program.title}
           </div>
           <div style={{ fontFamily: FONTS.body, fontSize: 13, color: 'rgba(255,255,255,0.92)', marginTop: 6 }}>
@@ -164,9 +166,7 @@ export default function ProgramDetail() {
                       overflow: 'hidden',
                     }}
                   >
-                    <div style={{ position: 'absolute', right: -6, top: -14, opacity: 0.16 }}>
-                      <Sprig size={160} color="#fff" />
-                    </div>
+                    <CardArt kind="program" size={160} opacity={0.16} />
                     <div style={{ position: 'absolute', left: 20, bottom: 16, fontFamily: FONTS.display, fontSize: 32, fontWeight: 500, color: '#fff' }}>
                       Week {week}
                     </div>

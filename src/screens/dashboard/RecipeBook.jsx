@@ -4,6 +4,7 @@ import { COLORS, FONTS, toneColor } from '../../brand/tokens';
 import SubHeader from '../../components/SubHeader';
 import Sprig from '../../components/Sprig';
 import { supabase } from '../../lib/supabaseClient';
+import { BrandMark } from '../../components/BrandArt';
 
 export const RECIPE_CATEGORIES = [
   { key: 'Smoothies', tone: 'rose' },
@@ -97,7 +98,7 @@ function RecipeCard({ r }) {
   return (
     <Link to={`/dashboard/nutrition/recipes/${r.id}`} style={{ textDecoration: 'none' }}>
       <div style={{ position: 'relative', aspectRatio: '4 / 3', borderRadius: 16, overflow: 'hidden', background: toneColor(toneFor(r.category)), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {r.image ? <img src={r.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <Sprig size={34} color="#fff" />}
+        {r.image ? <img src={r.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <BrandMark kind="small" size={34} color="#fff" />}
         {r.protein != null && (
           <span style={{ position: 'absolute', left: 8, bottom: 8, padding: '4px 9px', borderRadius: 999, background: COLORS.surface, fontFamily: FONTS.body, fontSize: 12, fontWeight: 700, color: COLORS.ink }}>
             {Number(r.protein)}g protein

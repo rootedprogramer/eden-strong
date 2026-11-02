@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import { Plus, Flame, ChevronRight } from 'lucide-react';
-import { COLORS, FONTS, HOME_TILES, SUPPORT_EMAIL, tint } from '../../brand/tokens';
+import { COLORS, FONTS, HOME_TILES, SUPPORT_EMAIL, tint, brandArt, dayKind } from '../../brand/tokens';
 import Sprig from '../../components/Sprig';
 import { loadToday, WEEKDAYS } from '../../lib/workout';
 import HomeTile from '../../components/HomeTile';
 import { supabase } from '../../lib/supabaseClient';
+import CardArt, { BrandMark } from '../../components/BrandArt';
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
 export default function DashboardHome() {
   const { edition } = useOutletContext() || {};
+  const art = brandArt(edition?.id);
   const [userId, setUserId] = useState(null);
   const [program, setProgram] = useState(null); // { title, week, day, dayTitle }
   const [nutrition, setNutrition] = useState({ goal: null, totals: { calories: 0, carbs: 0, fat: 0, protein: 0 } });
@@ -121,13 +123,22 @@ export default function DashboardHome() {
           textDecoration: 'none',
         }}
       >
-        <div style={{ position: 'absolute', right: -24, top: -18, opacity: 0.14 }}>
-          <Sprig size={250} color="#fff" />
-        </div>
+        {art.devotionArt ? (
+          <img
+            src={art.devotionArt}
+            alt=""
+            style={{
+              position: 'absolute', right: 0, top: 0, height: '100%', width: '46%', objectFit: 'cover',
+              WebkitMaskImage: 'linear-gradient(to left, #000 55%, transparent)', maskImage: 'linear-gradient(to left, #000 55%, transparent)',
+            }}
+          />
+        ) : (
+          <CardArt kind="feature" size={250} opacity={0.14} />
+        )}
         <span style={{ position: 'relative', display: 'inline-block', padding: '5px 12px', borderRadius: 999, background: COLORS.rose, color: '#171817', fontFamily: FONTS.body, fontSize: 12, fontWeight: 600 }}>
           Start here
         </span>
-        <div style={{ position: 'relative', fontFamily: FONTS.display, fontSize: 32, fontWeight: 500, color: '#fff', lineHeight: 1.05, marginTop: 14 }}>
+        <div style={{ position: 'relative', fontFamily: FONTS.display, fontSize: 32, fontWeight: 500, color: '#fff', lineHeight: 1.05, marginTop: 14, maxWidth: art.devotionArt ? '68%' : 'none' }}>
           Today’s devotion and Bible reading
         </div>
         {devotion ? (
@@ -175,8 +186,12 @@ export default function DashboardHome() {
       />
       {!loading && program && (
         <Link to={program.day ? '/dashboard/workout' : program.next ? `/dashboard/workout?day=${program.next.id}` : '/dashboard/workout'} style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 14, textDecoration: 'none' }}>
-          <div style={{ width: 74, height: 60, borderRadius: 12, background: program.day ? COLORS.olive : COLORS.sage, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Sprig size={30} color="#fff" />
+          <div style={{ width: 74, height: 60, borderRadius: 12, overflow: 'hidden', background: program.day ? COLORS.olive : COLORS.sage, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {art.days[program.day ? dayKind(program.day.title) : 'rest'] ? (
+              <img src={art.days[program.day ? dayKind(program.day.title) : 'rest']} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              <BrandMark kind="small" size={30} color="#fff" />
+            )}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: FONTS.body, fontSize: 12, fontWeight: 600, color: COLORS.gold }}>
@@ -203,7 +218,7 @@ export default function DashboardHome() {
 
       {/* Nutrition */}
       <SectionHead title="Nutrition" style={{ marginTop: 28 }} />
-      <Link to="/dashboard/nutrition" style={{ display: 'block', marginTop: 12, padding: '16px 18px 18px', borderRadius: 18, background: COLORS.deep, textDecoration: 'none' }}>
+      <Link to={calGoal ? '/dashboard/nutrition' : '/dashboard/nutrition?goals=1'} style={{ display: 'block', marginTop: 12, padding: '16px 18px 18px', borderRadius: 18, background: COLORS.deep, textDecoration: 'none' }}>
         <div style={{ height: 6, borderRadius: 3, background: tint('#ffffff', 18) }}>
           <div style={{ width: `${calPct}%`, height: 6, borderRadius: 3, background: COLORS.rose }} />
         </div>
@@ -283,7 +298,7 @@ export default function DashboardHome() {
       {/* Big photo cards */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 30 }}>
         {HOME_TILES.map((t) => (
-          <HomeTile key={t.id} {...t} />
+          <HomeTile key={t.id} {...t} image={t.image || art.tiles[t.id] || null} />
         ))}
       </div>
 
@@ -295,7 +310,7 @@ export default function DashboardHome() {
             {recipes.map((r, i) => (
               <Link key={r.id} to={`/dashboard/nutrition/recipes/${r.id}`} style={{ textDecoration: 'none' }}>
                 <div style={{ aspectRatio: '4 / 3', borderRadius: 16, background: i % 2 ? COLORS.sage : COLORS.gold, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Sprig size={34} color="#fff" />
+                  <BrandMark kind="small" size={34} color="#fff" />
                 </div>
                 <div style={{ fontFamily: FONTS.body, fontSize: 14, fontWeight: 600, color: COLORS.ink, marginTop: 8, lineHeight: 1.25 }}>{r.title}</div>
                 {r.calories != null && (
@@ -324,6 +339,10 @@ export default function DashboardHome() {
           Lex and John are here to help.
         </div>
       </div>
+
+      {edition?.closing && (
+        <div style={{ textAlign: 'center', fontFamily: FONTS.script, fontSize: 28, color: COLORS.gold, marginTop: 28, lineHeight: 1.2 }}>{edition.closing}</div>
+      )}
     </div>
   );
 }

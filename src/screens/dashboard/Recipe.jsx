@@ -6,6 +6,7 @@ import Sprig from '../../components/Sprig';
 import { supabase } from '../../lib/supabaseClient';
 import { todayISO } from '../../lib/workout';
 import { toneFor, guessCategory } from './RecipeBook';
+import { BrandMark } from '../../components/BrandArt';
 
 export default function Recipe() {
   const { id } = useParams();
@@ -50,7 +51,7 @@ export default function Recipe() {
     <>
       <SubHeader title={r.category || 'Recipe'} />
       <div style={{ position: 'relative', height: 220, background: toneColor(toneFor(r.category)), overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {r.image ? <img src={r.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <Sprig size={70} color="#fff" />}
+        {r.image ? <img src={r.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <BrandMark kind="small" size={70} color="#fff" />}
       </div>
 
       <div style={{ padding: '18px 18px 40px' }}>

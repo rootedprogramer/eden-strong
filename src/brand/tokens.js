@@ -54,8 +54,9 @@ export const EDITIONS = {
     wordmark: ['Eden', 'Strong'],
     monogram: ['E', 'S'],
     pillars: 'Faith / Fitness / Purpose',
-    script: 'She is Eden Strong.',
-    verse: { text: 'Commit to the Lord whatever you do, and he will establish your plans.', ref: 'Proverbs 16:3' },
+    script: 'Train with purpose.',
+    closing: 'Stronger in faith. Stronger in life.',
+    verse: { text: 'She is clothed with strength and dignity, and she laughs without fear of the future.', ref: 'Proverbs 31:25' },
     welcomeImage: '/brand/eden-strong-welcome.jpg',
     card: { bg: '#987778', ink: '#F5F0E8' },
     audience: 'For women',
@@ -71,6 +72,7 @@ export const EDITIONS = {
     monogram: ['F', 'F'],
     pillars: 'Stronger than yesterday',
     script: 'Discipline builds freedom.',
+    closing: 'Stronger in faith. Stronger in purpose.',
     verse: { text: 'For the Spirit God gave us does not make us timid, but gives us power, love and self-discipline.', ref: '2 Timothy 1:7' },
     welcomeImage: '/brand/faith-over-flesh-welcome.jpg',
     card: { bg: '#171817', ink: '#F2EDE4' },
@@ -87,8 +89,10 @@ export const EDITIONS = {
     monogram: ['O', 'A'],
     pillars: 'United in Christ. Stronger together.',
     script: 'Two hearts. One foundation. One purpose.',
+    closing: 'Walk with Him. Grow together.',
     verse: { text: 'Two are better than one, because they have a good reward for their toil.', ref: 'Ecclesiastes 4:9' },
-    welcomeImage: null,
+    welcomeImage: '/brand/one-accord/welcome.jpg',
+    welcomeFit: 'contain',
     card: { bg: '#656D56', ink: '#F5F0E8' },
     audience: 'For couples',
     short: 'Couples',
@@ -97,6 +101,73 @@ export const EDITIONS = {
     community: 'Encouragement, prayer requests, and wins from couples walking this with you.',
   },
 };
+
+// ─── Brand photography ──────────────────────────────────────
+// Photos for each brand, cut from the brand mockups. Replace any path with
+// a real photo later (same size or larger, roughly 16:9 or 4:3 works best).
+const ES = '/brand/eden-strong/';
+const FOF = '/brand/faith-over-flesh/';
+const OA = '/brand/one-accord/';
+export const BRAND_ART = {
+  women: {
+    poster: ES + 'poster.jpg',
+    devotionArt: ES + 'devotion-art.jpg',
+    levels: { beginner: ES + 'foundation.jpg', experienced: ES + 'back-and-resilience.jpg' },
+    tracks: {
+      'Rooted & Rising': ES + 'foundation.jpg',
+      'Vessel & Valor': ES + 'discipline.jpg',
+      'Grit & Glory': ES + 'unbreakable.jpg',
+      'Strong & Steadfast': ES + 'power-and-purpose.jpg',
+      'Faith Foundations': ES + 'back-and-resilience.jpg',
+    },
+    days: { legs: ES + 'grace-and-strength.jpg', push: ES + 'power-and-purpose.jpg', pull: ES + 'back-and-resilience.jpg', rest: ES + 'rest-and-renew.jpg' },
+    splits: [ES + 'grace-and-strength.jpg', ES + 'power-and-purpose.jpg', ES + 'back-and-resilience.jpg', ES + 'discipline.jpg'],
+    tiles: { programs: ES + 'discipline.jpg', devotions: ES + 'rest-and-renew.jpg', community: ES + 'unbreakable.jpg', coaches: ES + 'foundation.jpg' },
+  },
+  men: {
+    poster: FOF + 'poster.jpg',
+    devotionArt: FOF + 'devotion-art.jpg',
+    levels: { beginner: FOF + 'foundation.jpg', experienced: FOF + 'built-in-faith.jpg' },
+    tracks: {
+      'Rooted & Rising': FOF + 'foundation.jpg',
+      'Vessel & Valor': FOF + 'pull.jpg',
+      'Grit & Glory': FOF + 'legs.jpg',
+      'Strong & Steadfast': FOF + 'push.jpg',
+      'Faith Foundations': FOF + 'discipline.jpg',
+    },
+    days: { legs: FOF + 'legs.jpg', push: FOF + 'push.jpg', pull: FOF + 'pull.jpg', rest: FOF + 'rest.jpg' },
+    splits: [FOF + 'legs.jpg', FOF + 'push.jpg', FOF + 'pull.jpg', FOF + 'discipline.jpg'],
+    tiles: { programs: FOF + 'discipline.jpg', devotions: FOF + 'built-in-faith.jpg', community: FOF + 'foundation.jpg', coaches: FOF + 'pull.jpg' },
+  },
+  together: {
+    poster: OA + 'poster.jpg',
+    devotionArt: null,
+    levels: { beginner: OA + 'sitting.jpg', experienced: OA + 'side-by-side.jpg' },
+    tracks: {
+      'Rooted & Rising': OA + 'sitting.jpg',
+      'Vessel & Valor': OA + 'embrace.jpg',
+      'Grit & Glory': OA + 'together.jpg',
+      'Strong & Steadfast': OA + 'side-by-side.jpg',
+      'Faith Foundations': OA + 'sunset.jpg',
+    },
+    days: { rest: OA + 'sunset.jpg' },
+    splits: [OA + 'side-by-side.jpg', OA + 'together.jpg', OA + 'embrace.jpg', OA + 'sitting.jpg'],
+    tiles: { programs: OA + 'side-by-side.jpg', devotions: OA + 'sunset.jpg', community: OA + 'sitting.jpg', coaches: OA + 'embrace.jpg' },
+  },
+};
+
+export function brandArt(editionId) {
+  return BRAND_ART[editionId] || BRAND_ART.women;
+}
+
+// Which photo fits a training day, by its focus: legs, push, pull, or rest
+export function dayKind(title = '') {
+  const t = title.toLowerCase();
+  if (/rest|recover/.test(t)) return 'rest';
+  if (/leg|glute|lower|squat|quad|hamstring/.test(t)) return 'legs';
+  if (/pull|back|bicep|row/.test(t)) return 'pull';
+  return 'push';
+}
 
 export const EDITION_LIST = [EDITIONS.women, EDITIONS.men, EDITIONS.together];
 
@@ -253,6 +324,7 @@ export const TRACK_TILES = {
   'Vessel & Valor': { image: null, tone: 'olive' },
   'Grit & Glory': { image: null, tone: 'ink' },
   'Strong & Steadfast': { image: null, tone: 'gold' },
+  'Faith Foundations': { image: null, tone: 'ink' },
 };
 // Placeholder colors for the sessions-per-week cards, in order
 export const SESSION_TONES = ['olive', 'gold', 'ink', 'sage'];

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { COLORS, FONTS } from '../../brand/tokens';
 import Sprig from '../../components/Sprig';
 import { supabase } from '../../lib/supabaseClient';
+import { BrandMark } from '../../components/BrandArt';
 
 export default function Devotion() {
   const [devotion, setDevotion] = useState(null);
@@ -61,7 +62,7 @@ export default function Devotion() {
   if (completed) {
     return (
       <div style={{ padding: '24px 24px', textAlign: 'center' }}>
-        <Sprig size={32} color={COLORS.gold} />
+        <BrandMark kind="small" size={32} color={COLORS.gold} />
         <div style={{ fontFamily: FONTS.display, fontSize: 24, color: COLORS.ink, fontStyle: 'italic', marginTop: 16 }}>
           Well spent time.
         </div>
@@ -92,7 +93,7 @@ export default function Devotion() {
       </div>
 
       <div style={{ marginTop: 16 }}>
-        <Sprig size={28} color={COLORS.gold} />
+        <BrandMark kind="small" size={28} color={COLORS.gold} />
       </div>
 
       <div style={{ fontFamily: FONTS.display, fontSize: 24, color: COLORS.ink, fontStyle: 'italic', lineHeight: 1.35, marginTop: 16 }}>

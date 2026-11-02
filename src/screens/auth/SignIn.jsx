@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { COLORS, FONTS } from '../../brand/tokens';
 import Sprig from '../../components/Sprig';
 import { supabase } from '../../lib/supabaseClient';
+import { BrandMark } from '../../components/BrandArt';
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ export default function SignIn() {
 
   return (
     <div style={{ minHeight: '100vh', background: COLORS.bg, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px 32px' }}>
-      <Sprig size={36} color={COLORS.gold} />
+      <BrandMark kind="small" size={36} color={COLORS.gold} />
       <div style={{ fontFamily: FONTS.display, fontSize: 32, color: COLORS.ink, marginTop: 20, fontStyle: 'italic' }}>
         Welcome back
       </div>

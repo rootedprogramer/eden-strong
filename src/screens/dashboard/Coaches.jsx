@@ -1,5 +1,6 @@
 import { COLORS, FONTS, toneColor } from '../../brand/tokens';
 import Sprig from '../../components/Sprig';
+import { BrandMark } from '../../components/BrandArt';
 
 // Edit the names, roles, and bios below. Add a photo by putting the image in
 // /public/coaches/ and setting photo to its path, e.g. '/coaches/lex.jpg'.
@@ -19,7 +20,7 @@ export default function Coaches() {
               {c.photo ? (
                 <img src={c.photo} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
-                <Sprig size={56} color="#fff" />
+                <BrandMark kind="feature" size={56} color="#fff" />
               )}
             </div>
             <div style={{ padding: '16px 18px 20px' }}>

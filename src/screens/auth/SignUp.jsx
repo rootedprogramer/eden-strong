@@ -4,6 +4,7 @@ import { useNavigate, Link, useSearchParams, Navigate } from 'react-router-dom';
 import { COLORS, FONTS, getEdition, rememberEdition, recallEdition } from '../../brand/tokens';
 import Sprig from '../../components/Sprig';
 import { supabase } from '../../lib/supabaseClient';
+import { BrandMark } from '../../components/BrandArt';
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ export default function SignUp() {
 
   return (
     <div style={{ minHeight: '100vh', background: COLORS.bg, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px 32px' }}>
-      <Sprig size={36} color={COLORS.gold} />
+      <BrandMark kind="small" size={36} color={COLORS.gold} />
       <div style={{ marginTop: 16, fontFamily: FONTS.body, fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: COLORS.mute }}>
         {edition.name} · <Link to="/" style={{ color: COLORS.gold, textTransform: 'none', letterSpacing: 0 }}>change</Link>
       </div>

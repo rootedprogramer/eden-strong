@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { PROGRAM_TILES, TRACK_TILES } from '../../../brand/tokens';
+import { PROGRAM_TILES, TRACK_TILES, brandArt } from '../../../brand/tokens';
 import SubHeader from '../../../components/SubHeader';
 import HomeTile from '../../../components/HomeTile';
 import { loadPrograms } from '../../../lib/programs';
 import { PageIntro, Muted, pagePad, tileStack } from './shared';
+import { useTheme } from '../../../theme/ThemeContext';
 
 // Step 2: choose the program (Rooted & Rising, Vessel & Valor, Grit & Glory)
 export default function ProgramTracks() {
+  const art = brandArt(useTheme().path);
   const { level } = useParams();
   const [tracks, setTracks] = useState(null);
 
@@ -36,12 +38,12 @@ export default function ProgramTracks() {
             const tile = TRACK_TILES[t.name] || {};
             const days = [...new Set(t.splits)].join(', ');
             return (
-              <HomeTile
+              <HomeTile art="program"
                 key={t.name}
                 title={t.name}
                 sub={`${days} days a week`}
                 to={`/dashboard/programs/level/${level}/${encodeURIComponent(t.name)}`}
-                image={tile.image}
+                image={tile.image || art.tracks[t.name]}
                 tone={tile.tone || 'olive'}
               />
             );

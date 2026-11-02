@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FONTS, TAGLINE, EDITION_LIST, rememberEdition } from '../brand/tokens';
+import { FONTS, TAGLINE, EDITION_LIST, rememberEdition, brandArt } from '../brand/tokens';
 import { useTheme } from '../theme/ThemeContext';
 import Monogram from '../components/Monogram';
 
@@ -52,20 +52,25 @@ export default function Landing() {
               onClick={() => choose(ed.id)}
               style={{
                 display: 'flex',
-                alignItems: 'center',
-                gap: 18,
-                padding: '20px 20px',
+                alignItems: 'stretch',
+                gap: 16,
+                padding: 0,
                 borderRadius: 18,
                 border: 'none',
+                overflow: 'hidden',
                 background: ed.card.bg,
                 color: ed.card.ink,
                 cursor: 'pointer',
                 textAlign: 'left',
               }}
             >
-              <Monogram letters={ed.monogram} size={58} />
-              <span style={{ flex: 1 }}>
-                <span style={{ display: 'block', fontFamily: FONTS.brand, fontSize: 19, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', lineHeight: 1.2 }}>
+              {brandArt(ed.id).poster ? (
+                <img src={brandArt(ed.id).poster} alt="" style={{ width: 118, minHeight: 118, objectFit: 'cover', flexShrink: 0, display: 'block' }} />
+              ) : (
+                <span style={{ padding: '20px 0 20px 20px', display: 'flex', alignItems: 'center' }}><Monogram letters={ed.monogram} size={58} /></span>
+              )}
+              <span style={{ flex: 1, padding: '16px 16px 16px 0', alignSelf: 'center' }}>
+                <span style={{ display: 'block', fontFamily: FONTS.brand, fontSize: 17, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', lineHeight: 1.2 }}>
                   {ed.name}
                 </span>
                 <span style={{ display: 'block', fontFamily: FONTS.brand, fontSize: 11, letterSpacing: '0.26em', textTransform: 'uppercase', opacity: 0.85, marginTop: 5 }}>
