@@ -7,6 +7,7 @@ import Monogram from '../../components/Monogram';
 import Vine from '../../components/Vine';
 import Sprig from '../../components/Sprig';
 import { supabase } from '../../lib/supabaseClient';
+import { SITE_BRAND } from '../../brand/site';
 
 // Screen order: 3 verse slides -> brand -> name capture -> path select -> path follow-up -> welcome
 const TOTAL_STEPS = 8;
@@ -14,7 +15,7 @@ const TOTAL_STEPS = 8;
 export default function OnboardingFlow() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const edition = getEdition(params.get('edition') || recallEdition());
+  const edition = getEdition(SITE_BRAND || params.get('edition') || recallEdition());
   const { setPath: setThemePath, tokens } = useTheme();
   const [step, setStep] = useState(0);
   const [name, setName] = useState('');
@@ -165,7 +166,7 @@ function BrandScreen({ edition, tokens }) {
   if (edition.welcomeImage) {
     return (
       <div style={{ position: 'absolute', inset: 0, background: '#000' }}>
-        <img src={edition.welcomeImage} alt={`${edition.name}. ${edition.verse.text} ${edition.verse.ref}`} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        <img src={edition.welcomeImage} alt={`${edition.name}. ${edition.verse.text} ${edition.verse.ref}`} style={{ width: '100%', height: '100%', objectFit: edition.welcomeFit || 'cover', display: 'block' }} />
       </div>
     );
   }

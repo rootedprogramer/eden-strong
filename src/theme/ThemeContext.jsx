@@ -8,6 +8,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { PATHS, DEFAULT_PATH, getTokens } from './theme';
+import { SITE_BRAND } from '../brand/site';
 
 const ThemeContext = createContext(null);
 
@@ -26,7 +27,7 @@ function applyCssVars(tokens) {
 
 export function ThemeProvider({ initialPath, children }) {
   const [path, setPath] = useState(
-    initialPath && PATHS[initialPath] ? initialPath : DEFAULT_PATH
+    initialPath && PATHS[initialPath] ? initialPath : SITE_BRAND || DEFAULT_PATH
   );
 
   useEffect(() => {

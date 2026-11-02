@@ -7,21 +7,21 @@
 // Shared brand palette: Obsidian #171817, Charcoal #333633, Olive #656D56,
 // Linen #D8CFC0, Ivory #F5F0E8, plus Dusty Mauve #987778 for Eden Strong.
 export const PATHS = {
-  // Eden Strong (women): ivory and linen with dusty mauve. Light.
+  // Eden Strong (women): near-black with blush pink and soft mauve. Dark.
   women: {
-    dark: false,
-    ink: '#171817',     // obsidian text and buttons
-    bg: '#F5F0E8',      // ivory
-    bgWarm: '#ECE4D9',  // soft linen for the header and nav
-    surface: '#FFFDF9', // cards
-    deep: '#2B2426',    // mauve-black feature panels
-    gold: '#987778',    // dusty mauve accent
-    goldTile: '#987778', // accent as a card background (white text on top)
-    sage: '#8E9580',    // light olive
-    olive: '#656D56',   // olive
-    rose: '#C4A3A0',    // soft mauve
-    mute: '#6F6762',
-    line: '#E3D9CD',
+    dark: true,
+    ink: '#F7EEF0',     // soft white text; buttons are blush-white with dark text
+    bg: '#120E10',      // near-black with a warm plum cast
+    bgWarm: '#1A1416',  // header and nav
+    surface: '#221A1D', // cards
+    deep: '#2C2125',    // feature panels
+    gold: '#E8A7B8',    // blush pink accent
+    goldTile: '#7B4E5B', // pink as a card background (white text on top)
+    sage: '#9C7882',    // dusty rose
+    olive: '#5A3F48',   // deep mauve
+    rose: '#E8A7B8',    // blush pills
+    mute: '#BCA6AD',
+    line: '#3A2C31',
   },
 
   // Faith Over Flesh (men): obsidian, charcoal, and stone. Dark.
