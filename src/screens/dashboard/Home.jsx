@@ -4,6 +4,7 @@ import { Plus, Flame, ChevronRight } from 'lucide-react';
 import { COLORS, FONTS, HOME_TILES, SUPPORT_EMAIL, tint, brandArt, dayKind } from '../../brand/tokens';
 import Sprig from '../../components/Sprig';
 import { loadToday, WEEKDAYS } from '../../lib/workout';
+import { loadDevotion } from '../../lib/devotions';
 import HomeTile from '../../components/HomeTile';
 import { supabase } from '../../lib/supabaseClient';
 import CardArt, { BrandMark } from '../../components/BrandArt';
@@ -69,12 +70,7 @@ export default function DashboardHome() {
 
       await loadHabits(uid);
 
-      const { data: devProgress } = await supabase.from('devotion_progress').select('current_day').eq('user_id', uid).maybeSingle();
-      const { data: dev } = await supabase
-        .from('daily_devotions')
-        .select('scripture_ref, scripture_text')
-        .eq('day_number', devProgress?.current_day || 1)
-        .maybeSingle();
+      const { devotion: dev } = await loadDevotion(uid, edition?.id);
       setDevotion(dev || null);
 
       const { data: recipeRows } = await supabase.from('recipes').select('id, title, calories').limit(2);
@@ -144,7 +140,7 @@ export default function DashboardHome() {
         {devotion ? (
           <>
             <div style={{ position: 'relative', fontFamily: FONTS.body, fontSize: 13, fontWeight: 600, color: COLORS.rose, marginTop: 12 }}>
-              {devotion.scripture_ref}
+              {devotion.title ? `${devotion.title} · ` : ''}{devotion.scripture_ref}
             </div>
             <div
               style={{
