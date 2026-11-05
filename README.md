@@ -22,17 +22,17 @@ All brand tokens (colors, fonts, copy, the 4 onboarding paths) live in `src/bran
 
 ## Three websites from one codebase
 
-Eden Strong, Faith Over Flesh, and One Accord are three separate websites built from this one repo. Each Netlify site sets `VITE_BRAND`:
+Eden Strong, Fidoryn, and One Accord are three separate websites built from this one repo. Each Netlify site sets `VITE_BRAND`:
 
 | Site | VITE_BRAND |
 |---|---|
 | Eden Strong (women) | `eden-strong` |
-| Faith Over Flesh (men) | `faith-over-flesh` |
+| Fidoryn (men) | `fidoryn` |
 | One Accord (couples) | `one-accord` |
 
 All three share one Supabase project, so accounts, programs, recipes, and admin tools are managed in one place. A site with no `VITE_BRAND` shows the brand-family page where people choose.
 
-Each site also needs `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`, and optionally `VITE_URL_EDEN_STRONG`, `VITE_URL_FAITH_OVER_FLESH`, `VITE_URL_ONE_ACCORD` (each site's address, so members who sign in at the wrong site get a link to theirs) and `USDA_API_KEY` (food search).
+Each site also needs `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`, and optionally `VITE_URL_EDEN_STRONG`, `VITE_URL_FIDORYN`, `VITE_URL_ONE_ACCORD` (each site's address, so members who sign in at the wrong site get a link to theirs) and `USDA_API_KEY` (food search).
 
 In Supabase, add every site's address under **Authentication → URL Configuration → Redirect URLs**.
 

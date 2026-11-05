@@ -40,6 +40,7 @@ alter table recipes add column if not exists sort_order int;
 alter table recipes add column if not exists image text;
 alter table recipes add column if not exists edition text;
 alter table workout_programs add column if not exists edition text;
+alter table workout_programs add column if not exists editions text[];
 alter table workout_programs add column if not exists guide text;
 alter table workout_programs add column if not exists core_note text;
 alter table workout_programs add column if not exists track text;
@@ -237,8 +238,8 @@ declare
   new_day uuid;
 begin
   if not public.is_admin() then raise exception 'Only admins can copy programs.'; end if;
-  insert into workout_programs (title, description, weeks, days_per_week, level, sort_order, guide, core_note, track, level_key, location, image, edition)
-  select title || ' (copy)', description, weeks, days_per_week, level, sort_order, guide, core_note, track, level_key, location, image, edition
+  insert into workout_programs (title, description, weeks, days_per_week, level, sort_order, guide, core_note, track, level_key, location, image, edition, editions)
+  select title || ' (copy)', description, weeks, days_per_week, level, sort_order, guide, core_note, track, level_key, location, image, edition, editions
   from workout_programs where id = source
   returning id into new_prog;
 

@@ -57,6 +57,8 @@ begin
   for r in select id, coalesce(title, '') as t from program_days loop
     perform es_add_bookends(r.id,
       case
+        when r.t ~* 'full body' then 'full'
+        when r.t ~* '^upper' then 'upper'
         when r.t ~* 'back' then 'back'
         when r.t ~* '(hiit|core|conditioning|cardio)' then 'full'
         when r.t ~* '(leg|glute|lower|quad)' then 'lower'

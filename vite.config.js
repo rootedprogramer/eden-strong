@@ -1,16 +1,16 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// Each website (Eden Strong, Faith Over Flesh, One Accord) is the same app
+// Each website (Eden Strong, Fidoryn, One Accord) is the same app
 // built with a different VITE_BRAND. This sets the browser-tab title, icon,
 // description, and theme color for whichever brand is being built.
 const SITES = {
   women: { title: 'Eden Strong', description: 'Faith-led fitness and wellness for women. Faith, fitness, purpose.', color: '#120E10', icon: '/brand/favicon-eden-strong.svg' },
-  men: { title: 'Faith Over Flesh', description: 'Discipline, strength, and faith for men. Stronger than yesterday.', color: '#0F0F0E', icon: '/brand/favicon-faith-over-flesh.svg' },
+  men: { title: 'Fidoryn', description: 'Discipline, strength, and faith for men. Stronger than yesterday.', color: '#0F0F0E', icon: '/brand/favicon-faith-over-flesh.svg' },
   together: { title: 'One Accord', description: 'Faith, fitness, and purpose for couples. United in Christ. Stronger together.', color: '#121311', icon: '/brand/favicon-one-accord.svg' },
-  family: { title: 'Eden Strong, Faith Over Flesh, One Accord', description: 'Faith-rooted fitness. One mission, three expressions.', color: '#F5F0E8', icon: '/brand/favicon-family.svg' },
+  family: { title: 'Eden Strong, Fidoryn, One Accord', description: 'Faith-rooted fitness. One mission, three expressions.', color: '#F5F0E8', icon: '/brand/favicon-family.svg' },
 };
-const ALIASES = { women: 'women', es: 'women', 'eden-strong': 'women', edenstrong: 'women', men: 'men', fof: 'men', ff: 'men', 'faith-over-flesh': 'men', faithoverflesh: 'men', together: 'together', couples: 'together', oa: 'together', 'one-accord': 'together', oneaccord: 'together' };
+const ALIASES = { women: 'women', es: 'women', 'eden-strong': 'women', edenstrong: 'women', men: 'men', fidoryn: 'men', fof: 'men', ff: 'men', 'faith-over-flesh': 'men', faithoverflesh: 'men', together: 'together', couples: 'together', oa: 'together', 'one-accord': 'together', oneaccord: 'together' };
 
 const escape = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
