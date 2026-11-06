@@ -8,10 +8,11 @@ import { useTheme } from '../../../theme/ThemeContext';
 
 // Step 1: Programs → choose Beginner or Experienced
 export default function ProgramsIntro() {
-  const art = brandArt(useTheme().path);
+  const brand = useTheme().path;
+  const art = brandArt(brand);
   const [state, setState] = useState(null); // { programs, error }
 
-  useEffect(() => { loadPrograms().then(setState); }, []);
+  useEffect(() => { loadPrograms(brand).then(setState); }, [brand]);
 
   const levels = state ? LEVEL_ORDER.filter((l) => state.programs.some((p) => p.level_key === l)) : [];
 

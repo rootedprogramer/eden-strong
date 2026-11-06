@@ -7,11 +7,20 @@ import { supabase } from './supabaseClient';
 //   level:    'beginner' or 'experienced'. Uses level_key if set; otherwise the
 //             track's lowest-day program's level text ('Beginner–Intermediate' → beginner).
 //             Old 'intermediate' and 'advanced' values count as experienced.
-export async function loadPrograms() {
+// Whether a program is meant for a brand: edition = one brand,
+// editions = a list of brands, neither = every brand
+export function programIsFor(p, editionId) {
+  if (!editionId) return true;
+  if (p.edition) return p.edition === editionId;
+  if (Array.isArray(p.editions) && p.editions.length) return p.editions.includes(editionId);
+  return true;
+}
+
+export async function loadPrograms(editionId) {
   const { data, error } = await supabase.from('workout_programs').select('*');
   if (error) return { programs: [], error };
 
-  const rows = (data || []).map((p) => ({
+  const rows = (data || []).filter((p) => programIsFor(p, editionId)).map((p) => ({
     ...p,
     track: p.track || String(p.title || '').split(/\s[—–-]\s/)[0].trim(),
     location: p.location || 'gym',

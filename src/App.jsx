@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Landing from './screens/Landing';
 import SignUp from './screens/auth/SignUp';
 import SignIn from './screens/auth/SignIn';
@@ -15,7 +15,7 @@ import Profile from './screens/dashboard/Profile';
 import Nutrition from './screens/dashboard/Nutrition';
 import RecipeBook from './screens/dashboard/RecipeBook';
 import Recipe from './screens/dashboard/Recipe';
-import TapCook from './screens/dashboard/TapCook';
+import DailyBread from './screens/dashboard/DailyBread';
 import CookRecipe from './screens/dashboard/CookRecipe';
 import MealPlan from './screens/dashboard/MealPlan';
 import AdminHome from './screens/admin/AdminHome';
@@ -65,7 +65,8 @@ export default function App() {
           <Route path="nutrition" element={<Nutrition />} />
           <Route path="nutrition/recipes" element={<RecipeBook />} />
           <Route path="nutrition/recipes/:id" element={<Recipe />} />
-          <Route path="nutrition/tap-cook" element={<TapCook />} />
+          <Route path="nutrition/daily-bread" element={<DailyBread />} />
+          <Route path="nutrition/tap-cook" element={<Navigate to="/dashboard/nutrition/daily-bread" replace />} />
           <Route path="nutrition/cook/:id" element={<CookRecipe />} />
           <Route path="nutrition/plan" element={<MealPlan />} />
           <Route path="admin" element={<AdminHome />} />

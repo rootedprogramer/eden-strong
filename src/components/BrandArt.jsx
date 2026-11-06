@@ -8,13 +8,13 @@ import Monogram from './Monogram';
 //   kind="small"    small placeholders (recipe cards, thumbnails, icons)
 //
 // Eden Strong:      the leaf everywhere
-// Faith Over Flesh: rugged cross (feature), mountains (program), F✝F (small)
+// Fidoryn: rugged cross (feature), mountains (program), F✝F (small)
 // One Accord:       O✝A (feature, small), sunset mountains (program)
 
 export function RuggedCross({ size = 100, color = 'currentColor' }) {
   return (
     <svg viewBox="0 0 100 100" width={size} height={size} aria-hidden="true" style={{ display: 'block', color }}>
-      {/* rough, hand-hewn edges like the Faith Over Flesh wallpaper */}
+      {/* rough, hand-hewn edges like the Fidoryn wallpaper */}
       <polygon
         fill="currentColor"
         points="47,3 50,1 53,4 52.5,12 54,13 53,24 52,29 60,29.5 69,28 76,29 79,31 77,35 70,36 61,35.5 53,36 53.5,47 52.5,58 54,70 53,84 54,93 51,99 48,97 46.5,88 47.5,74 46,61 47,48 46.5,37 38,36.5 29,37 22,36 20,32 24,29.5 33,30 46,29.5 47.5,22 46,13"

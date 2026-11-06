@@ -24,7 +24,7 @@ export const PATHS = {
     line: '#3A2C31',
   },
 
-  // Faith Over Flesh (men): obsidian, charcoal, and stone. Dark.
+  // Fidoryn (men): obsidian, charcoal, and stone. Dark.
   men: {
     dark: true,
     ink: '#F2EDE4',     // bone white text; buttons are bone with black text

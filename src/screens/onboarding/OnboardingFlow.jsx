@@ -162,7 +162,7 @@ function VerseSplash({ verse, bgAlt, edition, tokens }) {
 }
 
 function BrandScreen({ edition, tokens }) {
-  // Brands with artwork (Eden Strong, Faith Over Flesh) show it full screen
+  // Brands with artwork (Eden Strong, Fidoryn) show it full screen
   if (edition.welcomeImage) {
     return (
       <div style={{ position: 'absolute', inset: 0, background: '#000' }}>

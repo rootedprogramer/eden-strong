@@ -19,7 +19,7 @@ export function useIsAdmin() {
 export const EDITION_OPTIONS = [
   ['', 'Every edition'],
   ['women', 'Eden Strong only (women)'],
-  ['men', 'Faith Over Flesh only (men)'],
+  ['men', 'Fidoryn only (men)'],
   ['together', 'One Accord only (couples)'],
 ];
 export const RECIPE_CATEGORY_OPTIONS = ['Smoothies', 'Snacks', 'Breakfasts', 'Lunches', 'Dinners', 'Desserts'];

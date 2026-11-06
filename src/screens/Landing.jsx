@@ -25,7 +25,7 @@ function FamilyLanding() {
 
   useEffect(() => {
     setPath('women');
-    document.title = 'Eden Strong, Faith Over Flesh, One Accord';
+    document.title = 'Eden Strong, Fidoryn, One Accord';
     document.body.style.background = IVORY;
   }, []);
 
@@ -76,7 +76,7 @@ function FamilyLanding() {
               }}
             >
               {brandArt(ed.id).poster ? (
-                <img src={brandArt(ed.id).poster} alt="" style={{ width: 118, minHeight: 118, objectFit: 'cover', flexShrink: 0, display: 'block' }} />
+                <img src={brandArt(ed.id).poster} alt="" style={{ width: 118, minHeight: 118, objectFit: 'cover', objectPosition: brandArt(ed.id).posterPosition || 'center', flexShrink: 0, display: 'block' }} />
               ) : (
                 <span style={{ padding: '20px 0 20px 20px', display: 'flex', alignItems: 'center' }}><Monogram letters={ed.monogram} size={58} /></span>
               )}
@@ -113,7 +113,10 @@ function FamilyLanding() {
 function BrandLanding({ edition }) {
   const navigate = useNavigate();
   const art = brandArt(edition.id);
-  const hero = edition.welcomeImage && edition.welcomeFit !== 'contain' ? edition.welcomeImage : art.poster;
+  // Brand artwork that already shows the name (Eden Strong, One Accord), or a
+  // photo without it (Fidoryn), in which case the name is shown below it
+  const hero = art.hero || (edition.welcomeImage && edition.welcomeFit !== 'contain' ? edition.welcomeImage : art.poster);
+  const heroHasName = hero && !art.hero;
 
   useEffect(() => {
     document.title = edition.name;
@@ -129,14 +132,18 @@ function BrandLanding({ edition }) {
   return (
     <div style={{ minHeight: '100vh', background: COLORS.bg, color: COLORS.ink }}>
       <div style={{ maxWidth: 480, margin: '0 auto' }}>
-        <div style={{ position: 'relative', height: '58vh', minHeight: 380, maxHeight: 560, overflow: 'hidden' }}>
-          {hero && <img src={hero} alt={`${edition.name}. ${edition.pillars}`} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', display: 'block' }} />}
-          <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to bottom, rgba(0,0,0,0) 55%, ${'var(--es-bg)'} 100%)` }} />
-        </div>
+        {hero ? (
+          <div style={{ position: 'relative', height: '58vh', minHeight: 380, maxHeight: 560, overflow: 'hidden' }}>
+            <img src={hero} alt={`${edition.name}. ${edition.pillars}`} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: art.heroPosition || 'top', display: 'block' }} />
+            <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to bottom, rgba(0,0,0,0) 55%, ${'var(--es-bg)'} 100%)` }} />
+          </div>
+        ) : (
+          <div style={{ height: 'max(12vh, 72px)' }} />
+        )}
 
-        <div style={{ padding: '0 24px 40px', marginTop: -30, position: 'relative', textAlign: 'center' }}>
+        <div style={{ padding: '0 24px 40px', marginTop: hero ? -30 : 0, position: 'relative', textAlign: 'center' }}>
           {/* The brand artwork already shows the logo and name; repeat them only without artwork */}
-          {hero ? (
+          {heroHasName ? (
             <h1 style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' }}>{edition.name}</h1>
           ) : (
             <>
@@ -145,7 +152,7 @@ function BrandLanding({ edition }) {
               <div style={{ fontFamily: FONTS.brand, fontSize: 12, letterSpacing: '0.22em', textTransform: 'uppercase', color: COLORS.mute, marginTop: 8 }}>{edition.pillars}</div>
             </>
           )}
-          <div style={{ fontFamily: FONTS.script, fontSize: 36, color: COLORS.gold, marginTop: hero ? 4 : 18, lineHeight: 1.15 }}>{edition.script}</div>
+          <div style={{ fontFamily: FONTS.script, fontSize: 36, color: COLORS.gold, marginTop: heroHasName ? 4 : 18, lineHeight: 1.15 }}>{edition.script}</div>
           <p style={{ fontFamily: FONTS.body, fontSize: 15, color: COLORS.ink, lineHeight: 1.6, margin: '14px auto 0', maxWidth: 340 }}>{edition.tagline}</p>
 
           <button

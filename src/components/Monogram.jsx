@@ -1,5 +1,5 @@
 // Brand monogram: two letters with a cross through the middle,
-// like E✝S (Eden Strong), F✝F (Faith Over Flesh) and O✝A (One Accord).
+// like E✝S (Eden Strong), F✝F (Fidoryn) and O✝A (One Accord).
 // Drawn in code so it stays sharp at any size and takes any color.
 export default function Monogram({ letters = ['E', 'S'], size = 48, color = 'currentColor', title }) {
   const [a, b] = letters;

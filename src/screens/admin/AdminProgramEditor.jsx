@@ -4,12 +4,20 @@ import { Plus, Trash2, ArrowUp, ArrowDown, ChevronDown, Copy } from 'lucide-reac
 import { COLORS, FONTS } from '../../brand/tokens';
 import SubHeader from '../../components/SubHeader';
 import { Button, Card, Field, Heading, Note, NumberInput, Row, Select, SubHeading, TextArea, TextInput } from '../../components/admin/ui';
-import { EDITION_OPTIONS, SECTION_OPTIONS } from '../../lib/admin';
+import { SECTION_OPTIONS } from '../../lib/admin';
 import { WEEKDAYS } from '../../lib/workout';
 import { supabase } from '../../lib/supabaseClient';
 import { AdminGate } from './AdminHome';
 
-const blankProgram = { title: '', track: '', level_key: 'beginner', days_per_week: 3, weeks: 6, location: 'gym', edition: '', description: '', guide: '', core_note: '' };
+const blankProgram = { title: '', track: '', level_key: 'beginner', days_per_week: 3, weeks: 6, location: 'gym', brands: ['women', 'men', 'together'], description: '', guide: '', core_note: '' };
+const BRANDS = [['women', 'Eden Strong'], ['men', 'Fidoryn'], ['together', 'One Accord']];
+
+// Saved as edition (one brand), editions (several), or neither (all three)
+function brandsFrom(p) {
+  if (p.edition) return [p.edition];
+  if (Array.isArray(p.editions) && p.editions.length) return p.editions;
+  return BRANDS.map(([id]) => id);
+}
 
 export default function AdminProgramEditor() {
   return (
@@ -41,7 +49,7 @@ function Editor() {
     if (isNew) return;
     (async () => {
       const { data } = await supabase.from('workout_programs').select('*').eq('id', id).maybeSingle();
-      setProgram(data ? { ...blankProgram, ...data, edition: data.edition || '' } : false);
+      setProgram(data ? { ...blankProgram, ...data, brands: brandsFrom(data) } : false);
       await loadDays();
     })();
   }, [id]);
@@ -54,6 +62,8 @@ function Editor() {
   const saveProgram = async () => {
     setError('');
     if (!program.title.trim()) return setError('Give the program a title, like “Rooted & Rising — 4 Days”.');
+    if (!program.brands.length) return setError('Pick at least one brand to show this program in.');
+    const all = program.brands.length === BRANDS.length;
     const row = {
       title: program.title.trim(),
       track: program.track.trim() || program.title.split(/\s[—–-]\s/)[0].trim(),
@@ -62,7 +72,8 @@ function Editor() {
       days_per_week: Number(program.days_per_week) || 3,
       weeks: Number(program.weeks) || 6,
       location: program.location || 'gym',
-      edition: program.edition || null,
+      edition: !all && program.brands.length === 1 ? program.brands[0] : null,
+      editions: !all && program.brands.length > 1 ? program.brands : null,
       description: program.description || null,
       guide: program.guide || null,
       core_note: program.core_note || null,
@@ -116,10 +127,22 @@ function Editor() {
             <Field label="Level" style={{ flex: 1 }}>
               <Select value={program.level_key} onChange={set('level_key')} options={[['beginner', 'Beginner'], ['experienced', 'Experienced']]} />
             </Field>
-            <Field label="Who sees it" style={{ flex: 1 }}>
-              <Select value={program.edition} onChange={set('edition')} options={EDITION_OPTIONS} />
-            </Field>
           </Row>
+          <Field label="Who sees it">
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14 }}>
+              {BRANDS.map(([id, name]) => (
+                <label key={id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: FONTS.body, fontSize: 14, color: COLORS.ink }}>
+                  <input
+                    type="checkbox"
+                    checked={program.brands.includes(id)}
+                    onChange={(e) => set('brands')(e.target.checked ? [...program.brands, id] : program.brands.filter((b) => b !== id))}
+                    style={{ width: 18, height: 18 }}
+                  />
+                  {name}
+                </label>
+              ))}
+            </div>
+          </Field>
           <Row>
             <Field label="Days a week" style={{ flex: 1 }}>
               <NumberInput value={program.days_per_week} onChange={set('days_per_week')} />

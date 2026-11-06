@@ -1,5 +1,5 @@
 // Brand tokens for the three communities: Eden Strong (women),
-// Faith Over Flesh (men), and One Accord (couples)
+// Fidoryn (men), and One Accord (couples)
 // Identity: garden/sanctuary meets quiet strength — devotional without heaviness,
 // strong without aggression.
 
@@ -67,14 +67,14 @@ export const EDITIONS = {
   },
   men: {
     id: 'men',
-    name: 'Faith Over Flesh',
-    wordmark: ['Faith Over', 'Flesh'],
+    name: 'Fidoryn',
+    wordmark: ['Fidoryn', ''],
     monogram: ['F', 'F'],
     pillars: 'Stronger than yesterday',
     script: 'Discipline builds freedom.',
     closing: 'Stronger in faith. Stronger in purpose.',
     verse: { text: 'For the Spirit God gave us does not make us timid, but gives us power, love and self-discipline.', ref: '2 Timothy 1:7' },
-    welcomeImage: '/brand/faith-over-flesh-welcome.jpg',
+    welcomeImage: null, // the Faith Over Flesh wallpaper shows the old name; add new Fidoryn art here
     card: { bg: '#171817', ink: '#F2EDE4' },
     audience: 'For men',
     short: 'Men',
@@ -125,7 +125,11 @@ export const BRAND_ART = {
     tiles: { programs: ES + 'discipline.jpg', devotions: ES + 'rest-and-renew.jpg', community: ES + 'unbreakable.jpg', coaches: ES + 'foundation.jpg' },
   },
   men: {
-    poster: FOF + 'poster.jpg',
+    poster: '/brand/fidoryn/hero.jpg',
+    posterPosition: '82% center',
+    // Welcome-page artwork. It doesn't include the name, so the page shows it.
+    hero: '/brand/fidoryn/hero.jpg',
+    heroPosition: '82% center',
     devotionArt: FOF + 'devotion-art.jpg',
     levels: { beginner: FOF + 'foundation.jpg', experienced: FOF + 'built-in-faith.jpg' },
     tracks: {
@@ -134,6 +138,9 @@ export const BRAND_ART = {
       'Grit & Glory': FOF + 'legs.jpg',
       'Strong & Steadfast': FOF + 'push.jpg',
       'Faith Foundations': FOF + 'discipline.jpg',
+      'Stronger Than Yesterday': FOF + 'foundation.jpg',
+      'Unbreakable Kingdom': FOF + 'built-in-faith.jpg',
+      'Faith Forged': FOF + 'push.jpg',
     },
     days: { legs: FOF + 'legs.jpg', push: FOF + 'push.jpg', pull: FOF + 'pull.jpg', rest: FOF + 'rest.jpg' },
     splits: [FOF + 'legs.jpg', FOF + 'push.jpg', FOF + 'pull.jpg', FOF + 'discipline.jpg'],
@@ -325,6 +332,9 @@ export const TRACK_TILES = {
   'Grit & Glory': { image: null, tone: 'ink' },
   'Strong & Steadfast': { image: null, tone: 'gold' },
   'Faith Foundations': { image: null, tone: 'ink' },
+  'Stronger Than Yesterday': { image: null, tone: 'olive' },
+  'Unbreakable Kingdom': { image: null, tone: 'ink' },
+  'Faith Forged': { image: null, tone: 'gold' },
 };
 // Placeholder colors for the sessions-per-week cards, in order
 export const SESSION_TONES = ['olive', 'gold', 'ink', 'sage'];

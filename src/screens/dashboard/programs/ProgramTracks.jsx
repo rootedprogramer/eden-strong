@@ -9,12 +9,13 @@ import { useTheme } from '../../../theme/ThemeContext';
 
 // Step 2: choose the program (Rooted & Rising, Vessel & Valor, Grit & Glory)
 export default function ProgramTracks() {
-  const art = brandArt(useTheme().path);
+  const brand = useTheme().path;
+  const art = brandArt(brand);
   const { level } = useParams();
   const [tracks, setTracks] = useState(null);
 
   useEffect(() => {
-    loadPrograms().then(({ programs }) => {
+    loadPrograms(brand).then(({ programs }) => {
       const byTrack = {};
       programs
         .filter((p) => p.level_key === level)
