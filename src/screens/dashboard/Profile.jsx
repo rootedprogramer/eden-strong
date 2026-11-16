@@ -113,7 +113,7 @@ function CoupleCard({ profile }) {
       {couple && !couple.partner_b && (
         <>
           <div style={{ fontFamily: FONTS.body, fontSize: 14, color: COLORS.ink, marginTop: 8, lineHeight: 1.5 }}>
-            Have your spouse sign up for One Accord, then enter this code on their Profile page:
+            Have your spouse sign up for Everlasting Love, then enter this code on their Profile page:
           </div>
           <div style={{ fontFamily: FONTS.body, fontSize: 28, fontWeight: 600, letterSpacing: '0.2em', color: 'var(--es-primary)', marginTop: 12 }}>
             {couple.invite_code}

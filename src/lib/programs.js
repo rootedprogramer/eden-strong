@@ -30,7 +30,8 @@ export async function loadPrograms(editionId) {
     const first = String(text || '').toLowerCase().split(/[^a-z]/)[0];
     return first === 'beginner' || first === '' ? 'beginner' : 'experienced';
   };
-  const normalize = (key) => (key ? (key === 'beginner' ? 'beginner' : 'experienced') : null);
+  // 'home' is its own group: at-home programs with no level to choose
+  const normalize = (key) => (key ? (key === 'beginner' || key === 'home' ? key : 'experienced') : null);
 
   const trackLevel = {};
   [...rows]

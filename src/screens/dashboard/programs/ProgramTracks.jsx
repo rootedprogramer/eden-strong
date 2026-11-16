@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { PROGRAM_TILES, TRACK_TILES, brandArt } from '../../../brand/tokens';
 import SubHeader from '../../../components/SubHeader';
 import HomeTile from '../../../components/HomeTile';
@@ -13,12 +13,18 @@ export default function ProgramTracks() {
   const art = brandArt(brand);
   const { level } = useParams();
   const [tracks, setTracks] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadPrograms(brand).then(({ programs }) => {
       const byTrack = {};
-      programs
-        .filter((p) => p.level_key === level)
+      const matching = programs.filter((p) => p.level_key === level);
+      // At home there's no level or split to pick: one program opens straight away
+      if (level === 'home' && matching.length === 1) {
+        navigate(`/dashboard/programs/view/${matching[0].id}`, { replace: true });
+        return;
+      }
+      matching
         .sort((a, b) => (a.days_per_week || 0) - (b.days_per_week || 0))
         .forEach((p) => {
           if (!byTrack[p.track]) byTrack[p.track] = { name: p.track, description: p.description, splits: [] };

@@ -7,6 +7,7 @@ import { Button, Card, Field, Heading, Note, Row, Select, SubHeading, TextArea, 
 import { EDITION_OPTIONS, MEALS } from '../../lib/admin';
 import { WEEKDAYS } from '../../lib/workout';
 import { supabase } from '../../lib/supabaseClient';
+import { formatServings } from '../../lib/mealPlans';
 import { AdminGate } from './AdminHome';
 
 export default function AdminMealPlanEditor() {
@@ -21,7 +22,7 @@ function Editor() {
   const [recipes, setRecipes] = useState([]);
   const [error, setError] = useState('');
   const [status, setStatus] = useState('');
-  const [adding, setAdding] = useState({ day: 1, meal: 'Breakfast', recipe: '' });
+  const [adding, setAdding] = useState({ day: 1, meal: 'Breakfast', recipe: '', servings: 1 });
 
   const loadItems = async () => {
     const { data } = await supabase.from('meal_plan_items').select('*').eq('plan_id', id);
@@ -31,7 +32,7 @@ function Editor() {
   useEffect(() => {
     (async () => {
       const { data } = await supabase.from('meal_plans').select('*').eq('id', id).maybeSingle();
-      setPlan(data ? { ...data, description: data.description || '', edition: data.edition || '' } : false);
+      setPlan(data ? { ...data, description: data.description || '', edition: data.edition || '', calories: data.calories ?? '', protein_min: data.protein_min ?? '', protein_max: data.protein_max ?? '', is_library: !!data.is_library } : false);
       const { data: rs } = await supabase.from('recipes').select('id, title, category, calories, protein');
       setRecipes((rs || []).sort((a, b) => a.title.localeCompare(b.title)));
       loadItems();
@@ -46,7 +47,11 @@ function Editor() {
   const saveDetails = async () => {
     setError('');
     if (!plan.title.trim()) return setError('Give the plan a title.');
-    const { error: err } = await supabase.from('meal_plans').update({ title: plan.title.trim(), description: plan.description || null, edition: plan.edition || null }).eq('id', id);
+    const num = (v) => (v === '' || v == null ? null : Number(v));
+    const { error: err } = await supabase.from('meal_plans').update({
+      title: plan.title.trim(), description: plan.description || null, edition: plan.edition || null,
+      calories: num(plan.calories), protein_min: num(plan.protein_min), protein_max: num(plan.protein_max), is_library: plan.is_library,
+    }).eq('id', id);
     if (err) return setError(err.message);
     setStatus('Saved.');
     setTimeout(() => setStatus(''), 2500);
@@ -59,10 +64,11 @@ function Editor() {
       day_number: Number(adding.day),
       meal: adding.meal,
       recipe_id: adding.recipe,
+      servings: Number(adding.servings) || 1,
       sort_order: MEALS.indexOf(adding.meal),
     });
     if (err) return setError(err.message);
-    setAdding((a) => ({ ...a, recipe: '' }));
+    setAdding((a) => ({ ...a, recipe: '', servings: 1 }));
     loadItems();
   };
 
@@ -72,7 +78,7 @@ function Editor() {
   };
 
   const copyDay = async (from, to) => {
-    const rows = items.filter((i) => i.day_number === from).map((i) => ({ plan_id: id, day_number: to, meal: i.meal, recipe_id: i.recipe_id, sort_order: i.sort_order }));
+    const rows = items.filter((i) => i.day_number === from).map((i) => ({ plan_id: id, day_number: to, meal: i.meal, recipe_id: i.recipe_id, servings: i.servings ?? 1, sort_order: i.sort_order }));
     if (!rows.length) return;
     await supabase.from('meal_plan_items').insert(rows);
     loadItems();
@@ -98,6 +104,14 @@ function Editor() {
             <TextArea value={plan.description} onChange={(v) => setPlan((p) => ({ ...p, description: v }))} rows={2} />
           </Field>
           <Field label="Who it’s for"><Select value={plan.edition} onChange={(v) => setPlan((p) => ({ ...p, edition: v }))} options={EDITION_OPTIONS} /></Field>
+          <Field label="Show in the meal plan library" hint="Library plans are open for every member to browse. Turn this off for a plan you assign to one person.">
+            <Select value={plan.is_library ? 'yes' : 'no'} onChange={(v) => setPlan((p) => ({ ...p, is_library: v === 'yes' }))} options={[['no', 'No, assigned plans only'], ['yes', 'Yes, members can browse it']]} />
+          </Field>
+          <Row>
+            <Field label="Calories" style={{ flex: 1 }}><TextInput inputMode="numeric" value={plan.calories} onChange={(v) => setPlan((p) => ({ ...p, calories: v.replace(/\D/g, '') }))} /></Field>
+            <Field label="Protein from (g)" style={{ flex: 1 }}><TextInput inputMode="numeric" value={plan.protein_min} onChange={(v) => setPlan((p) => ({ ...p, protein_min: v.replace(/\D/g, '') }))} /></Field>
+            <Field label="to (g)" style={{ flex: 1 }}><TextInput inputMode="numeric" value={plan.protein_max} onChange={(v) => setPlan((p) => ({ ...p, protein_max: v.replace(/\D/g, '') }))} /></Field>
+          </Row>
           {error && <Note tone="error">{error}</Note>}
           {status && <Note tone="ok">{status}</Note>}
           <Button onClick={saveDetails} style={{ marginTop: 14, width: '100%', justifyContent: 'center' }}>Save details</Button>
@@ -114,6 +128,7 @@ function Editor() {
             </Field>
           </Row>
           <Field label="Recipe"><Select value={adding.recipe} onChange={(v) => setAdding((a) => ({ ...a, recipe: v }))} options={recipeOptions} /></Field>
+          <Field label="Servings"><Select value={adding.servings} onChange={(v) => setAdding((a) => ({ ...a, servings: Number(v) }))} options={[0.5, 1, 1.5, 2, 2.5, 3].map((n) => [n, formatServings(n)])} /></Field>
           <Button onClick={addItem} disabled={!adding.recipe} style={{ marginTop: 12, width: '100%', justifyContent: 'center' }}><Plus size={16} /> Add to {WEEKDAYS[adding.day - 1]}</Button>
         </Card>
 
@@ -121,7 +136,7 @@ function Editor() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 10 }}>
           {WEEKDAYS.map((w, i) => {
             const dayItems = items.filter((it) => it.day_number === i + 1).sort((a, b) => MEALS.indexOf(a.meal) - MEALS.indexOf(b.meal));
-            const totals = dayItems.reduce((t, it) => ({ cal: t.cal + (byId[it.recipe_id]?.calories || 0), pro: t.pro + Number(byId[it.recipe_id]?.protein || 0) }), { cal: 0, pro: 0 });
+            const totals = dayItems.reduce((t, it) => { const s = Number(it.servings) || 1; return { cal: Math.round(t.cal + (byId[it.recipe_id]?.calories || 0) * s), pro: Math.round(t.pro + Number(byId[it.recipe_id]?.protein || 0) * s) }; }, { cal: 0, pro: 0 });
             return (
               <Card key={w} style={{ padding: 14 }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
@@ -132,7 +147,7 @@ function Editor() {
                 {dayItems.map((it) => (
                   <div key={it.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', borderBottom: `1px solid ${COLORS.line}` }}>
                     <span style={{ width: 72, flexShrink: 0, fontFamily: FONTS.body, fontSize: 12, fontWeight: 600, color: COLORS.mute }}>{it.meal}</span>
-                    <span style={{ flex: 1, fontFamily: FONTS.body, fontSize: 14, color: COLORS.ink }}>{byId[it.recipe_id]?.title || 'Recipe removed'}</span>
+                    <span style={{ flex: 1, fontFamily: FONTS.body, fontSize: 14, color: COLORS.ink }}>{byId[it.recipe_id]?.title || 'Recipe removed'}{Number(it.servings || 1) !== 1 && <span style={{ color: COLORS.mute }}> · {formatServings(it.servings)}</span>}</span>
                     <button onClick={() => removeItem(it.id)} aria-label="Remove meal" style={{ background: 'none', border: 'none', color: COLORS.mute, cursor: 'pointer', padding: 4 }}><X size={16} /></button>
                   </div>
                 ))}

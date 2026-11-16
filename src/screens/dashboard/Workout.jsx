@@ -117,9 +117,8 @@ export default function Workout() {
 
         {day.rest_note && <Callout>{day.rest_note}</Callout>}
 
-        {SECTIONS.map((sec, i) => {
+        {SECTIONS.filter((sec) => exercises.some((e) => sectionOf(e) === sec.key)).map((sec, i) => {
           const items = exercises.filter((e) => sectionOf(e) === sec.key);
-          if (!items.length) return null;
           return (
             <section key={sec.key} style={{ borderTop: i ? `1px solid ${COLORS.line}` : 'none', marginTop: 18, paddingTop: 18 }}>
               <h2 style={{ margin: 0, textAlign: 'center', fontFamily: FONTS.display, fontSize: 28, fontWeight: 500, color: COLORS.ink }}>{sec.label}</h2>

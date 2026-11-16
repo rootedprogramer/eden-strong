@@ -25,7 +25,7 @@ function FamilyLanding() {
 
   useEffect(() => {
     setPath('women');
-    document.title = 'Eden Strong, Fidoryn, One Accord';
+    document.title = 'Eden Strong, Fidoryn, Everlasting Love';
     document.body.style.background = IVORY;
   }, []);
 
@@ -113,8 +113,8 @@ function FamilyLanding() {
 function BrandLanding({ edition }) {
   const navigate = useNavigate();
   const art = brandArt(edition.id);
-  // Brand artwork that already shows the name (Eden Strong, One Accord), or a
-  // photo without it (Fidoryn), in which case the name is shown below it
+  // Brand artwork that already shows the name (Eden Strong), or a
+  // photo without it (Fidoryn), or none yet (Everlasting Love), in which case the name is shown below it
   const hero = art.hero || (edition.welcomeImage && edition.welcomeFit !== 'contain' ? edition.welcomeImage : art.poster);
   const heroHasName = hero && !art.hero;
 

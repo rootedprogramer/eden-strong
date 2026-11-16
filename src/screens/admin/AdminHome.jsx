@@ -183,7 +183,7 @@ function ProgramsTab() {
           <div style={{ fontFamily: FONTS.display, fontSize: 22, color: COLORS.ink }}>{track}</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
             {groups[track].sort((a, b) => (a.days_per_week || 0) - (b.days_per_week || 0)).map((p) => (
-              <ListLink key={p.id} to={`/dashboard/admin/programs/${p.id}`} title={p.title} sub={[p.level_key === 'beginner' ? 'Beginner' : 'Experienced', p.edition ? `${getEdition(p.edition)?.name} only` : Array.isArray(p.editions) && p.editions.length ? p.editions.map((e) => getEdition(e)?.name).join(' + ') : 'All brands'].filter(Boolean).join(', ')} />
+              <ListLink key={p.id} to={`/dashboard/admin/programs/${p.id}`} title={p.title} sub={[p.level_key === 'beginner' ? 'Beginner' : p.level_key === 'home' ? 'At home' : 'Experienced', p.edition ? `${getEdition(p.edition)?.name} only` : Array.isArray(p.editions) && p.editions.length ? p.editions.map((e) => getEdition(e)?.name).join(' + ') : 'All brands'].filter(Boolean).join(', ')} />
             ))}
           </div>
         </div>

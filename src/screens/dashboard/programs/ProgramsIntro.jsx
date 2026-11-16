@@ -34,7 +34,7 @@ export default function ProgramsIntro() {
 
         <div style={{ marginTop: 28 }}>
           <div style={{ fontFamily: FONTS.body, fontSize: 13, fontWeight: 600, color: COLORS.gold }}>Start here</div>
-          <PageIntro title="Choose your level">You can always change it later.</PageIntro>
+          <PageIntro title="Choose where to start">You can always change it later.</PageIntro>
         </div>
 
         {state === null && <Muted style={{ marginTop: 16 }}>Loading…</Muted>}
@@ -56,7 +56,7 @@ export default function ProgramsIntro() {
               title={PROGRAM_TILES[l].title}
               sub={LEVEL_BLURBS[l]}
               to={`/dashboard/programs/level/${l}`}
-              image={PROGRAM_TILES[l].image || art.levels[l]}
+              image={PROGRAM_TILES[l].image || art.levels[l] || null}
               tone={PROGRAM_TILES[l].tone}
             />
           ))}

@@ -20,12 +20,14 @@ export const EDITION_OPTIONS = [
   ['', 'Every edition'],
   ['women', 'Eden Strong only (women)'],
   ['men', 'Fidoryn only (men)'],
-  ['together', 'One Accord only (couples)'],
+  ['together', 'Everlasting Love only (couples)'],
 ];
 export const RECIPE_CATEGORY_OPTIONS = ['Smoothies', 'Snacks', 'Breakfasts', 'Lunches', 'Dinners', 'Desserts'];
 export const MEALS = ['Breakfast', 'Snack', 'Lunch', 'Dinner', 'Dessert'];
 export const SECTION_OPTIONS = [
+  ['warmup', 'Warm up'],
   ['mobility', 'Mobility'],
+  ['activation', 'Glute activation'],
   ['workout', 'Workout'],
   ['abs', 'Ab circuit'],
   ['core', 'Deep core finisher'],

@@ -4,7 +4,7 @@ import { Pencil, Plus, Search, Trash2, ChevronRight, History } from 'lucide-reac
 import { COLORS, FONTS, tint } from '../../brand/tokens';
 import WeekStrip from '../../components/WeekStrip';
 import Sheet, { fieldLabel, fieldInput, primaryButton } from '../../components/Sheet';
-import { loadMyMealPlan } from './MealPlan';
+import { loadMyMealPlan } from '../../lib/mealPlans';
 import { WEEKDAYS, weekdayNumber, todayISO } from '../../lib/workout';
 import { SPLITS, macrosFor, pctFromGoal, splitIdFor, scaleFood, searchFoods } from '../../lib/nutrition';
 import { supabase } from '../../lib/supabaseClient';
@@ -79,6 +79,7 @@ export default function Nutrition() {
       <WeekStrip />
 
       <MealPlanCard />
+      <MealPlansLink />
 
       {/* Today's numbers */}
       {!loading && !goal && (
@@ -502,6 +503,19 @@ const chip = (on) => ({
   cursor: 'pointer',
 });
 
+// Entry to the meal plan library
+function MealPlansLink() {
+  return (
+    <Link to="/dashboard/nutrition/meal-plans" style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 14, padding: '16px 18px', borderRadius: 18, background: COLORS.surface, border: `1px solid ${COLORS.line}`, textDecoration: 'none' }}>
+      <span style={{ flex: 1 }}>
+        <span style={{ display: 'block', fontFamily: FONTS.display, fontSize: 22, color: COLORS.ink }}>Meal plans</span>
+        <span style={{ display: 'block', fontFamily: FONTS.body, fontSize: 13, color: COLORS.mute, marginTop: 3, lineHeight: 1.45 }}>Full example weeks for your calorie and protein goal</span>
+      </span>
+      <ChevronRight size={20} color={COLORS.ink} aria-hidden="true" />
+    </Link>
+  );
+}
+
 // Shows the member's assigned meal plan, with today's meals, when they have one
 function MealPlanCard() {
   const [data, setData] = useState(undefined);
@@ -510,7 +524,7 @@ function MealPlanCard() {
   const today = weekdayNumber();
   const meals = data.items.filter((i) => i.day_number === today);
   return (
-    <Link to="/dashboard/nutrition/plan" style={{ display: 'block', marginTop: 20, padding: 18, borderRadius: 18, background: COLORS.deep, textDecoration: 'none' }}>
+    <Link to={`/dashboard/nutrition/meal-plans/${data.plan.id}`} style={{ display: 'block', marginTop: 20, padding: 18, borderRadius: 18, background: COLORS.deep, textDecoration: 'none' }}>
       <div style={{ fontFamily: FONTS.body, fontSize: 12, fontWeight: 600, color: COLORS.rose }}>Your meal plan</div>
       <div style={{ fontFamily: FONTS.display, fontSize: 24, color: '#fff', marginTop: 4 }}>{data.plan.title}</div>
       <div style={{ fontFamily: FONTS.body, fontSize: 13, color: 'rgba(255,255,255,0.85)', marginTop: 8, lineHeight: 1.5 }}>

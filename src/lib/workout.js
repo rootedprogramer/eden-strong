@@ -7,7 +7,9 @@ export const todayISO = () => {
 
 // Order and labels for the sections of a workout day
 export const SECTIONS = [
+  { key: 'warmup', label: 'Warm up', tone: 'olive' },
   { key: 'mobility', label: 'Mobility', tone: 'sage' },
+  { key: 'activation', label: 'Glute activation', tone: 'rose' },
   { key: 'workout', label: 'Workout', tone: 'ink' },
   { key: 'abs', label: 'Ab circuit', tone: 'gold' },
   { key: 'core', label: 'Deep core finisher', tone: 'gold' },

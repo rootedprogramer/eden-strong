@@ -1,5 +1,5 @@
 // Tap Cook — ingredient catalog, recipe matching, and the member's kitchen
-// (pantry + grocery list). In One Accord, linked spouses share one
+// (pantry + grocery list). In Everlasting Love, linked spouses share one
 // kitchen: the database lets each spouse read and change the other's rows.
 
 import { supabase } from './supabaseClient';

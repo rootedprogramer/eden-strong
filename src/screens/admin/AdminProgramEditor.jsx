@@ -10,7 +10,7 @@ import { supabase } from '../../lib/supabaseClient';
 import { AdminGate } from './AdminHome';
 
 const blankProgram = { title: '', track: '', level_key: 'beginner', days_per_week: 3, weeks: 6, location: 'gym', brands: ['women', 'men', 'together'], description: '', guide: '', core_note: '' };
-const BRANDS = [['women', 'Eden Strong'], ['men', 'Fidoryn'], ['together', 'One Accord']];
+const BRANDS = [['women', 'Eden Strong'], ['men', 'Fidoryn'], ['together', 'Everlasting Love']];
 
 // Saved as edition (one brand), editions (several), or neither (all three)
 function brandsFrom(p) {
@@ -68,7 +68,7 @@ function Editor() {
       title: program.title.trim(),
       track: program.track.trim() || program.title.split(/\s[—–-]\s/)[0].trim(),
       level_key: program.level_key,
-      level: program.level_key === 'beginner' ? 'Beginner' : 'Experienced',
+      level: program.level_key === 'beginner' ? 'Beginner' : program.level_key === 'home' ? 'At home' : 'Experienced',
       days_per_week: Number(program.days_per_week) || 3,
       weeks: Number(program.weeks) || 6,
       location: program.location || 'gym',
@@ -125,7 +125,7 @@ function Editor() {
           </Field>
           <Row>
             <Field label="Level" style={{ flex: 1 }}>
-              <Select value={program.level_key} onChange={set('level_key')} options={[['beginner', 'Beginner'], ['experienced', 'Experienced']]} />
+              <Select value={program.level_key} onChange={set('level_key')} options={[['beginner', 'Beginner'], ['experienced', 'Experienced'], ['home', 'At home (no level)']]} />
             </Field>
           </Row>
           <Field label="Who sees it">

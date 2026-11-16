@@ -18,6 +18,7 @@ import Recipe from './screens/dashboard/Recipe';
 import DailyBread from './screens/dashboard/DailyBread';
 import CookRecipe from './screens/dashboard/CookRecipe';
 import MealPlan from './screens/dashboard/MealPlan';
+import MealPlans from './screens/dashboard/MealPlans';
 import AdminHome from './screens/admin/AdminHome';
 import AdminProgramEditor from './screens/admin/AdminProgramEditor';
 import AdminRecipeEditor from './screens/admin/AdminRecipeEditor';
@@ -69,6 +70,8 @@ export default function App() {
           <Route path="nutrition/tap-cook" element={<Navigate to="/dashboard/nutrition/daily-bread" replace />} />
           <Route path="nutrition/cook/:id" element={<CookRecipe />} />
           <Route path="nutrition/plan" element={<MealPlan />} />
+          <Route path="nutrition/meal-plans" element={<MealPlans />} />
+          <Route path="nutrition/meal-plans/:id" element={<MealPlan />} />
           <Route path="admin" element={<AdminHome />} />
           <Route path="admin/programs/:id" element={<AdminProgramEditor />} />
           <Route path="admin/recipes/:id" element={<AdminRecipeEditor />} />

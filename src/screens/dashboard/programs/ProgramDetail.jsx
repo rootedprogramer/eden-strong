@@ -91,7 +91,7 @@ export default function ProgramDetail() {
             {program.track || program.title}
           </div>
           <div style={{ fontFamily: FONTS.body, fontSize: 13, color: 'rgba(255,255,255,0.92)', marginTop: 6 }}>
-            {program.days_per_week} sessions a week, {program.weeks} weeks, {program.level_key === 'beginner' || (!program.level_key && /^beginner/i.test(program.level || '')) ? 'Beginner' : 'Experienced'}
+            {program.days_per_week} sessions a week, {program.weeks} weeks, {program.level_key === 'home' ? 'At home' : program.level_key === 'beginner' || (!program.level_key && /^beginner/i.test(program.level || '')) ? 'Beginner' : 'Experienced'}
           </div>
         </div>
       </div>

@@ -9,7 +9,7 @@ import Monogram from './Monogram';
 //
 // Eden Strong:      the leaf everywhere
 // Fidoryn: rugged cross (feature), mountains (program), F✝F (small)
-// One Accord:       O✝A (feature, small), sunset mountains (program)
+// Everlasting Love: E✝L (feature, small), sunset mountains (program)
 
 export function RuggedCross({ size = 100, color = 'currentColor' }) {
   return (
@@ -44,7 +44,7 @@ export function BrandMark({ kind = 'small', size = 40, color = 'currentColor' })
     if (kind === 'feature') return <RuggedCross size={size} color={color} />;
     return <Monogram letters={['F', 'F']} size={size} color={color} />;
   }
-  if (path === 'together') return <Monogram letters={['O', 'A']} size={size} color={color} />;
+  if (path === 'together') return <Monogram letters={['E', 'L']} size={size} color={color} />;
   return <Sprig size={size} color={color} />;
 }
 

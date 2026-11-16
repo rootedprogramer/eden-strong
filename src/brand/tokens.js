@@ -1,5 +1,5 @@
 // Brand tokens for the three communities: Eden Strong (women),
-// Fidoryn (men), and One Accord (couples)
+// Fidoryn (men), and Everlasting Love (couples)
 // Identity: garden/sanctuary meets quiet strength — devotional without heaviness,
 // strong without aggression.
 
@@ -84,15 +84,14 @@ export const EDITIONS = {
   },
   together: {
     id: 'together',
-    name: 'One Accord',
-    wordmark: ['One', 'Accord'],
-    monogram: ['O', 'A'],
+    name: 'Everlasting Love',
+    wordmark: ['Everlasting', 'Love'],
+    monogram: ['E', 'L'],
     pillars: 'United in Christ. Stronger together.',
     script: 'Two hearts. One foundation. One purpose.',
     closing: 'Walk with Him. Grow together.',
     verse: { text: 'Two are better than one, because they have a good reward for their toil.', ref: 'Ecclesiastes 4:9' },
-    welcomeImage: '/brand/one-accord/welcome.jpg',
-    welcomeFit: 'contain',
+    welcomeImage: null, // the old couples artwork shows "One Accord"; add new Everlasting Love art here
     card: { bg: '#656D56', ink: '#F5F0E8' },
     audience: 'For couples',
     short: 'Couples',
@@ -147,7 +146,9 @@ export const BRAND_ART = {
     tiles: { programs: FOF + 'discipline.jpg', devotions: FOF + 'built-in-faith.jpg', community: FOF + 'foundation.jpg', coaches: FOF + 'pull.jpg' },
   },
   together: {
-    poster: OA + 'poster.jpg',
+    // The old poster shows "One Accord", so the brand-family card uses the sunset photo
+    poster: OA + 'sunset.jpg',
+    posterPosition: '40% center',
     devotionArt: null,
     levels: { beginner: OA + 'sitting.jpg', experienced: OA + 'side-by-side.jpg' },
     tracks: {
@@ -315,14 +316,15 @@ export const SUPPORT_EMAIL = '';
 // solid color block. tone picks that color.
 export const PROGRAM_TILES = {
   gym: { title: 'Gym', image: null, tone: 'ink' },
-  home: { title: 'Home', image: null, tone: 'olive' },
+  home: { title: 'At home', image: null, tone: 'olive' },
   beginner: { title: 'Beginner', image: null, tone: 'sage' },
   experienced: { title: 'Experienced', image: null, tone: 'ink' },
 };
-export const LEVEL_ORDER = ['beginner', 'experienced'];
+export const LEVEL_ORDER = ['beginner', 'experienced', 'home'];
 export const LEVEL_BLURBS = {
   beginner: 'New to training, or coming back after time away.',
   experienced: 'Comfortable in the gym and ready to push.',
+  home: 'Train at home with dumbbells and a band.',
 };
 // Cards for each program on the program-selection page. Add a photo path to
 // image when you have one, e.g. '/programs/grit-and-glory.jpg'.

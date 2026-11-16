@@ -41,7 +41,7 @@ export const PATHS = {
     line: '#33342F',
   },
 
-  // One Accord (couples): obsidian with olive and ivory. Dark.
+  // Everlasting Love (couples): obsidian with olive and ivory. Dark.
   together: {
     dark: true,
     ink: '#F5F0E8',     // ivory text; buttons are ivory with dark text
