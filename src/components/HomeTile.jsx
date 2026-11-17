@@ -6,8 +6,16 @@ import CardArt from './BrandArt';
 // Large photo card with the title over the bottom of the image. Until a photo
 // is added, it shows a solid block in one of the edition's colors with a
 // faint sprig, so the page still looks finished.
-export default function HomeTile({ title, sub, to, image, tone = 'ink', height = 210, art = 'feature' }) {
+export default function HomeTile({ title, sub, to, image, tone = 'ink', height = 210, art = 'feature', textInImage = false }) {
   const base = toneColor(tone);
+  // Artwork that already shows the title: show the whole picture, no overlay
+  if (image && textInImage) {
+    return (
+      <Link to={to} aria-label={sub ? `${title}: ${sub}` : title} style={{ display: 'block', borderRadius: 22, overflow: 'hidden', background: base }}>
+        <img src={image} alt="" style={{ display: 'block', width: '100%', height: 'auto' }} />
+      </Link>
+    );
+  }
   return (
     <Link
       to={to}

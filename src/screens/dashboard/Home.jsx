@@ -294,7 +294,7 @@ export default function DashboardHome() {
       {/* Big photo cards */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 30 }}>
         {HOME_TILES.filter((t) => !t.editions || t.editions.includes(edition?.id)).map((t) => (
-          <HomeTile key={t.id} {...t} image={t.image || art.tiles[t.id] || null} />
+          <HomeTile key={t.id} {...t} image={t.image || art.tiles[t.id] || null} textInImage={!t.image && (art.tilesWithText || []).includes(t.id)} />
         ))}
       </div>
 
