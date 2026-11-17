@@ -121,9 +121,19 @@ export const BRAND_ART = {
     },
     days: { legs: ES + 'grace-and-strength.jpg', push: ES + 'power-and-purpose.jpg', pull: ES + 'back-and-resilience.jpg', rest: ES + 'rest-and-renew.jpg' },
     splits: [ES + 'grace-and-strength.jpg', ES + 'power-and-purpose.jpg', ES + 'back-and-resilience.jpg', ES + 'discipline.jpg'],
-    tiles: { programs: ES + 'discipline.jpg', nutrition: ES + 'nutrition.jpg', devotions: ES + 'rest-and-renew.jpg', community: ES + 'unbreakable.jpg', coaches: ES + 'foundation.jpg' },
+    tiles: {
+      programs: ES + 'tile-fitness.jpg',
+      nutrition: ES + 'tile-nutrition.jpg',
+      mind: ES + 'tile-renew.jpg',
+      glow: ES + 'tile-glow.jpg',
+      devotions: ES + 'tile-devotions.jpg',
+      community: ES + 'unbreakable.jpg',
+      coaches: ES + 'foundation.jpg',
+    },
     // Tile art that already has its title in the picture: shown whole, with no text on top
-    tilesWithText: ['nutrition'],
+    tilesWithText: ['programs', 'nutrition', 'mind', 'glow', 'devotions'],
+    // Home page order for Eden Strong (tiles not listed follow in their usual order)
+    tileOrder: ['mind', 'glow', 'devotions', 'nutrition', 'programs'],
   },
   men: {
     poster: '/brand/fidoryn/hero.jpg',
