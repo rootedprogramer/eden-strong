@@ -28,6 +28,7 @@ import MindTool from './screens/dashboard/mind/MindTool';
 import MindVerses from './screens/dashboard/mind/MindVerses';
 import MindHelp from './screens/dashboard/mind/MindHelp';
 import { JournalList, JournalEntry } from './screens/dashboard/mind/Journal';
+import { HeartPaths, HeartPath, HeartLesson } from './screens/dashboard/mind/Heart';
 import AdminHome from './screens/admin/AdminHome';
 import AdminProgramEditor from './screens/admin/AdminProgramEditor';
 import AdminRecipeEditor from './screens/admin/AdminRecipeEditor';
@@ -88,6 +89,9 @@ export default function App() {
           <Route path="mind/journal/:id" element={<JournalEntry />} />
           <Route path="mind/verses" element={<MindVerses />} />
           <Route path="mind/help" element={<MindHelp />} />
+          <Route path="mind/heart" element={<HeartPaths />} />
+          <Route path="mind/heart/lesson/:slug" element={<HeartLesson />} />
+          <Route path="mind/heart/:path" element={<HeartPath />} />
           <Route path="glow" element={<Glow />} />
           <Route path="glow/routine" element={<GlowRoutine />} />
           <Route path="glow/item/:slug" element={<GlowItem />} />

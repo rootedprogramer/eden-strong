@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookHeart, ChevronRight, LifeBuoy, NotebookPen, Wind, Anchor, HandHeart, Lightbulb, ScanLine, Moon, Sparkles } from 'lucide-react';
+import { BookHeart, ChevronRight, Heart, Tags, LifeBuoy, NotebookPen, Wind, Anchor, HandHeart, Lightbulb, ScanLine, Moon, Sparkles } from 'lucide-react';
 import { COLORS, FONTS, tint, toneColor } from '../../../brand/tokens';
 import SubHeader from '../../../components/SubHeader';
 import { todayISO } from '../../../lib/workout';
 import { FEELINGS, MOODS, TOOLS, loadCheckins, loadJournal, moodOf, saveCheckin } from '../../../lib/mind';
 
-const TOOL_ICONS = { box: Wind, 'breath-prayer': Sparkles, ground: Anchor, cares: HandHeart, reframe: Lightbulb, 'body-scan': ScanLine, '478': Moon };
+const TOOL_ICONS = { feelings: Tags, box: Wind, 'breath-prayer': Sparkles, ground: Anchor, cares: HandHeart, reframe: Lightbulb, 'body-scan': ScanLine, '478': Moon };
 
 // Renew home: daily check-in, calming tools, journal, and help.
 export default function Mind() {
@@ -24,7 +24,7 @@ export default function Mind() {
       <div style={{ padding: '4px 16px 48px' }}>
         <h1 style={{ margin: 0, fontFamily: FONTS.display, fontSize: 34, fontWeight: 500, color: COLORS.ink }}>Renew</h1>
         <p style={{ margin: '6px 0 0', fontFamily: FONTS.body, fontSize: 15, color: COLORS.mute, lineHeight: 1.5 }}>
-          Care for your mind and heart: check in, slow down, and write it out with God.
+          Care for your mind and heart: check in, calm down, do the heart work, and write it out with God.
         </p>
         <figure style={{ margin: '16px 0 0', padding: '16px 18px', borderRadius: 18, background: tint(COLORS.sage, 26) }}>
           <blockquote style={{ margin: 0, fontFamily: FONTS.display, fontSize: 19, lineHeight: 1.4, color: COLORS.ink }}>
@@ -50,6 +50,18 @@ export default function Mind() {
             );
           })}
         </div>
+
+        <h2 style={h2}>Heart Work</h2>
+        <Link to="/dashboard/mind/heart" style={{ display: 'block', marginTop: 12, padding: 18, borderRadius: 20, background: COLORS.surface, border: `1px solid ${COLORS.line}`, textDecoration: 'none' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Heart size={24} color={COLORS.rose} aria-hidden="true" />
+            <span style={{ flex: 1 }}>
+              <span style={{ display: 'block', fontFamily: FONTS.display, fontSize: 20, color: COLORS.ink }}>Guided lessons for your heart</span>
+              <span style={{ display: 'block', fontFamily: FONTS.body, fontSize: 13, color: COLORS.mute, marginTop: 2, lineHeight: 1.45 }}>Emotions, boundaries, forgiveness and grief, self-worth and rest</span>
+            </span>
+            <ChevronRight size={20} color={COLORS.ink} />
+          </span>
+        </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 28 }}>
           <h2 style={{ ...h2, marginTop: 0 }}>Journal</h2>

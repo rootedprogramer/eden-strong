@@ -96,6 +96,7 @@ export const PROMPT_GROUPS = [
 ];
 
 export const TOOLS = [
+  { id: 'feelings', title: 'Name Your Feeling', sub: 'Find the exact word for what you feel, and what you need', time: '2 min', tone: 'rose' },
   { id: 'box', title: 'Box Breathing', sub: 'Steady, even breaths to calm your body', time: '1-2 min', tone: 'sage' },
   { id: 'breath-prayer', title: 'Breath Prayer', sub: 'Pray scripture as you breathe', time: '2 min', tone: 'gold' },
   { id: 'ground', title: '5-4-3-2-1 Grounding', sub: 'Come back to the present with your senses', time: '3 min', tone: 'olive' },

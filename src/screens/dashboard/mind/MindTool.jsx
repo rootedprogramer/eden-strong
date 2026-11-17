@@ -5,13 +5,14 @@ import { COLORS, FONTS, tint } from '../../../brand/tokens';
 import SubHeader from '../../../components/SubHeader';
 import { ding, primeDing } from '../../../lib/ding';
 import { BREATH_PRAYERS, FEELINGS, saveEntry, toolOf, versesFor } from '../../../lib/mind';
+import { NEEDS, WHEEL, WORD_VERSES } from '../../../lib/heart';
 
 export default function MindTool() {
   const { id } = useParams();
   const tool = toolOf(id);
   if (!tool) return <Navigate to="/dashboard/mind" replace />;
   const Body = {
-    box: BoxBreathing, '478': FourSevenEight, 'breath-prayer': BreathPrayer,
+    feelings: FeelingsWheel, box: BoxBreathing, '478': FourSevenEight, 'breath-prayer': BreathPrayer,
     ground: Grounding, 'body-scan': BodyScan, cares: CastCares, reframe: Reframe,
   }[id];
   return (
@@ -23,6 +24,68 @@ export default function MindTool() {
         <Body />
       </div>
     </>
+  );
+}
+
+// ---------- Feelings wheel ----------
+function FeelingsWheel() {
+  const [core, setCore] = useState(null);
+  const [word, setWord] = useState(null);
+  const [needs, setNeeds] = useState([]);
+  const c = WHEEL.find((w) => w.core === core);
+  const verse = word ? versesFor(WORD_VERSES[word] || c.verses)[0] : null;
+  const prompt = word ? `I feel ${word.toLowerCase()} because…${needs.length ? ` What I need right now: ${needs.join(', ').toLowerCase()}.` : ''}` : '';
+
+  return (
+    <div style={{ marginTop: 18 }}>
+      <div style={fieldLabel}>{core ? 'Which word fits best?' : 'What’s the big feeling?'}</div>
+      {!core ? (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 12 }}>
+          {WHEEL.map((w) => (
+            <button key={w.core} onClick={() => setCore(w.core)} style={{ padding: '22px 10px', borderRadius: 18, border: 'none', cursor: 'pointer', background: w.color, color: '#fff', fontFamily: FONTS.display, fontSize: 22 }}>
+              {w.core}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
+            {c.words.map((wd) => (
+              <button key={wd} onClick={() => setWord(wd)} aria-pressed={word === wd}
+                style={{ padding: '10px 16px', borderRadius: 999, cursor: 'pointer', border: `2px solid ${c.color}`, background: word === wd ? c.color : 'transparent', color: word === wd ? '#fff' : COLORS.ink, fontFamily: FONTS.body, fontSize: 15, fontWeight: 600 }}>
+                {wd}
+              </button>
+            ))}
+          </div>
+          <button onClick={() => { setCore(null); setWord(null); setNeeds([]); }} style={{ marginTop: 10, border: 'none', background: 'none', padding: 0, fontFamily: FONTS.body, fontSize: 13, color: COLORS.mute, cursor: 'pointer' }}>← Pick a different feeling</button>
+        </>
+      )}
+
+      {word && (
+        <>
+          <div style={{ marginTop: 22, padding: 18, borderRadius: 18, background: tint(c.color, 22), textAlign: 'center' }}>
+            <div style={{ fontFamily: FONTS.display, fontSize: 26, color: COLORS.ink }}>“I feel {word.toLowerCase()}.”</div>
+            <div style={{ fontFamily: FONTS.body, fontSize: 14, color: COLORS.ink, marginTop: 6, lineHeight: 1.5 }}>Say it to God. Naming it is the first step. It doesn’t have to be fixed right now.</div>
+          </div>
+          <div style={{ ...fieldLabel, marginTop: 20 }}>What might you need?</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+            {NEEDS.map((n) => (
+              <button key={n} onClick={() => setNeeds((cur) => (cur.includes(n) ? cur.filter((x) => x !== n) : [...cur, n]))} aria-pressed={needs.includes(n)}
+                style={{ padding: '7px 12px', borderRadius: 999, cursor: 'pointer', border: `1px solid ${needs.includes(n) ? COLORS.ink : COLORS.line}`, background: needs.includes(n) ? COLORS.ink : 'transparent', color: needs.includes(n) ? COLORS.bg : COLORS.ink, fontFamily: FONTS.body, fontSize: 13, fontWeight: 600 }}>
+                {n}
+              </button>
+            ))}
+          </div>
+          {verse && (
+            <figure style={{ margin: '20px 0 0', paddingLeft: 14, borderLeft: `2px solid ${COLORS.gold}` }}>
+              <blockquote style={{ margin: 0, fontFamily: FONTS.display, fontSize: 18, lineHeight: 1.45, color: COLORS.ink }}>{verse[0]}</blockquote>
+              <figcaption style={{ marginTop: 4, fontFamily: FONTS.body, fontSize: 13, fontWeight: 600, color: COLORS.mute }}>{verse[1]}</figcaption>
+            </figure>
+          )}
+          <Link to={`/dashboard/mind/journal/new?prompt=${encodeURIComponent(prompt)}`} style={{ ...bigButton, display: 'block', textAlign: 'center', textDecoration: 'none' }}>Journal about it</Link>
+        </>
+      )}
+    </div>
   );
 }
 
