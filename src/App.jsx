@@ -19,6 +19,15 @@ import DailyBread from './screens/dashboard/DailyBread';
 import CookRecipe from './screens/dashboard/CookRecipe';
 import MealPlan from './screens/dashboard/MealPlan';
 import MealPlans from './screens/dashboard/MealPlans';
+import Glow from './screens/dashboard/glow/Glow';
+import GlowList from './screens/dashboard/glow/GlowList';
+import GlowItem from './screens/dashboard/glow/GlowItem';
+import GlowRoutine from './screens/dashboard/glow/GlowRoutine';
+import Mind from './screens/dashboard/mind/Mind';
+import MindTool from './screens/dashboard/mind/MindTool';
+import MindVerses from './screens/dashboard/mind/MindVerses';
+import MindHelp from './screens/dashboard/mind/MindHelp';
+import { JournalList, JournalEntry } from './screens/dashboard/mind/Journal';
 import AdminHome from './screens/admin/AdminHome';
 import AdminProgramEditor from './screens/admin/AdminProgramEditor';
 import AdminRecipeEditor from './screens/admin/AdminRecipeEditor';
@@ -72,6 +81,17 @@ export default function App() {
           <Route path="nutrition/plan" element={<MealPlan />} />
           <Route path="nutrition/meal-plans" element={<MealPlans />} />
           <Route path="nutrition/meal-plans/:id" element={<MealPlan />} />
+          <Route path="mind" element={<Mind />} />
+          <Route path="mind/tool/:id" element={<MindTool />} />
+          <Route path="mind/journal" element={<JournalList />} />
+          <Route path="mind/journal/new" element={<JournalEntry />} />
+          <Route path="mind/journal/:id" element={<JournalEntry />} />
+          <Route path="mind/verses" element={<MindVerses />} />
+          <Route path="mind/help" element={<MindHelp />} />
+          <Route path="glow" element={<Glow />} />
+          <Route path="glow/routine" element={<GlowRoutine />} />
+          <Route path="glow/item/:slug" element={<GlowItem />} />
+          <Route path="glow/:category" element={<GlowList />} />
           <Route path="admin" element={<AdminHome />} />
           <Route path="admin/programs/:id" element={<AdminProgramEditor />} />
           <Route path="admin/recipes/:id" element={<AdminRecipeEditor />} />

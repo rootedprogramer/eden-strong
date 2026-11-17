@@ -6,6 +6,7 @@ import SubHeader from '../../components/SubHeader';
 import ExerciseThumb from '../../components/ExerciseThumb';
 import { supabase } from '../../lib/supabaseClient';
 import { loadDayById, todayISO, parseSeconds, plannedReps, prescription, formatClock, youtubeEmbed, SECTIONS, sectionOf } from '../../lib/workout';
+import { ding, primeDing } from '../../lib/ding';
 
 const REST_SECONDS = 90;
 
@@ -82,7 +83,7 @@ export default function Exercise() {
   useEffect(() => {
     if (rest === null) return;
     if (rest <= 0) {
-      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+      ding();
       setRest(null);
       return;
     }
@@ -263,7 +264,7 @@ export default function Exercise() {
         <Link to={`/dashboard/workout?day=${ctx.dayId}`} aria-label="Back to the workout" style={{ ...floatBtn, width: 60, padding: 0, justifyContent: 'center', pointerEvents: 'auto' }}>
           <List size={24} />
         </Link>
-        <button onClick={() => setRest(rest === null ? REST_SECONDS : null)} style={{ ...floatBtn, pointerEvents: 'auto', border: 'none', cursor: 'pointer' }}>
+        <button onClick={() => { if (rest === null) primeDing(); setRest(rest === null ? REST_SECONDS : null); }} style={{ ...floatBtn, pointerEvents: 'auto', border: 'none', cursor: 'pointer' }}>
           {rest === null ? <><Timer size={20} /> Rest</> : <><Square size={16} fill="currentColor" /> {formatClock(rest)}</>}
         </button>
       </div>
@@ -302,7 +303,7 @@ function TimedRow({ n, target, row, onFinish, onToggle }) {
   useEffect(() => {
     if (left === null) return;
     if (left <= 0) {
-      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+      ding();
       setLeft(null);
       onFinish(target);
       return;
@@ -337,7 +338,7 @@ function TimedRow({ n, target, row, onFinish, onToggle }) {
       </div>
       <div style={{ flex: 1 }} />
       <button
-        onClick={running ? stop : () => setLeft(target)}
+        onClick={running ? stop : () => { primeDing(); setLeft(target); }}
         style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '11px 18px', borderRadius: 14, border: 'none', background: COLORS.ink, color: COLORS.bg, fontFamily: FONTS.body, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
       >
         {running ? <><Square size={14} fill="currentColor" /> Stop</> : <><Play size={14} fill="currentColor" /> Start</>}

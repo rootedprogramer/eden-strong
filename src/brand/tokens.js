@@ -301,6 +301,8 @@ export const VERSES = [
 export const HOME_TILES = [
   { id: 'programs', title: 'Programs', sub: 'Beginner and experienced', to: '/dashboard/program', image: null, tone: 'ink' },
   { id: 'nutrition', title: 'Nutrition', sub: 'Recipes and meal plans', to: '/dashboard/nutrition/recipes', image: null, tone: 'olive' },
+  { id: 'mind', title: 'Renew', sub: 'Check-ins, journaling, and calming tools', to: '/dashboard/mind', image: null, tone: 'sage' },
+  { id: 'glow', title: 'Glow Up', sub: 'Natural skin, hair, body, and self-care', to: '/dashboard/glow', image: null, tone: 'rose', editions: ['women'] },
   { id: 'devotions', title: 'Devotions', sub: 'Scripture and reflection for every day', to: '/dashboard/devotion', image: null, tone: 'gold' },
   { id: 'community', title: 'Community', sub: 'Encouragement, prayer, and wins', to: '/dashboard/community', image: null, tone: 'sage' },
   { id: 'coaches', title: 'Meet your coaches', sub: 'Lex and John', to: '/dashboard/coaches', image: null, tone: 'ink' },

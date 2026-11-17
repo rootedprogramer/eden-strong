@@ -5,6 +5,7 @@ import { COLORS, FONTS, tint } from '../../brand/tokens';
 import SubHeader from '../../components/SubHeader';
 import { supabase } from '../../lib/supabaseClient';
 import { BASICS, MEAL_BLESSING, labelFor, loadKitchen, addToGrocery } from '../../lib/kitchen';
+import { ding, primeDing } from '../../lib/ding';
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
@@ -206,13 +207,13 @@ function StepTimer({ seconds }) {
       setLeft(remaining);
       if (remaining === 0) {
         setRunning(false);
-        try { navigator.vibrate?.([300, 150, 300]); } catch {}
+        ding();
       }
     }, 250);
     return () => clearInterval(t);
   }, [running]);
 
-  const start = () => { endsAt.current = Date.now() + left * 1000; setRunning(true); };
+  const start = () => { primeDing(); endsAt.current = Date.now() + left * 1000; setRunning(true); };
   const done = left === 0;
   const mm = Math.floor(left / 60);
   const ss = String(left % 60).padStart(2, '0');
