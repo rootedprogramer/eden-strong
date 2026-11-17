@@ -37,3 +37,16 @@ create index if not exists mind_checkins_user on mind_checkins (user_id, check_d
 create index if not exists mind_journal_user on mind_journal (user_id, created_at desc);
 
 select 'Renew is ready' as status;
+
+-- Heart Work (emotional health lessons): which lessons each member has finished. Private.
+create table if not exists heart_progress (
+  user_id uuid not null references auth.users on delete cascade,
+  lesson_slug text not null,
+  completed_at timestamptz default now(),
+  primary key (user_id, lesson_slug)
+);
+alter table heart_progress enable row level security;
+drop policy if exists "Own heart progress" on heart_progress;
+create policy "Own heart progress" on heart_progress for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+
+select 'Heart Work is ready' as status;
